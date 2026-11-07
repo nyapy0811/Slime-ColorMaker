@@ -5,8 +5,10 @@ using UnityEngine;
 namespace ColorMaze
 {
     /// <summary>
-    /// 복셀 칸에서 겉면 사각형을 만든다. 칸 배열은 Unity 축(y가 위)이고 0은 빈칸이다. 다른 칸(색과 상관없이)과 맞닿은 면은 버리고,
+    /// 복셀 칸에서 겉면 사각형을 만든다. 칸 배열은 Unity 축(y가 위)이고 0은 빈칸이다. 다른 칸과 맞닿은 면은 버리고,
     /// 같은 방향·같은 층·같은 색의 면은 큰 사각형 하나로 합친다(면 합치기, greedy meshing).
+    /// 반투명 칸이 있으면: 불투명 칸은 반투명 칸과 맞닿은 면을 남기고(반투명 너머로 보임), 반투명 칸은 어느 칸과 맞닿든 면을 버린다
+    /// (반투명 부분은 바깥 껍질만 그려 반투명 면끼리 겹치지 않음).
     /// </summary>
     public static class VoxMesher
     {
@@ -28,8 +30,11 @@ namespace ColorMaze
             return grid;
         }
 
-        /// <summary>include가 받는 색의 칸에서만 면을 만든다. 맞닿음은 모든 칸으로 본다(칠하는 부분과 회색 사이 면도 버림).</summary>
-        public static List<Quad> Quads(byte[,,] grid, Func<byte, bool> include)
+        /// <summary>
+        /// include가 받는 색의 칸에서만 면을 만든다. 맞닿음은 모든 칸으로 본다(칠하는 부분과 회색 사이 면도 버림).
+        /// 다만 isClear가 받는 색(반투명)의 칸은 불투명 칸의 면을 가리지 않는다.
+        /// </summary>
+        public static List<Quad> Quads(byte[,,] grid, Func<byte, bool> include, Func<byte, bool> isClear = null)
         {
             var quads = new List<Quad>();
             var size = new[] { grid.GetLength(0), grid.GetLength(1), grid.GetLength(2) };
@@ -54,7 +59,8 @@ namespace ColorMaze
                                 cell[v] = b;
                                 byte color = grid[cell[0], cell[1], cell[2]];
                                 cell[d] = s + sign;
-                                bool open = cell[d] < 0 || cell[d] >= size[d] || grid[cell[0], cell[1], cell[2]] == 0;
+                                byte neighbor = cell[d] < 0 || cell[d] >= size[d] ? (byte)0 : grid[cell[0], cell[1], cell[2]];
+                                bool open = neighbor == 0 || (isClear != null && isClear(neighbor) && !isClear(color));
                                 mask[a, b] = color != 0 && open && include(color) ? color : (byte)0;
                             }
                         }

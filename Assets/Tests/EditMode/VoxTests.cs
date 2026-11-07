@@ -88,6 +88,21 @@ namespace ColorMaze
         }
 
         [Test]
+        public void Quads_ClearNeighbor_KeepsOpaqueFaceButClearHidesItsOwn()
+        {
+            // 0: 불투명(1), 1: 반투명(2), 2: 반투명(3). 반투명은 바깥 껍질만, 불투명은 반투명 너머로 보이게 맞닿은 면을 남긴다.
+            var grid = new byte[3, 1, 1];
+            grid[0, 0, 0] = 1;
+            grid[1, 0, 0] = 2;
+            grid[2, 0, 0] = 3;
+            System.Func<byte, bool> clear = color => color >= 2;
+            var opaque = VoxMesher.Quads(grid, color => color == 1, clear);
+            Assert.AreEqual(6, opaque.Count);
+            var glass = VoxMesher.Quads(grid, clear, clear);
+            Assert.AreEqual(4 + 5, glass.Count); // 가운데 칸: 옆 넷(양쪽 맞닿은 면 없음), 끝 칸: 다섯
+        }
+
+        [Test]
         public void Quads_FrontFacesPointOutward()
         {
             var grid = new byte[1, 1, 1];

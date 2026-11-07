@@ -1,7 +1,9 @@
 {
     "name": "ColorMaze.Vox.Editor",
     "rootNamespace": "ColorMaze",
-    "references": [],
+    "references": [
+        "ColorMaze.Vox"
+    ],
     "includePlatforms": [
         "Editor"
     ],
