@@ -455,11 +455,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3017904359077663805, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: color.g
-      value: 0
+      value: 0.711412
       objectReference: {fileID: 0}
     - target: {fileID: -3017904359077663805, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: color.r
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3017904359077663805, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: opacity
@@ -471,7 +471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -1652429604140188213, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.000000025066015
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: -1652429604140188213, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_LocalPosition.z
