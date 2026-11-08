@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 110009236162225004}
   - component: {fileID: 4375191681412660721}
   - component: {fileID: 6417382920895058914}
+  - component: {fileID: 7658745634802305509}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -152,9 +153,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonTestCamera
   target: {fileID: 3688470996545907793}
   lookHeight: 0.5
+  distance: 7
+  collision: {fileID: 11400000, guid: c44f01f105c79ca4abd695ff2fdaa994, type: 2}
   mouseSensitivity: 0.02
-  minPitch: -10
-  maxPitch: 70
+  minPitch: 10
+  maxPitch: 90
+--- !u!114 &7658745634802305509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 293301748516147565}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6c45363fe696bd4c823016cc695d1a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CameraOcclusionFader
+  settings: {fileID: 11400000, guid: 0972b68255483fb4b953f3b830c40310, type: 2}
+  ditherShader: {fileID: 4800000, guid: f9a6070fd9934ed49ba204cf74534554, type: 3}
+  target: {fileID: 3688470996545907793}
+  targetHeight: 0.5
 --- !u!1 &1191597651033284044
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,6 +12,17 @@ namespace ColorMaze
     {
         [SerializeField] CubeGridData data = new();
 
+        CubeFaceCuller culler;
+
         public CubeGridData Data => data;
+
+        // Play 중에만(에디터 편집 화면은 모든 면 그대로, 만든 메시가 씬에 저장되지 않게): 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다.
+        void Awake()
+        {
+            culler = new CubeFaceCuller();
+            culler.Apply(this);
+        }
+
+        void OnDestroy() => culler?.Dispose();
     }
 }
