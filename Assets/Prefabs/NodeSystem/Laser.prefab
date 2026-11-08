@@ -81,9 +81,9 @@ MonoBehaviour:
   fixtureId: 0
   highlight: {fileID: 0}
   requiredColor:
-    r: 2
-    g: 1
-    b: 1
+    r: 6
+    g: 3
+    b: 3
   requiredColorRenderers:
   - {fileID: 8481462108067191981}
   blockers:

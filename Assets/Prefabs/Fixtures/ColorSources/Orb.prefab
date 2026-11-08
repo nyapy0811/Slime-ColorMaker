@@ -68,7 +68,7 @@ MonoBehaviour:
   fixtureId: 0
   highlight: {fileID: 1390710257538733583}
   value:
-    r: 1
+    r: 3
     g: 0
     b: 0
   paint: {fileID: 8523100375898112589}
@@ -153,6 +153,14 @@ PrefabInstance:
     - target: {fileID: 8881157477871195873, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
       propertyPath: color.g
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8881157477871195873, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: color.r
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8881157477871195873, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: opacity
+      value: 0.25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -49,10 +49,12 @@ namespace ColorMaze
         }
 
         [Test]
-        public void ToColor_IsNormalizedSoScaledValuesLookTheSame()
+        public void ToColor_IsValueOverChannelMax()
         {
-            Assert.AreEqual(ColorRules.ToColor(new ColorValue(1, 0, 0)), ColorRules.ToColor(new ColorValue(2, 0, 0)));
-            Assert.AreEqual(new Color(1f, 0.5f, 0f), ColorRules.ToColor(new ColorValue(4, 2, 0)));
+            Assert.AreEqual(new Color(1f, 0.2f, 0f), ColorRules.ToColor(new ColorValue(15, 3, 0)));
+            Assert.AreEqual(Color.black, ColorRules.ToColor(ColorValue.Zero));
+            Assert.AreEqual(Color.white, ColorRules.ToColor(ColorRules.Limit));
+            Assert.AreNotEqual(ColorRules.ToColor(new ColorValue(1, 0, 0)), ColorRules.ToColor(new ColorValue(2, 0, 0)));
         }
 
         [Test]
@@ -64,11 +66,5 @@ namespace ColorMaze
         }
 
         static Color ToGray(float value) => new(value, value, value, 1f);
-
-        [Test]
-        public void GlowIntensity_IsProportionalToLargestChannel()
-        {
-            Assert.AreEqual(1.5f, ColorRules.GlowIntensity(new ColorValue(1, 3, 2), 0.5f));
-        }
     }
 }

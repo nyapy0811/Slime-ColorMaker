@@ -65,9 +65,7 @@ namespace ColorMaze
                 problems++;
             }
 
-            var rules = managers.Count == 1 ? managers[0].Rules : null;
-            if (rules == null) Debug.LogWarning("[맵 검사] 게임 규칙을 찾지 못해 요구 색을 검사하지 않았다(맵 매니저의 게임 규칙 칸).");
-            else problems += CheckRequiredColors(scene, rules.channelLimit);
+            problems += CheckRequiredColors(scene, ColorRules.Limit);
 
             problems += CheckCubeGrid(scene);
 

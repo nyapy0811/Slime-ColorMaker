@@ -417,11 +417,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: Orb (1,0,1)
+      value: Orb (3,0,3)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.b
-      value: 1
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
+      propertyPath: value.r
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: fixtureId
@@ -952,11 +956,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: Orb (0,1,0)
+      value: Orb (0,3,0)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.g
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.r
@@ -2747,15 +2751,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4808676435208310991, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
       propertyPath: m_Name
-      value: Goal (3,1,1)
+      value: MeuengKing (9,3,3)
       objectReference: {fileID: 0}
     - target: {fileID: 6338167652662790735, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
       propertyPath: fixtureId
       value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 6338167652662790735, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
-      propertyPath: requiredColor.r
+      propertyPath: requiredColor.b
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6338167652662790735, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
+      propertyPath: requiredColor.g
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6338167652662790735, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
+      propertyPath: requiredColor.r
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7846592279083139667, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3757,7 +3769,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: Orb (1,0,0)
+      value: Orb (3,0,0)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
+      propertyPath: value.r
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: fixtureId
@@ -3823,15 +3839,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: Orb (2,1,0)
+      value: Orb (6,3,0)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.g
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.r
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: fixtureId
@@ -4703,15 +4719,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: Orb (0,3,1)
+      value: Orb (0,9,3)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.b
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.g
-      value: 3
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.r

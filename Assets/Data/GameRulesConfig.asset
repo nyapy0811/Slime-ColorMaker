@@ -12,10 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb0bbcc96081a914081a051246a5a558, type: 3}
   m_Name: GameRulesConfig
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.GameRulesConfig
-  channelLimit:
-    r: 5
-    g: 5
-    b: 5
   interactDistance: 3
-  glowFactor: 0.2
   fallDepth: 10
