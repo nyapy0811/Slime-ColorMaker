@@ -23,3 +23,8 @@ MonoBehaviour:
     displayName: "\uC2DC\uD5D8 \uB9F5 B"
     thumbnail: {fileID: 0}
     version: 3
+  - mapId: test_motion
+    sceneName: TestMap_Motion
+    displayName: "\uBAA8\uC158 \uC2DC\uD5D8 \uB9F5"
+    thumbnail: {fileID: 0}
+    version: 1

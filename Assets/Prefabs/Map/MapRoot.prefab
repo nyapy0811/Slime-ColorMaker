@@ -33,7 +33,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1467729416002094186}
+  m_Father: {fileID: 3688470996545907793}
   m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
 --- !u!20 &1638519155024908030
 Camera:
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f22c7b78749a9fb48acc49f67b177e44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonTestCamera
-  target: {fileID: 1467729416002094186}
+  target: {fileID: 3688470996545907793}
   lookHeight: 0.5
   mouseSensitivity: 0.02
   minPitch: -10
@@ -314,7 +314,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8852267103546963406}
-  - {fileID: 1467729416002094186}
+  - {fileID: 3688470996545907793}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2859209190413856057
@@ -353,21 +353,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 91523513434163832}
     m_Modifications:
-    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-      propertyPath: color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-      propertyPath: color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-      propertyPath: color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-      propertyPath: opacity
-      value: 0.5
+    - target: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      propertyPath: m_Name
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: -3567100548934855184, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_LocalScale.x
@@ -425,9 +413,21 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-      propertyPath: m_Name
-      value: Player
+    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      propertyPath: color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      propertyPath: color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      propertyPath: color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 249881639395210817, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      propertyPath: opacity
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -454,8 +454,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 915282881451326819}
+    - targetCorrespondingSourceObject: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6806087724032474307}
   m_SourcePrefab: {fileID: -9137962142385034750, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
---- !u!1 &1126061750646577461 stripped
+--- !u!4 &64597484756707751 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -168190958039560186, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+  m_PrefabInstance: {fileID: 9029444741763185057}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3688470996545907793 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3567100548934855184, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+  m_PrefabInstance: {fileID: 9029444741763185057}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8607976655849679367 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
   m_PrefabInstance: {fileID: 9029444741763185057}
@@ -466,7 +479,7 @@ CharacterController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -491,7 +504,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1182b552df66194aadd6eda2b238be2, type: 3}
@@ -508,7 +521,7 @@ BoxCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -529,7 +542,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e75578f44f4f8438742c3ce8dba75c, type: 3}
@@ -542,7 +555,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d92a77d7b4c5b24590def30e4f9eee0, type: 3}
@@ -554,14 +567,23 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126061750646577461}
+  m_GameObject: {fileID: 8607976655849679367}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a89aea70bd79534595801c088bc9f36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerColorView
---- !u!4 &1467729416002094186 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -3567100548934855184, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
-  m_PrefabInstance: {fileID: 9029444741763185057}
+--- !u!114 &6806087724032474307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8607976655849679367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26bd4e288d7af2148bff7a703ff2495e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerSquashView
+  settings: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
+  body: {fileID: 64597484756707751}

@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/TestMap_CoreLoop_B.unity
     guid: 293420d2dd712a1429500bac782a8078
+  - enabled: 1
+    path: Assets/Scenes/Maps/TestMap_Motion.unity
+    guid: de52ea2ca17d4f24bb6ceaab4acfac43
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
