@@ -7,8 +7,8 @@ namespace ColorMaze
 {
     /// <summary>
     /// 키보드·마우스 입력을 읽는 곳. 게임플레이 입력 잠금도 여기 있다: 잠근 쪽(팝업 등)이 하나라도 있으면 잠김이고,
-    /// 이동·시점과 조준이 이것을 본다. 일시정지는 잠금이 아니라 <c>Time.timeScale = 0</c>으로 멈춘다.
-    /// 읽는 키는 쓰는 단계에서 더한다(ESC는 뒤로 가기 스택, 좌클릭은 상호작용).
+    /// 이동·시점과 닿음 상호작용이 이것을 본다. 일시정지는 잠금이 아니라 <c>Time.timeScale = 0</c>으로 멈춘다.
+    /// 읽는 키는 쓰는 단계에서 더한다(ESC는 뒤로 가기 스택).
     /// </summary>
     public class InputManager : MonoSingleton<InputManager>
     {
@@ -36,13 +36,6 @@ namespace ColorMaze
         {
             var mouse = Mouse.current;
             return mouse != null ? mouse.delta.ReadValue() : Vector2.zero;
-        }
-
-        /// <summary>상호작용(좌클릭)을 누른 순간.</summary>
-        public bool ReadInteract()
-        {
-            var mouse = Mouse.current;
-            return mouse != null && mouse.leftButton.wasPressedThisFrame;
         }
 
         /// <summary>뒤로 가기(ESC)를 누른 순간.</summary>

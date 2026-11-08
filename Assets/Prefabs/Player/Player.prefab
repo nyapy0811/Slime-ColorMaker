@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 5231515334537013122}
   - component: {fileID: 1308353034515817941}
   - component: {fileID: 147754407189271427}
-  - component: {fileID: 8303065507167363394}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -177,19 +176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d92a77d7b4c5b24590def30e4f9eee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerInventory
---- !u!114 &8303065507167363394
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4488645559290923506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 112a23a79d8893f4f9b7509b02e1c66b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.InteractionController
-  aimCamera: {fileID: 9179665582831082242}
 --- !u!1 &4577737014975015306
 GameObject:
   m_ObjectHideFlags: 0

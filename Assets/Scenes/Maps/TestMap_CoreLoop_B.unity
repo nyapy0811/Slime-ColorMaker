@@ -417,7 +417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: FireExtinguisher (1,0,1)
+      value: Orb (1,0,1)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.b
@@ -952,7 +952,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: FireExtinguisher (0,1,0)
+      value: Orb (0,1,0)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.g
@@ -3757,7 +3757,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: FireExtinguisher (1,0,0)
+      value: Orb (1,0,0)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: fixtureId
@@ -3823,7 +3823,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: FireExtinguisher (2,1,0)
+      value: Orb (2,1,0)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.g
@@ -4703,7 +4703,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: m_Name
-      value: FireExtinguisher (0,3,1)
+      value: Orb (0,3,1)
       objectReference: {fileID: 0}
     - target: {fileID: 8416537884071974335, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
       propertyPath: value.b

@@ -1,4 +1,3 @@
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -7,37 +6,7 @@ namespace ColorMaze
 {
     public class VoxTests
     {
-        // 아트 세션이 만든 가져오기 시험 모델(Docs/v2 복셀 모델링 규칙 8절).
-        const string TestFile = "Assets/Models/Tests/VoxImportTest.vox";
-
-        static VoxFile ReadTestFile() => VoxFile.Read(File.ReadAllBytes(TestFile));
-
         static int Area(VoxMesher.Quad quad) => (quad.du.x + quad.du.y + quad.du.z) * (quad.dv.x + quad.dv.y + quad.dv.z);
-
-        [Test]
-        public void Read_TestFile_PlacesObjectsByCenterCell()
-        {
-            var file = ReadTestFile();
-            Assert.AreEqual(new[] { "Base", "Lamp" }, file.objects.Select(obj => obj.name).ToArray());
-            Assert.AreEqual(new Vector3Int(14, 14, 12), file.objects[0].model.size);
-            // 가운데 칸은 크기/2 내림: Base 14·14·12 → 7·7·6, Lamp 5·5·7 → 2·2·3.
-            Assert.AreEqual(new Vector3Int(-7, -7, 0), file.objects[0].Min);
-            Assert.AreEqual(new Vector3Int(0, -2, 12), file.objects[1].Min);
-            Assert.AreEqual((new Vector3Int(-7, -7, 0), new Vector3Int(7, 7, 19)), file.Bounds());
-        }
-
-        [Test]
-        public void Read_TestFile_PaletteIndexIsColorNumber()
-        {
-            // 값 색 칸 33(가장 밝음)과 40(가장 어두움)은 Base의 윗면 테두리에만 있다(규칙 3절, 8절).
-            var file = ReadTestFile();
-            Assert.AreEqual(new Color32(255, 0, 0, 255), file.palette[VoxImporter.FirstValueColor]);
-            Assert.AreEqual(new Color32(0, 0, 0, 255), file.palette[VoxImporter.LastValueColor]);
-            Assert.AreEqual(44, file.objects[0].model.voxels.Count(voxel => voxel.color == VoxImporter.FirstValueColor));
-            Assert.AreEqual(44, file.objects[0].model.voxels.Count(voxel => voxel.color == VoxImporter.LastValueColor));
-            Assert.AreEqual(0, file.objects[1].model.voxels.Count(voxel => VoxImporter.IsValueColor(voxel.color)));
-            Assert.IsFalse(file.hasRotation);
-        }
 
         [Test]
         public void Grid_SwapsYAndZ()

@@ -9,7 +9,7 @@ namespace ColorMaze
         [Tooltip("채널 한도(R, G, B). 지금 색은 채널마다 0 ~ 한도로 잘린다.")]
         public ColorValue channelLimit = new(5, 5, 5);
 
-        [Tooltip("조준해 상호작용할 수 있는 거리(유닛). 코어 루프 9단계에서 걸어 보며 정했다(v1은 1.3).")]
+        [Tooltip("값이 보이는 거리(유닛, 캐릭터에서 기물까지). 코어 루프 9단계에서 조준 거리로 정했고(v1은 1.3), 2026-11-08 조준을 없애며 가까운 값 표시 거리로 바뀜.")]
         public float interactDistance = 3f;
 
         [Tooltip("지금 색 구의 발광 세기 계수(가장 큰 채널 × 계수). 블룸이 꺼져 있어 1을 넘는 발광은 더 밝아 보이지 않으므로 " +

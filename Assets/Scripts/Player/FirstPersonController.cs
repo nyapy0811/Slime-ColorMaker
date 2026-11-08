@@ -53,9 +53,10 @@ namespace ColorMaze
         /// <summary>위치와 방향을 바로 옮긴다(시작 지점, 나중에 체크포인트). 속도와 위아래 시점은 초기화한다.</summary>
         public void Teleport(Vector3 position, Quaternion rotation)
         {
+            bool wasEnabled = cc.enabled; // 3인칭 캐릭터 시험 중에는 꺼져 있다(켜지 않고 그대로 둠).
             cc.enabled = false; // 켜진 CharacterController는 transform 직접 이동을 덮어쓴다.
             transform.SetPositionAndRotation(position, rotation);
-            cc.enabled = true;
+            cc.enabled = wasEnabled;
             horizontalVelocity = Vector3.zero;
             verticalVelocity = 0f;
             pitch = 0f;
