@@ -16,5 +16,6 @@ MonoBehaviour:
   stairPrefab: {fileID: 6158692792192568682, guid: ff276e83c8c8ab64da02449cd0024377, type: 3}
   defaultSkybox: {fileID: 2100000, guid: 05226d1aefb999e4d8a65a1acefa6d7b, type: 2}
   startPointPrefab: {fileID: 3587805617355241486, guid: 23697c6bec58a8d429a98334cefa9ea2, type: 3}
+  checkpointPrefab: {fileID: 8270021457413110793, guid: 85fd52a7dfbd8b64aab9cc3ff61c0ff4, type: 3}
   colorSourcePrefab: {fileID: 4248790584534183962, guid: 95fde862473d85c4495d7c8df691c910, type: 3}
   goalPrefab: {fileID: 4808676435208310991, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}

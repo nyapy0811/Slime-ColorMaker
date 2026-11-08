@@ -16,9 +16,9 @@ namespace ColorMaze
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, StartPoint, ColorSource, Goal, TestModel }
+        public enum Brush { Block, Stair, StartPoint, Checkpoint, ColorSource, Goal, TestModel }
 
-        public static readonly string[] BrushNames = { "블록", "계단", "시작 지점", "색 원천", "목적지", "시험 모델" };
+        public static readonly string[] BrushNames = { "블록", "계단", "시작 지점", "체크포인트", "색 원천", "목적지", "시험 모델" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -188,7 +188,7 @@ namespace ColorMaze
         // 기물은 종류별 묶음 오브젝트 아래에 둔다(시험 맵의 구성과 같음). 시작 지점은 씬 바로 아래.
         static Transform FolderFor(UnityEngine.SceneManagement.Scene scene, Brush brush)
         {
-            string name = brush switch { Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.TestModel => TestModelsFolder, _ => null };
+            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.TestModel => TestModelsFolder, _ => null };
             if (name == null) return null;
             var existing = scene.GetRootGameObjects().FirstOrDefault(root => root.name == name);
             if (existing != null) return existing.transform;
@@ -205,6 +205,7 @@ namespace ColorMaze
             Brush.Stair => config.stairPrefab,
             Brush.TestModel => TestModelAsset,
             Brush.StartPoint => config.startPointPrefab,
+            Brush.Checkpoint => config.checkpointPrefab,
             Brush.ColorSource => config.colorSourcePrefab,
             Brush.Goal => config.goalPrefab,
             _ => config.blockPrefab,

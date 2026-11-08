@@ -4,7 +4,7 @@ namespace ColorMaze
 {
     /// <summary>
     /// 큐브 맵의 프리팹(애셋은 Assets/Data). 블록은 아직 한 종류이고, 블록과 계단의 겉모습은 임시 복셀 모델이다.
-    /// 기물 프리팹은 큐브 맵 편집 도구의 팔레트가 쓴다(지금은 시작 지점·색 원천·목적지만, 2026-11-07).
+    /// 기물 프리팹은 큐브 맵 편집 도구의 팔레트가 쓴다(지금은 시작 지점·체크포인트·색 원천·목적지, 2026-11-08 체크포인트 더함).
     /// </summary>
     [CreateAssetMenu(menuName = "ColorMaze/큐브 맵 설정", fileName = "CubeGridConfig")]
     public class CubeGridConfig : ScriptableObject
@@ -20,6 +20,7 @@ namespace ColorMaze
 
         [Header("팔레트 기물 (피벗은 바닥 가운데)")]
         public GameObject startPointPrefab;
+        public GameObject checkpointPrefab;
         public GameObject colorSourcePrefab;
         public GameObject goalPrefab;
     }
