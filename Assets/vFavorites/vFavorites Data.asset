@@ -30,9 +30,43 @@ MonoBehaviour:
       isFolder: 0
       isAsset: 1
       _id: 1043232329
+    - globalId:
+        globalObjectIdString: GlobalObjectId_V1-1-de52ea2ca17d4f24bb6ceaab4acfac43-102900000-0
+      _typeString: UnityEditor.SceneAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _obj: {fileID: 102900000, guid: de52ea2ca17d4f24bb6ceaab4acfac43, type: 3}
+      isSceneGameObject: 0
+      isFolder: 0
+      isAsset: 1
+      _id: 1061187054
+    - globalId:
+        globalObjectIdString: GlobalObjectId_V1-3-5c2fdfc91b3cd9c45a6ce31fde74b076-11400000-0
+      _typeString: ColorMaze.PlayerSquashSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _obj: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
+      isSceneGameObject: 0
+      isFolder: 0
+      isAsset: 1
+      _id: 1062605454
     name: Page 1
     _id: 1050270189
   - items: []
     name: Page 2
+    _id: 1064777864
+  - items: []
+    name: Page 3
+    _id: 1032150033
+  - items: []
+    name: Page 4
+    _id: 1044261105
+  - items: []
+    name: Page 5
+    _id: 1042193177
+  - items: []
+    name: Page 6
+    _id: 1052069977
+  - items: []
+    name: Page 7
+    _id: 1040813817
+  - items: []
+    name: Page 8
     _id: 0
   rowScale: 1
