@@ -25,7 +25,7 @@ namespace ColorMaze
         void Awake()
         {
             box = GetComponent<BoxCollider>();
-            context = new PlayerContext(GetComponent<PlayerColor>(), transform);
+            context = new PlayerContext(GetComponent<PlayerColor>());
         }
 
         // 이동(Update) 뒤에 잰다.

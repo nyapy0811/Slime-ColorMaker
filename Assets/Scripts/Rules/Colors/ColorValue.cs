@@ -27,9 +27,6 @@ namespace ColorMaze
         public int G => g;
         public int B => b;
 
-        /// <summary>가장 큰 채널 값.</summary>
-        public int Max => Math.Max(r, Math.Max(g, b));
-
         public static ColorValue operator +(ColorValue a, ColorValue b) => new(a.r + b.r, a.g + b.g, a.b + b.b);
         public static ColorValue operator -(ColorValue a, ColorValue b) => new(a.r - b.r, a.g - b.g, a.b - b.b);
 

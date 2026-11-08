@@ -15,9 +15,9 @@ namespace ColorMaze
         {
             Gizmos.color = Color.cyan;
             Vector3 feet = transform.position;
-            Gizmos.DrawWireCube(feet + Vector3.up * 0.8f, new Vector3(0.5f, 1.6f, 0.5f));
+            Gizmos.DrawWireCube(feet + Vector3.up * 0.5f, Vector3.one); // 므엥 크기(1 × 1 × 1)
             Vector3 forward = SpawnRotation * Vector3.forward;
-            Gizmos.DrawLine(feet + Vector3.up * 1.3f, feet + Vector3.up * 1.3f + forward * 0.8f);
+            Gizmos.DrawLine(feet + Vector3.up * 0.5f, feet + Vector3.up * 0.5f + forward * 0.8f);
         }
     }
 }

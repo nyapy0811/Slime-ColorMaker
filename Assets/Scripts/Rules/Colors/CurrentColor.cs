@@ -26,9 +26,6 @@ namespace ColorMaze
             return true;
         }
 
-        /// <summary>레이저 벽을 지날 수 있는가: 모든 채널이 빼는 색 이상.</summary>
-        public bool CanPass(ColorValue cost) => ColorRules.IsAtLeast(Value, cost);
-
         /// <summary>레이저 벽을 지나 빼는 색만큼 뺀다. 모자란 채널은 0에서 멈춘다.</summary>
         public void Pass(ColorValue cost) => Set(ColorRules.Clamp(Value - cost, Limit));
 

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace ColorMaze
 {
     /// <summary>
@@ -10,17 +8,9 @@ namespace ColorMaze
     {
         readonly PlayerColor color;
 
-        readonly Transform body;
-
-        public PlayerContext(PlayerColor color, Transform body)
-        {
-            this.color = color;
-            this.body = body;
-        }
+        public PlayerContext(PlayerColor color) => this.color = color;
 
         /// <summary>지금 색. 플레이어의 지금 색이 깨어날 때 만들어지므로 쓸 때 읽는다.</summary>
         public CurrentColor Color => color.Current;
-        /// <summary>발밑 위치.</summary>
-        public Vector3 Position => body.position;
     }
 }

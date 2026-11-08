@@ -24,12 +24,6 @@ namespace ColorMaze
         }
 
         [Test]
-        public void Max_IsLargestChannel()
-        {
-            Assert.AreEqual(4, new ColorValue(1, 4, 2).Max);
-        }
-
-        [Test]
         public void ToString_IsThreeNumbers()
         {
             Assert.AreEqual("2 0 0", new ColorValue(2, 0, 0).ToString());

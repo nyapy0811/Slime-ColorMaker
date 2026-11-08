@@ -42,13 +42,6 @@ namespace ColorMaze
         }
 
         [Test]
-        public void CanPass_NeedsEveryChannelAtLeastCost()
-        {
-            Assert.IsTrue(Make(new ColorValue(2, 1, 1)).CanPass(new ColorValue(1, 0, 1)));
-            Assert.IsFalse(Make(new ColorValue(2, 1, 0)).CanPass(new ColorValue(1, 0, 1)));
-        }
-
-        [Test]
         public void Pass_SubtractsCost()
         {
             var color = Make(new ColorValue(2, 1, 1));
