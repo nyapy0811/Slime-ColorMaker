@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5019268302561034160}
   - component: {fileID: 3988166587064032416}
   - component: {fileID: 8217513241585623951}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeafRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 5955280868505090839}
   - component: {fileID: 2131962591730623772}
   - component: {fileID: 223434410635737950}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeafLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 5271962453691439686}
   - component: {fileID: 1710570943130567343}
   - component: {fileID: 3739834138344589509}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RequiredColor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 1064042811457881662}
   - component: {fileID: 4038230722551934566}
   - component: {fileID: 2972089568804079639}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -401,6 +401,7 @@ MonoBehaviour:
     b: 3
   requiredColorRenderers:
   - {fileID: 3739834138344589509}
+  requiredColorModel: {fileID: 0}
   blockers:
   - {fileID: 2131962591730623772}
   - {fileID: 3988166587064032416}

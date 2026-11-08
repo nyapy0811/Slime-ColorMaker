@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6338167652662790735}
   - component: {fileID: 8356149011840848604}
   - component: {fileID: 5453584517965621237}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MeuengKing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,6 +118,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7846592279083139667}
     m_Modifications:
+    - target: {fileID: -8566865159913316725, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -7766590400773579133, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -2156141795657180137, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 530052706474138050, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
       propertyPath: color.b
       value: 0.2
@@ -170,9 +182,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6685817987228316109, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7545049469251479114, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
       propertyPath: m_Name
       value: Model
+      objectReference: {fileID: 0}
+    - target: {fileID: 7545049469251479114, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

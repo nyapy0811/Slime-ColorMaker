@@ -9,6 +9,7 @@ namespace ColorMaze
     /// 새로 닿은 순간 한 번 상호작용한다(계속 닿아 있으면 되풀이하지 않고, 떨어졌다 다시 닿으면 또 함). 트리거(오브)도 닿음으로 친다.
     /// 상호작용 거리 안에서 값이 있는 기물 전부의 (윗면 가운데, 값)을 '가까운 값들 바뀜'으로 보낸다(목록이 달라질 때만).
     /// 입력이 잠겨 있거나 일시정지 중이면 상호작용하지 않고 값도 숨긴다(팝업·일시정지·클리어 화면).
+    /// 기물 레이어(<see cref="FixtureBase.LayerName"/>)만 찾아 블록은 결과에 들지 않는다. 매 프레임 도는 코드라 결과 배열·목록은 재사용한다.
     /// </summary>
     [RequireComponent(typeof(BoxCollider), typeof(PlayerColor))]
     public class TouchInteractionController : MonoBehaviour
@@ -18,14 +19,21 @@ namespace ColorMaze
 
         readonly HashSet<IInteractable> touching = new();
         readonly HashSet<IInteractable> touchingNow = new();
+        readonly HashSet<IValueProvider> seen = new();
+        readonly List<NearbyValue> found = new();
+        readonly List<NearbyValue> shown = new();
+        readonly List<Collider> parts = new();
+        Collider[] hits = new Collider[16];
+        int fixtureMask;
         BoxCollider box;
         PlayerContext context;
-        List<NearbyValue> shown = new();
 
         void Awake()
         {
             box = GetComponent<BoxCollider>();
             context = new PlayerContext(GetComponent<PlayerColor>());
+            fixtureMask = LayerMask.GetMask(FixtureBase.LayerName);
+            if (fixtureMask == 0) Debug.LogError($"[TouchInteractionController] '{FixtureBase.LayerName}' 레이어가 없다(Project Settings > Tags and Layers).", this);
         }
 
         // 이동(Update) 뒤에 잰다.
@@ -41,39 +49,48 @@ namespace ColorMaze
         void Touch()
         {
             var halfExtents = Vector3.Scale(box.size, transform.lossyScale) / 2f + Vector3.one * touchMargin;
+            int count;
+            // 결과가 배열을 꽉 채우면 빠진 것이 있을 수 있으므로 두 배로 늘려 다시 찾는다.
+            while ((count = Physics.OverlapBoxNonAlloc(Center, halfExtents, hits, transform.rotation, fixtureMask, QueryTriggerInteraction.Collide)) == hits.Length)
+                hits = new Collider[hits.Length * 2];
             touchingNow.Clear();
-            foreach (var hit in Physics.OverlapBox(Center, halfExtents, transform.rotation, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide))
-                if (hit.GetComponentInParent<IInteractable>() is { } interactable) touchingNow.Add(interactable);
+            for (int i = 0; i < count; i++)
+                if (hits[i].GetComponentInParent<IInteractable>() is { } interactable) touchingNow.Add(interactable);
             foreach (var interactable in touchingNow)
                 if (!touching.Contains(interactable) && interactable.CanInteract) interactable.Interact(context);
             touching.Clear();
             touching.UnionWith(touchingNow);
         }
 
-        // 흡수 직후처럼 기물의 값이 없어져도 여기서 잡힌다.
+        // 흡수 직후처럼 기물의 값이 없어져도 여기서 잡힌다. 보내는 목록은 재사용하므로 받는 쪽이 복사해 둔다.
         void ReportValue(bool idle)
         {
-            var found = idle ? new List<NearbyValue>() : FindValues();
+            found.Clear();
+            if (!idle) FindValues();
             if (SameValues(found, shown)) return;
-            shown = found;
-            EventBus.Publish(new NearbyValuesChanged(found));
+            shown.Clear();
+            shown.AddRange(found);
+            EventBus.Publish(new NearbyValuesChanged(shown));
         }
 
         // 거리 안에 콜라이더가 하나라도 걸친 기물. 자리는 그 기물 콜라이더 전체의 경계 상자 윗면 가운데.
-        List<NearbyValue> FindValues()
+        void FindValues()
         {
-            var found = new List<NearbyValue>();
-            var seen = new HashSet<IValueProvider>();
-            foreach (var hit in Physics.OverlapSphere(Center, MapManager.Current.Rules.interactDistance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide))
+            int count;
+            while ((count = Physics.OverlapSphereNonAlloc(Center, MapManager.Current.Rules.interactDistance, hits, fixtureMask, QueryTriggerInteraction.Collide)) == hits.Length)
+                hits = new Collider[hits.Length * 2];
+            seen.Clear();
+            for (int i = 0; i < count; i++)
             {
+                var hit = hits[i];
                 if (hit.GetComponentInParent<IValueProvider>() is not { } provider || !seen.Add(provider)) continue;
                 if (!provider.TryGetDisplayValue(out var value)) continue;
                 var bounds = hit.bounds;
-                foreach (var part in ((Component)provider).GetComponentsInChildren<Collider>())
+                ((Component)provider).GetComponentsInChildren(parts);
+                foreach (var part in parts)
                     if (part.enabled) bounds.Encapsulate(part.bounds);
                 found.Add(new NearbyValue(new Vector3(bounds.center.x, bounds.max.y, bounds.center.z), value));
             }
-            return found;
         }
 
         // 물리 결과의 차례는 프레임마다 다를 수 있어 차례와 상관없이 비교한다.
@@ -81,7 +98,12 @@ namespace ColorMaze
         {
             if (a.Count != b.Count) return false;
             foreach (var x in a)
-                if (!b.Exists(y => y.Top == x.Top && y.Value == x.Value)) return false;
+            {
+                bool match = false;
+                foreach (var y in b)
+                    if (y.Top == x.Top && y.Value == x.Value) { match = true; break; }
+                if (!match) return false;
+            }
             return true;
         }
     }

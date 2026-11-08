@@ -66,6 +66,7 @@ namespace ColorMaze
             }
 
             problems += CheckRequiredColors(scene, ColorRules.Limit);
+            problems += CheckFixtureLayers(scene);
 
             problems += CheckCubeGrid(scene);
 
@@ -98,6 +99,27 @@ namespace ColorMaze
             {
                 Debug.LogError($"[맵 검사] 맵 목록에 맵 id '{group.Key}'가 {group.Count()}개다(맵마다 달라야 함).", mapList);
                 problems++;
+            }
+            return problems;
+        }
+
+        /// <summary>상호작용하거나 값을 보이는 기물의 콜라이더는 기물 레이어에 있어야 캐릭터가 닿고 값을 본다(2026-11-08).</summary>
+        static int CheckFixtureLayers(Scene scene)
+        {
+            int layer = LayerMask.NameToLayer(FixtureBase.LayerName);
+            if (layer < 0)
+            {
+                Debug.LogError($"[맵 검사] '{FixtureBase.LayerName}' 레이어가 없다(Project Settings > Tags and Layers).");
+                return 1;
+            }
+            int problems = 0;
+            foreach (var fixture in FixtureIdAssigner.FixturesIn(scene).Where(f => f is IInteractable or IValueProvider))
+            {
+                foreach (var collider in fixture.GetComponentsInChildren<Collider>(true).Where(c => c.gameObject.layer != layer))
+                {
+                    Debug.LogError($"[맵 검사] '{fixture.name}'의 콜라이더 '{collider.name}'가 '{FixtureBase.LayerName}' 레이어가 아니다(캐릭터가 닿지 못하고 값도 안 보임). 프리팹의 레이어를 고친다.", collider);
+                    problems++;
+                }
             }
             return problems;
         }

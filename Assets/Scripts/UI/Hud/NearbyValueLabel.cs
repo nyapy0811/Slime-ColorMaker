@@ -19,7 +19,7 @@ namespace ColorMaze
         [SerializeField] float heightAbove = 0.2f;
 
         readonly List<ColorValueLabel> labels = new();
-        IReadOnlyList<NearbyValue> shown = System.Array.Empty<NearbyValue>();
+        readonly List<NearbyValue> shown = new();
 
         void Awake()
         {
@@ -32,7 +32,8 @@ namespace ColorMaze
 
         void OnNearbyValuesChanged(NearbyValuesChanged e)
         {
-            shown = e.Values;
+            shown.Clear();
+            shown.AddRange(e.Values); // 보내는 쪽이 목록을 재사용하므로 복사해 둔다.
             while (labels.Count < shown.Count) labels.Add(Instantiate(label, label.transform.parent));
             for (int i = 0; i < labels.Count; i++)
             {

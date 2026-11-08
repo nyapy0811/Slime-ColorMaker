@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 508235429252620439}
   - component: {fileID: 2367701127916203431}
   - component: {fileID: 3768806407981117390}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Laser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,6 +86,7 @@ MonoBehaviour:
     b: 3
   requiredColorRenderers:
   - {fileID: 8481462108067191981}
+  requiredColorModel: {fileID: 0}
   blockers:
   - {fileID: 4645137979019011529}
   view: {fileID: 2367701127916203431}
@@ -101,7 +102,7 @@ GameObject:
   - component: {fileID: 4889297113472519133}
   - component: {fileID: 4645137979019011529}
   - component: {fileID: 1549111098353233031}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Beam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +213,7 @@ GameObject:
   - component: {fileID: 5811676011171227533}
   - component: {fileID: 4412050574568996028}
   - component: {fileID: 8481462108067191981}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Emitter
   m_TagString: Untagged
   m_Icon: {fileID: 0}

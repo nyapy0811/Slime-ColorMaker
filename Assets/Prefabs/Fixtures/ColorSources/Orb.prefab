@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1390710257538733583}
   - component: {fileID: 8416537884071974335}
   - component: {fileID: 4933722197394593766}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Orb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,6 +106,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Model
       objectReference: {fileID: 0}
+    - target: {fileID: -4514123090168326488, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -3376338994454683257, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -3067136164873354986, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1810512134718315977, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -145,6 +157,10 @@ PrefabInstance:
     - target: {fileID: 1810512134718315977, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5776626336364087690, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8881157477871195873, guid: 9e5236280314a154c85f4a45cd1e1a43, type: 3}
       propertyPath: color.b

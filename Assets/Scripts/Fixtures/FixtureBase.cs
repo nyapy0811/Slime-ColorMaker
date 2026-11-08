@@ -9,6 +9,12 @@ namespace ColorMaze
     /// </summary>
     public abstract class FixtureBase : MonoBehaviour
     {
+        /// <summary>
+        /// 상호작용하거나 값을 보이는 기물의 콜라이더가 있을 레이어. 캐릭터의 닿음·가까운 값 찾기가 이 레이어만 보므로 블록이 결과에 들지 않는다
+        /// (맵 검사가 알림, 2026-11-08).
+        /// </summary>
+        public const string LayerName = "Interactable";
+
         [Tooltip("맵 안 id. 메뉴 ColorMaze/맵 안 id 고치기로 발급한다.")]
         [SerializeField] int fixtureId;
 
