@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19a02f9eed926fa43b7be25eea59227a, type: 3}
+  m_Name: MapEnvironmentSettings
+  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapEnvironmentSettings
+  skybox: {fileID: 2100000, guid: 05226d1aefb999e4d8a65a1acefa6d7b, type: 2}
+  ambientMode: 0
+  ambientSkyColor: {r: 0.41237435, g: 0.41237435, b: 0.41237435, a: 1}
+  ambientEquatorColor: {r: 0.58074325, g: 0.58074325, b: 0.58074325, a: 1}
+  ambientGroundColor: {r: 0.047124922, g: 0.047124922, b: 0.047124922, a: 1}
+  ambientIntensity: 1
+  reflectionMode: 0
+  customReflection: {fileID: 0}
+  reflectionIntensity: 1
+  fog: 0
+  fogColor: {r: 1, g: 1, b: 1, a: 1}
+  fogMode: 1
+  fogDensity: 0
+  fogStart: 100
+  fogEnd: 200
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 2
+  sunAngles: {x: 15, y: 150, z: 0}
+  sunShadows: 2
+  sunShadowStrength: 0.5

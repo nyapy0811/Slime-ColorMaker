@@ -4,7 +4,7 @@ namespace ColorMaze
 {
     /// <summary>
     /// 요구 색을 가진 기물의 기반(문, 레이저 벽, 목적지). 요구 색의 렌더러와 복셀 모델(<see cref="VoxPaint"/>, 목적지의 므엥킹)을
-    /// 요구 색(값 ÷ 15 밝기)으로 칠하고(에디터에서도 보임),
+    /// 요구 색(가장 큰 채널을 최대 밝기로 한 비율)으로 칠하고(에디터에서도 보임),
     /// 가까이 가면 요구 색을 보인다. 요구 색을 어떻게 쓰는지는 종류마다 다르다(문·목적지는 정확히 같아야 하고, 레이저 벽은 뺀다).
     /// </summary>
     public abstract class RequiredColorBase : FixtureBase, IValueProvider

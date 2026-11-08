@@ -5,7 +5,7 @@ namespace ColorMaze
 {
     /// <summary>
     /// 지금 색을 캐릭터 몸 색으로 보인다(2026-11-08, 1인칭 뷰모델의 구를 대신함). '지금 색 바뀜'을 받아 캐릭터 모델의
-    /// <see cref="VoxPaint"/> 색을 바꾼다(값 색·반투명 값 색 칸만, 회색 칸은 그대로). 색은 HUD 색 견본과 같이 값 ÷ 15 밝기이고
+    /// <see cref="VoxPaint"/> 색을 바꾼다(값 색·반투명 값 색 칸만, 회색 칸은 그대로). 색은 HUD 색 견본과 같이 가장 큰 채널을 최대 밝기로 한 비율이고
     /// (0,0,0)은 검정이다.
     /// </summary>
     [RequireComponent(typeof(VoxPaint))]

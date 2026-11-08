@@ -6,7 +6,7 @@ namespace ColorMaze
     /// 레이저 벽의 겉모습(임시): 지나갈 수 있으면 레이저 면이 흐려지고, 막으면 다시 짙어진다(v1 필터의 채움 투명도처럼).
     /// 레이저 면의 재질은 투명 재질이고, 짙을 때는 재질 색을 그대로 쓴다. 레이저 색과 미리 보이는 모양은 미정이다.
     /// </summary>
-    public class LaserWallView : MonoBehaviour
+    public class LaserWallView : PassableView
     {
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
@@ -32,7 +32,7 @@ namespace ColorMaze
             enabled = false;
         }
 
-        public void SetPassable(bool value)
+        public override void SetPassable(bool value)
         {
             target = value ? 1f : 0f;
             enabled = true;

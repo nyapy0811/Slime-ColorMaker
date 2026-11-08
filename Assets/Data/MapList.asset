@@ -17,14 +17,14 @@ MonoBehaviour:
     sceneName: TestMap_CoreLoop
     displayName: "\uC2DC\uD5D8 \uB9F5"
     thumbnail: {fileID: 0}
-    version: 3
+    version: 4
   - mapId: test_core_loop_b
     sceneName: TestMap_CoreLoop_B
     displayName: "\uC2DC\uD5D8 \uB9F5 B"
     thumbnail: {fileID: 0}
-    version: 3
+    version: 4
   - mapId: test_motion
     sceneName: TestMap_Motion
     displayName: "\uBAA8\uC158 \uC2DC\uD5D8 \uB9F5"
     thumbnail: {fileID: 0}
-    version: 1
+    version: 2

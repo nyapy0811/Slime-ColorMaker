@@ -48,7 +48,12 @@ namespace ColorMaze
             var starts = FixtureIdAssigner.FixturesIn(scene).OfType<StartPoint>().ToList();
             if (starts.Count != 1)
             {
-                Debug.LogError($"[맵 검사] 시작 지점이 {starts.Count}개다(1개여야 함).", starts.FirstOrDefault());
+                Debug.LogError($"[맵 검사] 시작 지점이 {starts.Count}개다(1개여야 함, MapRoot 안에 있음).", starts.FirstOrDefault());
+                problems++;
+            }
+            foreach (var start in starts.Where(s => s.transform.position != Vector3.zero))
+            {
+                Debug.LogError($"[맵 검사] 시작 지점이 원점이 아니다({start.transform.position}). 맵을 옮겨 시작 칸이 (0,0,0)에 오게 한다.", start);
                 problems++;
             }
 
@@ -71,7 +76,7 @@ namespace ColorMaze
             problems += CheckCubeGrid(scene);
 
             if (managers.Count == 1) problems += CheckMapList(scene, managers[0].MapList);
-            if (managers.Count == 1) problems += CheckSharedLight(scene, managers[0]);
+            if (managers.Count == 1) problems += CheckEnvironment(scene, managers[0]);
 
             return problems;
         }
@@ -198,34 +203,23 @@ namespace ColorMaze
         }
 
         /// <summary>
-        /// 방향광은 맵 기본 프리팹(MapRoot) 안의 것 하나를 모든 맵이 같이 쓴다(2026-11-07). 그 밖의 방향광, 공유 빛이 없음,
-        /// 이 맵에서만 바꾼 공유 빛 설정(프리팹 오버라이드)을 알린다. 설정은 프리팹에서 고치거나 오버라이드를 프리팹에 적용한다.
+        /// 맵 환경(하늘·조명·태양)은 MapRoot의 맵 환경(<see cref="MapEnvironment"/>)이 설정 애셋에서 적용한다(2026-11-08, 2026-11-07의
+        /// 'MapRoot 안 공유 방향광'을 대신함). 맵 환경이 없거나 설정이 비었음, 씬에 저장된 방향광(태양은 맵 환경이 숨겨서 만듦)을 알린다.
         /// </summary>
-        static int CheckSharedLight(Scene scene, MapManager manager)
+        static int CheckEnvironment(Scene scene, MapManager manager)
         {
             int problems = 0;
-            var directional = Roots(scene).SelectMany(root => root.GetComponentsInChildren<Light>(true)).Where(l => l.type == LightType.Directional).ToList();
-            var shared = directional.Where(l => l.transform.IsChildOf(manager.transform)).ToList();
-            foreach (var other in directional.Except(shared))
+            var environment = manager.GetComponent<MapEnvironment>();
+            if (environment == null || new SerializedObject(environment).FindProperty("settings").objectReferenceValue == null)
             {
-                Debug.LogError($"[맵 검사] 공유 빛(MapRoot 안) 말고 방향광 '{other.name}'이 있다. 지운다(새 씬에 기본으로 생기는 빛 포함).", other);
+                Debug.LogError("[맵 검사] MapRoot에 맵 환경(MapEnvironment)이 없거나 맵 환경 설정이 비었다.", manager);
                 problems++;
             }
-            if (shared.Count != 1)
+            var directional = Roots(scene).SelectMany(root => root.GetComponentsInChildren<Light>(true))
+                .Where(l => l.type == LightType.Directional && (l.gameObject.hideFlags & HideFlags.DontSave) == 0);
+            foreach (var light in directional)
             {
-                Debug.LogError($"[맵 검사] MapRoot 안의 공유 방향광이 {shared.Count}개다(1개여야 함).", manager);
-                return problems + 1;
-            }
-
-            var light = shared[0].gameObject;
-            var instanceRoot = PrefabUtility.GetOutermostPrefabInstanceRoot(manager.gameObject);
-            if (instanceRoot == null) return problems;
-            bool changedHere = PrefabUtility.GetObjectOverrides(instanceRoot).Any(o =>
-                o.instanceObject is Component c ? c.gameObject == light : o.instanceObject == light)
-                || PrefabUtility.GetAddedComponents(instanceRoot).Any(a => a.instanceComponent.gameObject == light);
-            if (changedHere)
-            {
-                Debug.LogError($"[맵 검사] 공유 빛 '{light.name}'을 이 맵에서만 바꿨다(프리팹 오버라이드). 모든 맵에 쓰려면 인스펙터의 Overrides → Apply, 아니면 Revert.", light);
+                Debug.LogError($"[맵 검사] 방향광 '{light.name}'이 있다. 태양은 맵 환경 설정(Assets/Data/MapEnvironmentSettings)이 만드므로 지운다(새 씬에 기본으로 생기는 빛 포함).", light);
                 problems++;
             }
             return problems;

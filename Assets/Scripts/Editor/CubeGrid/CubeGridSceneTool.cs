@@ -156,6 +156,14 @@ namespace ColorMaze
                 foreach (float side in new[] { -0.4f, 0f, 0.4f })
                     Handles.DrawLine(center + rotation * new Vector3(side, -0.5f, -0.5f), center + rotation * new Vector3(side, 0.5f, 0.5f));
             }
+            // 차단기 붓이면 칸 뒤쪽(카메라 쪽) 가장자리에 막대 자리를 보인다.
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.BoomGate && cells.Count == 1)
+            {
+                var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
+                var center = CubeGridRules.CellCenter(cells[0]);
+                foreach (float height in new[] { -0.3f, -0.25f })
+                    Handles.DrawLine(center + rotation * new Vector3(-0.5f, height, -0.45f), center + rotation * new Vector3(0.5f, height, -0.45f));
+            }
             Handles.zTest = zTest;
         }
     }

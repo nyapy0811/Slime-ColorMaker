@@ -39,13 +39,15 @@ namespace ColorMaze
             value.R >= 0 && value.G >= 0 && value.B >= 0 && !IsAllEqual(value);
 
         /// <summary>
-        /// 값의 색. 채널마다 값 ÷ <see cref="ChannelMax"/>를 그대로 밝기로 쓴다(2026-11-08, 정규화 RGB에서 바뀜):
-        /// (15,0,0)은 밝은 빨강, (3,0,0)은 어두운 빨강, (15,15,15)는 흰색, (0,0,0)은 검정. 한도를 넘는 값은 1로 자른다.
+        /// 값의 색. 채널마다 값 ÷ 가장 큰 채널 값이라, 그 비율에서 가장 밝은 색이 된다(2026-11-08, '값 ÷ 15 밝기'에서 되돌림):
+        /// (3,0,0)과 (15,0,0)은 같은 빨강, (6,3,3)은 (1, 0.5, 0.5), 세 채널이 같으면 흰색, (0,0,0)은 검정.
         /// </summary>
-        public static Color ToColor(ColorValue value) => new(
-            Mathf.Clamp01((float)value.R / ChannelMax),
-            Mathf.Clamp01((float)value.G / ChannelMax),
-            Mathf.Clamp01((float)value.B / ChannelMax));
+        public static Color ToColor(ColorValue value)
+        {
+            int max = Mathf.Max(value.R, Mathf.Max(value.G, value.B));
+            if (max <= 0) return Color.black;
+            return new Color(Mathf.Clamp01((float)value.R / max), Mathf.Clamp01((float)value.G / max), Mathf.Clamp01((float)value.B / max));
+        }
 
         /// <summary>
         /// 흑백 색(흡수한 색 원천). 채도만 0으로 내리고 밝기는 세 채널의 평균이라,
