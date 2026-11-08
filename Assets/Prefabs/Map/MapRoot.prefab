@@ -313,7 +313,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8644717608519144141}
   - {fileID: 8852267103546963406}
   - {fileID: 1467729416002094186}
   m_Father: {fileID: 0}
@@ -332,7 +331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapManager
   mapList: {fileID: 11400000, guid: a3cece53594c67346b11d6e6f52f1c39, type: 2}
   rules: {fileID: 11400000, guid: 8d5419a019904f845a7a4960b685ac87, type: 2}
-  player: {fileID: 7640263962046832447}
+  player: {fileID: 7449247461241739846}
 --- !u!114 &5608387345766397136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,95 +345,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.SoundEventPlayer
   config: {fileID: 11400000, guid: 87815d81412baf04189f5cfdf28497b9, type: 2}
---- !u!1001 &8660316190462950122
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 91523513434163832}
-    m_Modifications:
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4488645559290923506, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-      propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
---- !u!1 &5072531930867577624 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4488645559290923506, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-  m_PrefabInstance: {fileID: 8660316190462950122}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7640263962046832447 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1308353034515817941, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-  m_PrefabInstance: {fileID: 8660316190462950122}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5072531930867577624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27777372154e80242a87dc0ccc1b2c8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.FirstPersonController
---- !u!4 &8644717608519144141 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1141569511447767079, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-  m_PrefabInstance: {fileID: 8660316190462950122}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &8801003893813700969 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 147754407189271427, guid: 719cd60aaf856904b91e63e6afc3ae94, type: 3}
-  m_PrefabInstance: {fileID: 8660316190462950122}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5072531930867577624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d92a77d7b4c5b24590def30e4f9eee0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerInventory
 --- !u!1001 &9029444741763185057
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -517,7 +427,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -941363281566523244, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_Name
-      value: CharactorTest
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -538,6 +448,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -941363281566523244, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3674812717793696406}
+    - targetCorrespondingSourceObject: {fileID: -941363281566523244, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3290173031007403659}
+    - targetCorrespondingSourceObject: {fileID: -941363281566523244, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 915282881451326819}
   m_SourcePrefab: {fileID: -9137962142385034750, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
 --- !u!1 &1126061750646577461 stripped
 GameObject:
@@ -585,9 +501,7 @@ MonoBehaviour:
   accelerationTime: 0.2
   turnSpeed: 720
   gravity: 13.125
-  fallHeight: -20
-  cameraTransform: {fileID: 2176341778118481240}
-  firstPersonPlayer: {fileID: 5072531930867577624}
+  playerCamera: {fileID: 6417382920895058914}
 --- !u!65 &3511452282257729438
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -621,8 +535,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e75578f44f4f8438742c3ce8dba75c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.TouchInteractionController
-  playerColor: {fileID: 8801003893813700969}
   touchMargin: 0.05
+--- !u!114 &3290173031007403659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126061750646577461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d92a77d7b4c5b24590def30e4f9eee0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerColor
+--- !u!114 &915282881451326819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1126061750646577461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a89aea70bd79534595801c088bc9f36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerColorView
 --- !u!4 &1467729416002094186 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -1652429604140188213, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}

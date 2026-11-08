@@ -22,7 +22,7 @@ namespace ColorMaze
 
         [SerializeField] MapList mapList;
         [SerializeField] GameRulesConfig rules;
-        [SerializeField] FirstPersonController player;
+        [SerializeField] ThirdPersonController player;
 
         readonly Dictionary<int, FixtureBase> fixtures = new();
         PlayerColor playerColor;
@@ -41,7 +41,7 @@ namespace ColorMaze
         /// <summary>닿은 체크포인트가 있는지('체크포인트로'의 확인 문구가 다름).</summary>
         public bool HasCheckpoint => checkpoint != null;
         public GameRulesConfig Rules => rules;
-        public FirstPersonController Player => player;
+        public ThirdPersonController Player => player;
 
         /// <summary>맵을 시작한 뒤 흐른 시간(초).</summary>
         public float ClearTime { get; private set; }

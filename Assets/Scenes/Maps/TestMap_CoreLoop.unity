@@ -5267,10 +5267,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MapRoot
       objectReference: {fileID: 0}
-    - target: {fileID: 6960610078348537754, guid: 01fd7f6173e908c4388d53bbea37fa7b, type: 3}
-      propertyPath: m_ClearFlags
-      value: 4
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

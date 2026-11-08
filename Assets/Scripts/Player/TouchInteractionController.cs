@@ -10,12 +10,9 @@ namespace ColorMaze
     /// 상호작용 거리 안에서 값이 있는 기물 전부의 (윗면 가운데, 값)을 '가까운 값들 바뀜'으로 보낸다(목록이 달라질 때만).
     /// 입력이 잠겨 있거나 일시정지 중이면 상호작용하지 않고 값도 숨긴다(팝업·일시정지·클리어 화면).
     /// </summary>
-    [RequireComponent(typeof(BoxCollider))]
+    [RequireComponent(typeof(BoxCollider), typeof(PlayerColor))]
     public class TouchInteractionController : MonoBehaviour
     {
-        [Tooltip("지금 색을 든 플레이어 색(1인칭 플레이어의 것을 함께 씀)")]
-        [SerializeField] PlayerColor playerColor;
-
         [Tooltip("닿음을 찾을 때 상자를 둘레로 이만큼(유닛) 키운다. 막힌 기물(문·목적지)은 겉면에서 멈추므로 밀거나 위에 서도 닿게 한다.")]
         [SerializeField] float touchMargin = 0.05f;
 
@@ -28,7 +25,7 @@ namespace ColorMaze
         void Awake()
         {
             box = GetComponent<BoxCollider>();
-            context = new PlayerContext(playerColor, transform);
+            context = new PlayerContext(GetComponent<PlayerColor>(), transform);
         }
 
         // 이동(Update) 뒤에 잰다.
