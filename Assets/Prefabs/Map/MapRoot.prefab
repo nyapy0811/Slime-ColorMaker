@@ -343,7 +343,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -3567100548934855184, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01
+      value: 0.001
       objectReference: {fileID: 0}
     - target: {fileID: -3567100548934855184, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       propertyPath: m_LocalPosition.z
@@ -459,13 +459,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1
-  m_Radius: 0.45
+  m_Height: 0.5
+  m_Radius: 0.35
   m_SlopeLimit: 50
   m_StepOffset: 0.3
   m_SkinWidth: 0.02
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!114 &7449247461241739846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1182b552df66194aadd6eda2b238be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonTestController
-  moveSpeed: 3
+  moveSpeed: 2
   accelerationTime: 0.2
   turnSpeed: 720
   gravity: 13.125
@@ -502,8 +502,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Center: {x: 0, y: 0.25, z: 0}
 --- !u!114 &3674812717793696406
 MonoBehaviour:
   m_ObjectHideFlags: 0

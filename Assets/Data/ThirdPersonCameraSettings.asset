@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c3d0cac971d6004190c369fd180a82d, type: 3}
   m_Name: ThirdPersonCameraSettings
   m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonCameraSettings
-  lookHeight: 0.5
-  distance: 5
+  lookHeight: 0.25
+  distance: 3
+  minDistance: 1
+  maxDistance: 8
+  zoomStep: 0.5
+  zoomSmoothSpeed: 10
   fieldOfView: 90
   mouseSensitivity: 0.02
-  minPitch: 10
+  minPitch: -10
   maxPitch: 90

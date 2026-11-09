@@ -38,6 +38,15 @@ namespace ColorMaze
             return mouse != null ? mouse.delta.ReadValue() : Vector2.zero;
         }
 
+        /// <summary>이번 프레임의 휠 굴림(칸, 위로 굴리면 +). 플랫폼 값(윈도우는 한 칸 120)을 쓰는 설정이어도 한 칸 = 1로 맞춘다.</summary>
+        public float ReadZoom()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null) return 0f;
+            float y = mouse.scroll.ReadValue().y;
+            return InputSystem.settings.scrollDeltaBehavior == InputSettings.ScrollDeltaBehavior.KeepPlatformSpecificInputRange ? y / 120f : y;
+        }
+
         /// <summary>뒤로 가기(ESC)를 누른 순간.</summary>
         public bool ReadCancel()
         {
