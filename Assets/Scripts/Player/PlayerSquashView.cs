@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 므엥의 말랑말랑한 출렁임(2026-11-08, 푸딩·슬라임 느낌). 몸 모델(<see cref="body"/>) 메시의 꼭짓점만 바꾸므로

@@ -1,9 +1,9 @@
 {
-    "name": "ColorMaze.Assembly.Tests",
-    "rootNamespace": "ColorMaze",
+    "name": "SlimeColorMaker.Assembly.Tests",
+    "rootNamespace": "SlimeColorMaker",
     "references": [
-        "ColorMaze.Assembly",
-        "ColorMaze.Vox.Editor",
+        "SlimeColorMaker.Assembly",
+        "SlimeColorMaker.Vox.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

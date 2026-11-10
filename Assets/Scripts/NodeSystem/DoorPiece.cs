@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 일반 벽 구간에 끼운 문의 모양. 문 프리팹의 루트에 있고, 일반 벽 구간이 자식으로 만들어 문 자리에 놓는다.

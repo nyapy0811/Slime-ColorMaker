@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// HUD 묶음(UIScene의 Hud)을 맵이 있을 때만 보인다(메인 메뉴에서는 숨김, 진행 시스템 3단계).

@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a3153a4254e32d49882e43dc27bffa4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.LaserSegment
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserSegment
   dataId: 0
   beam: {fileID: 1564021834805351915}
   emitter: {fileID: 5811676011171227533}
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef084e5c64e74414ca60ad819963dfce, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.LaserWallView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserWallView
   beam: {fileID: 1564021834805351915}
   passableAlpha: 0.12
   duration: 0.4
@@ -77,7 +77,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f630c6e5ff45f0346b420d552cc7005e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.LaserWall
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserWall
   fixtureId: 0
   highlight: {fileID: 0}
   requiredColor:

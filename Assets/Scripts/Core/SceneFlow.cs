@@ -2,7 +2,7 @@ using Framework.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 씬 사이 이동(진행 시스템 3단계, 1단계의 '처음부터'를 넓힘): 맵 시작(처음부터·이어하기), '처음부터', 메인 메뉴로.

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     public class BackStackTests
     {

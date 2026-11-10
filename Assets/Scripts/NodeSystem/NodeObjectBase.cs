@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 노드 시스템 기물의 기반: 노드 데이터의 id를 기억하고 데이터로 모양을 만든다. 다시 만들 때 벽 빌더가 이 id로

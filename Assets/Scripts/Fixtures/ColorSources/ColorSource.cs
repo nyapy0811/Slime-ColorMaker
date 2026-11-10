@@ -2,7 +2,7 @@ using System;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 색 원천. 프리팹(지금은 오브 하나)에 붙인다. 복셀 모델을 값의 색(가장 큰 채널을 최대 밝기로 한 비율 × 오브젝트 밝기)으로

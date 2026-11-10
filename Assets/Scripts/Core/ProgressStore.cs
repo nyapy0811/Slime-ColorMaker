@@ -1,7 +1,7 @@
 using System;
 using Framework.Core;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// v2 진행 저장(colormaze_save.json, 결정 로그 3절): 맵별 기록과 마지막 체크포인트. 설정(<see cref="GameSettings"/>)과 같은 방식으로

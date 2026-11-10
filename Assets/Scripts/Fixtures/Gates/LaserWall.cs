@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 레이저 벽(6.5). 막음을 맡고, 겉모습은 <see cref="PassableView"/>가 맡는다: 노드 시스템의 레이저 면(<see cref="LaserSegment"/>,

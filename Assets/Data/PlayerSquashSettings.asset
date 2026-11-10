@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b332f0f9b682224fa2966b979484718, type: 3}
   m_Name: PlayerSquashSettings
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerSquashSettings
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerSquashSettings
   maxStretch: 0.5
   stiffness: 50
   damping: 0.1

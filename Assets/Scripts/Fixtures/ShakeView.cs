@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 거부 효과(임시): 이 오브젝트를 자기 오른쪽 방향으로 짧게 흔들고 제자리로 돌려놓는다.

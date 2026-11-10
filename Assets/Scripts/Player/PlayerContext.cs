@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 상호작용할 때 닿음 상호작용 컨트롤러가 기물에 넘기는 플레이어 문맥. 기물은 전역 플레이어를 찾지 않고 이것만 쓴다

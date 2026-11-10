@@ -67,7 +67,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 363dca7b906fa9343bdf06cc2192cc1b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.Checkpoint
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Checkpoint
   fixtureId: 0
   highlight: {fileID: 0}
   inactiveView: {fileID: 792618496711306519}

@@ -668,7 +668,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 099fca3d16ef1dd46bc2a01f48e242ac, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CurrentColorHud
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CurrentColorHud
   swatch: {fileID: 424742435}
   label: {fileID: 1747039162}
 --- !u!1 &191871542
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d75d4d812f3db8b419a6329803b19f63, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ScreenFader
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ScreenFader
   group: {fileID: 209571667}
   duration: 0.3
 --- !u!225 &209571667
@@ -1143,7 +1143,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cff19eb355f84cd40b7154f96eb9dfb2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayTimeHud
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayTimeHud
   label: {fileID: 285797348}
   bestLabel: {fileID: 89146844}
 --- !u!114 &285797348
@@ -2006,7 +2006,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e71c37a5377589478cd781f9ec88382, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ConfirmDialog
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ConfirmDialog
   panel: {fileID: 1602271157}
   messageText: {fileID: 401379329}
   confirmButton: {fileID: 1182835452}
@@ -2059,7 +2059,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d8bb2173c30b54543a95df7ee935154c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.AimValueLabel
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.AimValueLabel
   label: {fileID: 1872695317}
   heightAbove: 0.2
 --- !u!1 &504423322
@@ -2292,7 +2292,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06091564a5c1d14498cb21ea1da885bd, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PauseMenu
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PauseMenu
   panel: {fileID: 2026774589}
   resumeButton: {fileID: 1737924690}
   restartButton: {fileID: 338431625}
@@ -2483,7 +2483,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4128e7a657518f44a8e1d6bae6833fc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PopupHost
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PopupHost
   root: {fileID: 1688268303}
   closeButton: {fileID: 416954975}
   views: []
@@ -2950,7 +2950,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5536329b965847e47a46188af6e70c46, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.HudVisibility
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.HudVisibility
 --- !u!225 &966874618
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3530,7 +3530,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32be9e1a6a1d1aa4cbb3d4382b9b119c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapClearScreen
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapClearScreen
   panel: {fileID: 249566409}
   timeText: {fileID: 1793377219}
   bestText: {fileID: 117829227}
@@ -5042,7 +5042,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4de8bce1b629b3241b4adcae618feee4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.OrbValueLabel
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.OrbValueLabel
   channels:
   - {fileID: 407375449}
   - {fileID: 999630447}
@@ -5797,7 +5797,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4de8bce1b629b3241b4adcae618feee4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.OrbValueLabel
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.OrbValueLabel
   channels:
   - {fileID: 1596709172}
   - {fileID: 1430512467}

@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 플레이어가 든 지금 색(코어 규칙, 색 시스템 개편). (0,0,0)에서 시작해 흡수하면 더하고(채널마다 한도에서 자름),

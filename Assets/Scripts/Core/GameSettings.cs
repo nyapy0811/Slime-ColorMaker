@@ -1,6 +1,6 @@
 using Framework.Core;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 설정값(음량, 마우스 감도)을 settings.json 하나로 관리한다. SaveManager의 범용 JSON API 위에서 동작한다.

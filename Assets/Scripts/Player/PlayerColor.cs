@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 플레이어의 지금 색. 코어 규칙의 지금 색(<see cref="CurrentColor"/>)을 들고, 채널 한도는 고정 한도(<see cref="ColorRules.Limit"/>, 0~15)다.

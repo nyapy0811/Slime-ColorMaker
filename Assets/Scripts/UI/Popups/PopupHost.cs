@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 팝업 호스트(UIScene, 코드 흐름 Q493). 켜질 때 정적 접근점(<see cref="Popups"/>)에 등록한다.

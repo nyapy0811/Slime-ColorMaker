@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19a02f9eed926fa43b7be25eea59227a, type: 3}
   m_Name: MapEnvironmentSettings
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapEnvironmentSettings
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapEnvironmentSettings
   skybox: {fileID: 2100000, guid: 05226d1aefb999e4d8a65a1acefa6d7b, type: 2}
   ambientMode: 0
   ambientSkyColor: {r: 0.41237435, g: 0.41237435, b: 0.41237435, a: 1}

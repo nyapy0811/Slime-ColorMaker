@@ -1,8 +1,12 @@
 {
-    "name": "ColorMaze.Assembly",
-    "rootNamespace": "ColorMaze",
-    "references": [],
-    "includePlatforms": [],
+    "name": "SlimeColorMaker.Vox.Editor",
+    "rootNamespace": "SlimeColorMaker",
+    "references": [
+        "SlimeColorMaker.Vox"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

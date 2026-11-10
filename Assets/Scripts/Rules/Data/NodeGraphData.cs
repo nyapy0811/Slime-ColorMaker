@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 벽 노드 시스템의 데이터: 노드 목록, 벽 목록, 다음 id. 유니티 에디터 맵의 노드 그래프와

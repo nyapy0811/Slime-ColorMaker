@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 확인 창(UIScene, 2차 Q453·Q456·Q449). 진행이 사라지는 버튼과 맵 시작 경고에 쓴다.

@@ -364,7 +364,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 63758d587cdb0d647b84e781cd1bde6f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.DoorPiece
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.DoorPiece
   dataId: 0
 --- !u!114 &4797410353434219377
 MonoBehaviour:
@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aec2de517224dbb4d8a65e15f495c1ca, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.DoorView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.DoorView
   leftLeaf: {fileID: 7567881497516558785}
   rightLeaf: {fileID: 1109803168260672224}
   duration: 0.5
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 520a225c2cb86124e8659d2671955bb4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.Door
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Door
   fixtureId: 0
   highlight: {fileID: 4038230722551934566}
   requiredColor:
@@ -418,7 +418,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a98dfb5d4dc72d41a015be34708388f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.InteractHighlightView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.InteractHighlightView
   renderers:
   - {fileID: 223434410635737950}
   - {fileID: 8217513241585623951}
@@ -436,6 +436,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b2777ce63fe2724792ed94e9272c558, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ShakeView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ShakeView
   distance: 0.03
   duration: 0.3

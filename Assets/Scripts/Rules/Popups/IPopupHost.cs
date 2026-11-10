@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 팝업을 여는 곳(UIScene의 팝업 호스트). 기물은 세션과 '닫힐 때 할 일'만 넘기고 UI 클래스를 모른다.

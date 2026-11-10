@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// MagicaVoxel <c>.vox</c> 파일(버전 200)을 읽는다. 모델(SIZE·XYZI), 팔레트(RGBA), 씬 그래프(nTRN·nGRP·nSHP)만 읽고

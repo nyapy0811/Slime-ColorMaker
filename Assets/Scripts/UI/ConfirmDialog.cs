@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 확인 창(UIScene, 진행 시스템 3단계). 일시정지 메뉴·클리어 화면보다 위, 화면 페이드보다 아래에 그린다.

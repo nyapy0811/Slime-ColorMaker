@@ -2,7 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     public class VoxTests
     {

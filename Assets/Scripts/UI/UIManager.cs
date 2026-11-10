@@ -2,7 +2,7 @@ using Framework.Core;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// UI 씬을 게임 위에 additive로 얹어 둔다. 맵 씬을 Single로 불러오면 UI 씬도 함께 내려가므로,

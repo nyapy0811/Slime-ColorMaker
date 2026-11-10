@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 복셀 모델(.vox)의 칠하기와 반투명 정도. 가져오기 코드가 모든 모델의 맨 위 오브젝트에 붙인다(Docs/v2 복셀 모델링 규칙 3절).

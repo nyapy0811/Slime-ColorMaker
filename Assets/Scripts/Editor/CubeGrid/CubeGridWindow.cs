@@ -2,15 +2,15 @@ using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵 편집 창(메뉴 ColorMaze/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 붓(블록, 계단, 체크포인트, 색 원천, 목적지, 차단기, 시험 모델)을 고르고,
+    /// 큐브 맵 편집 창(메뉴 Slime ~ColorMaker~/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 붓(블록, 계단, 체크포인트, 색 원천, 목적지, 차단기, 시험 모델)을 고르고,
     /// 씬 뷰 도구를 켜고, 블록을 다시 만든다. 기물 값(색 원천 값, 요구 색 등)은 놓은 뒤 인스펙터에서 고친다.
     /// </summary>
     public class CubeGridWindow : EditorWindow
     {
-        [MenuItem("ColorMaze/큐브 맵 편집")]
+        [MenuItem("Slime ~ColorMaker~/큐브 맵 편집")]
         static void Open() => GetWindow<CubeGridWindow>("큐브 맵 편집");
 
         void OnEnable()

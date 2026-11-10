@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 노드 데이터의 순수 계산: id 발급, 노드·벽 편집, 같은 자리 노드 합치기, 구간의 모듈 수와 콜라이더 구간,

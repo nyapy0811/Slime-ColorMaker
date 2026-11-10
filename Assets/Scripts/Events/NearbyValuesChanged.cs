@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>상호작용 거리 안에서 값이 보이는 기물 하나: 그 기물 콜라이더 윗면 가운데와 값.</summary>
     public readonly struct NearbyValue

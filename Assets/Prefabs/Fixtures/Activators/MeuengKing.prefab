@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a98dfb5d4dc72d41a015be34708388f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.InteractHighlightView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.InteractHighlightView
   renderers:
   - {fileID: 6241701311847498202}
   - {fileID: 2457640646835602774}
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5869ecbbc5586af4096f304910601a71, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.Goal
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Goal
   fixtureId: 0
   highlight: {fileID: 5222098991059307253}
   requiredColor:
@@ -86,7 +86,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b2777ce63fe2724792ed94e9272c558, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ShakeView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ShakeView
   distance: 0.03
   duration: 0.3
 --- !u!65 &5453584517965621237
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9cbc9a69565be234291a136d2475cf6c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: ColorMaze.Vox::ColorMaze.VoxPaint
+  m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.VoxPaint
 --- !u!4 &1344704147305887178 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1410932223158756176, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}

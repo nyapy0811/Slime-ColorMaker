@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 벽 빌더: 노드 그래프의 데이터로 벽·끼운 문·레이저 벽·기둥·바닥·천장을 만든다. 유니티 에디터 맵(에디터에서 미리 만들어

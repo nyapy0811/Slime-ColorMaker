@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09e9684ddf9fa7449a4c307c94cf4869, type: 3}
   m_Name: CubeGridConfig
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CubeGridConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CubeGridConfig
   blockPrefab: {fileID: 2726233998951691754, guid: d0586c1999e93b14396a543aba9123ea, type: 3}
   stairPrefab: {fileID: 6158692792192568682, guid: ff276e83c8c8ab64da02449cd0024377, type: 3}
   defaultSkybox: {fileID: 2100000, guid: 05226d1aefb999e4d8a65a1acefa6d7b, type: 2}

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 요구 색을 가진 기물의 기반(문, 레이저 벽, 목적지). 요구 색의 렌더러와 복셀 모델(<see cref="VoxPaint"/>, 목적지의 므엥킹)을

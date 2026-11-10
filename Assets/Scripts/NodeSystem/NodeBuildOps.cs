@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 벽 빌더가 오브젝트를 만들고 고치고 지우는 곳. 에디터(Play 밖)에서는 프리팹 연결을 지키고 Undo에 기록한다.

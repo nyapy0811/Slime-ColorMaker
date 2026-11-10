@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// v2 저장 데이터(colormaze_save.json, 결정 로그 3절): 맵별 기록과 지금 플레이 중인 맵의 마지막 체크포인트 하나.

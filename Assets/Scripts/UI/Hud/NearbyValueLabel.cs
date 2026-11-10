@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 가까운 값 표시(UIScene HUD, 2차 Q461 ← 2026-11-08 조준을 없앰). '가까운 값들 바뀜'을 받아 범위 안 기물마다 그 기물 위에

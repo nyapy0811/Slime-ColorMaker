@@ -812,7 +812,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c124dd86b04dafd42b36d4a1abc67455, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapSelectScreen
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapSelectScreen
   mapList: {fileID: 11400000, guid: a3cece53594c67346b11d6e6f52f1c39, type: 2}
   panel: {fileID: 677645892}
   itemTemplate: {fileID: 666237400}
@@ -1013,7 +1013,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0fa9fc1a63ffb140a936db0cc892c65, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapSelectItem
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapSelectItem
   button: {fileID: 666237402}
   background: {fileID: 666237403}
   nameText: {fileID: 37712135}
@@ -3322,7 +3322,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c30993998ff3f0e4093df6913992050c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MainMenu
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MainMenu
   mapList: {fileID: 11400000, guid: a3cece53594c67346b11d6e6f52f1c39, type: 2}
   panel: {fileID: 479498469}
   playButton: {fileID: 747265501}

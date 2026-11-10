@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 복셀 칸에서 겉면 사각형을 만든다. 칸 배열은 Unity 축(y가 위)이고 0은 빈칸이다. 다른 칸과 맞닿은 면은 버리고,

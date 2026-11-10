@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 717738df6cbd053429121c4b8bcec53f, type: 3}
   m_Name: CameraCollisionSettings
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CameraCollisionSettings
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CameraCollisionSettings
   collisionRadius: 0.2
   collisionMargin: 0.1
   minDistance: 0.5

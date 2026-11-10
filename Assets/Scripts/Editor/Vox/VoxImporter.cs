@@ -7,7 +7,7 @@ using UnityEditor.AssetImporters;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// MagicaVoxel <c>.vox</c>를 프리팹 겉모습으로 가져온다(약속은 Docs/v2 복셀 모델링 규칙 1~5절). 오브젝트 하나가 자식 하나이고,

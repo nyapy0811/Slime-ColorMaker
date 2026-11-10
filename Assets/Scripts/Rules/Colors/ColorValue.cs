@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 색의 R·G·B 값(지금 색, 색 원천의 값, 요구 색). 인스펙터와 JSON에 보이도록 직렬화하지만 코드에서는 값으로만 다룬다

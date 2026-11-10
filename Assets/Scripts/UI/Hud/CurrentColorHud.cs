@@ -2,7 +2,7 @@ using Framework.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 지금 색 표시(UIScene HUD, 왼쪽 아래, 임시 자리·모양). '지금 색 바뀜'을 받아 색 견본(가장 큰 채널을 최대 밝기로 한 비율, (0,0,0)은 검정)과

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 팝업 화면의 기반. 세션 종류마다 하나이고 팝업 호스트 아래에 두어 등록한다(6.8 '새 팝업').

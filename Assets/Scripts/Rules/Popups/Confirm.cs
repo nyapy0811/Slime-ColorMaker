@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 확인 창의 정적 접근점(<see cref="Popups"/>와 같은 방식). UIScene의 확인 창이 켜질 때 등록하고 꺼질 때 뺀다.

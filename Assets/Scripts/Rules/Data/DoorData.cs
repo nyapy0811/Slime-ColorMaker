@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 일반 벽 구간에 끼운 문. 위치는 구간의 첫 벽 모듈부터 센 0.25유닛 모듈 수(문의 시작 쪽 가장자리)라

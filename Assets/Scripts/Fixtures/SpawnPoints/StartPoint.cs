@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 시작 지점. 맵 기본 프리팹(MapRoot)의 자식으로 원점에 있어 모든 맵이 (0,0,0)에서 시작한다(2026-11-08). 맵을 시작하면

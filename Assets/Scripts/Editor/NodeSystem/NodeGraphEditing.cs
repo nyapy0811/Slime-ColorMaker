@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 노드 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작과 선택. 편집마다 데이터를 바꾸고, 같은 자리 노드를 합치고,

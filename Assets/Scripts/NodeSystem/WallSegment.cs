@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 일반 벽 구간. 루트는 시작 노드에 서서 로컬 +X가 끝 노드를 향한다. '만든 부분' 아래에 0.25 벽 모듈을 반복하고

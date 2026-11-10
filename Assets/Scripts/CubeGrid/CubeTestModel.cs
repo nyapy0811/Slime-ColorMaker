@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵에 놓은 시험 모델(아트 모델을 맵에서 바로 보는 용도, 기물 아님). 칸 바닥 가운데에 놓이고 칸 하나를 차지하며,

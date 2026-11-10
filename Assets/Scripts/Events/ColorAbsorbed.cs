@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>색 원천에서 색을 흡수함. 보내는 곳: 색 원천. 받는 곳: 소리 연결.</summary>
     public readonly struct ColorAbsorbed : IEvent

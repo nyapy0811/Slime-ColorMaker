@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 닿으면 상호작용(2026-11-08, 조준+좌클릭을 대신함). 캐릭터의 상자 콜라이더가 상호작용하는 기물(색 원천, 문, 목적지)에

@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 맵 안 id를 발급한다. 빈 id(0 이하)와 겹친 id(계층에서 뒤에 있는 쪽)만 새 번호로 바꾸고,
@@ -13,7 +13,7 @@ namespace ColorMaze
     /// </summary>
     public static class FixtureIdAssigner
     {
-        [MenuItem("ColorMaze/맵 안 id 고치기")]
+        [MenuItem("Slime ~ColorMaker~/맵 안 id 고치기")]
         static void FixActiveScene()
         {
             int changed = FixIds(SceneManager.GetActiveScene());

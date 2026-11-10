@@ -3,7 +3,7 @@ using Framework.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 키보드·마우스 입력을 읽는 곳. 게임플레이 입력 잠금도 여기 있다: 잠근 쪽(팝업 등)이 하나라도 있으면 잠김이고,

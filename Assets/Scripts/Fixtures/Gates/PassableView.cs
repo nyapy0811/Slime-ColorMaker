@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 레이저 벽(<see cref="LaserWall"/>)의 겉모습 기반(2026-11-08): 지나갈 수 있는지가 바뀌면 받는다.

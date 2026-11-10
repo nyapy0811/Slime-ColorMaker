@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.

@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f22c7b78749a9fb48acc49f67b177e44, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonTestCamera
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ThirdPersonTestCamera
   target: {fileID: 3688470996545907793}
   settings: {fileID: 11400000, guid: d4274532d7426d54abeec36b12309b0f, type: 2}
   collision: {fileID: 11400000, guid: c44f01f105c79ca4abd695ff2fdaa994, type: 2}
@@ -165,7 +165,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6c45363fe696bd4c823016cc695d1a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CameraOcclusionFader
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CameraOcclusionFader
   settings: {fileID: 11400000, guid: 0972b68255483fb4b953f3b830c40310, type: 2}
   ditherShader: {fileID: 4800000, guid: f9a6070fd9934ed49ba204cf74534554, type: 3}
   target: {fileID: 3688470996545907793}
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c39e8a46d67a99147b377c437ccb50df, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapManager
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapManager
   mapList: {fileID: 11400000, guid: a3cece53594c67346b11d6e6f52f1c39, type: 2}
   rules: {fileID: 11400000, guid: 8d5419a019904f845a7a4960b685ac87, type: 2}
   player: {fileID: 7449247461241739846}
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f48efd911f651d4c95c979a78fa53b7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.SoundEventPlayer
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.SoundEventPlayer
   config: {fileID: 11400000, guid: 87815d81412baf04189f5cfdf28497b9, type: 2}
 --- !u!114 &2640995617470103943
 MonoBehaviour:
@@ -245,7 +245,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2b1cbf9915e1cdb4ca66bf6c265080e0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapEnvironment
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapEnvironment
   settings: {fileID: 11400000, guid: 46aef7f86d2061249bdb016949f50667, type: 2}
 --- !u!1001 &2318655689998416011
 PrefabInstance:
@@ -477,7 +477,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1182b552df66194aadd6eda2b238be2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.ThirdPersonTestController
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ThirdPersonTestController
   moveSpeed: 2
   accelerationTime: 0.2
   turnSpeed: 720
@@ -515,7 +515,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e75578f44f4f8438742c3ce8dba75c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.TouchInteractionController
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.TouchInteractionController
   touchMargin: 0.05
 --- !u!114 &3290173031007403659
 MonoBehaviour:
@@ -528,7 +528,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5d92a77d7b4c5b24590def30e4f9eee0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerColor
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerColor
 --- !u!114 &915282881451326819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -540,7 +540,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a89aea70bd79534595801c088bc9f36, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerColorView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerColorView
 --- !u!114 &6806087724032474307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -552,6 +552,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26bd4e288d7af2148bff7a703ff2495e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.PlayerSquashView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerSquashView
   settings: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
   body: {fileID: 64597484756707751}

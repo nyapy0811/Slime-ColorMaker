@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 맵 환경(2026-11-08). MapRoot에 붙어 맵 환경 설정(<see cref="MapEnvironmentSettings"/>)을 그 맵에 적용한다: 하늘·환경 조명·반사·안개

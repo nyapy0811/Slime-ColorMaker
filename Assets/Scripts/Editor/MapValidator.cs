@@ -5,10 +5,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 검사(첫 버전). 메뉴 ColorMaze/맵 검사로 지금 맵을 검사해 콘솔에 알린다(항목을 누르면 그 오브젝트로 감).
+    /// 맵 검사(첫 버전). 메뉴 Slime ~ColorMaker~/맵 검사로 지금 맵을 검사해 콘솔에 알린다(항목을 누르면 그 오브젝트로 감).
     /// 맵 씬을 저장할 때는 가벼운 검사(맵 안 id)만 자동으로 한다. 검사 항목은 기물을 만드는 단계마다 더한다.
     /// </summary>
     [InitializeOnLoad]
@@ -22,7 +22,7 @@ namespace ColorMaze
             };
         }
 
-        [MenuItem("ColorMaze/맵 검사")]
+        [MenuItem("Slime ~ColorMaker~/맵 검사")]
         static void ValidateActiveScene()
         {
             var scene = SceneManager.GetActiveScene();
@@ -160,7 +160,7 @@ namespace ColorMaze
             var grids = Roots(scene).SelectMany(root => root.GetComponentsInChildren<CubeGrid>(true)).ToList();
             if (grids.Count != 1)
             {
-                Debug.LogError($"[맵 검사] 큐브 격자가 {grids.Count}개다(1개여야 함). ColorMaze/큐브 맵 편집 창에서 만든다.");
+                Debug.LogError($"[맵 검사] 큐브 격자가 {grids.Count}개다(1개여야 함). Slime ~ColorMaker~/큐브 맵 편집 창에서 만든다.");
                 return 1;
             }
 
@@ -232,12 +232,12 @@ namespace ColorMaze
             var fixtures = FixtureIdAssigner.FixturesIn(scene).ToList();
             foreach (var fixture in fixtures.Where(f => f.FixtureId <= 0))
             {
-                Debug.LogError($"[맵 검사] '{fixture.name}'의 맵 안 id가 비어 있다. ColorMaze/맵 안 id 고치기로 고친다.", fixture);
+                Debug.LogError($"[맵 검사] '{fixture.name}'의 맵 안 id가 비어 있다. Slime ~ColorMaker~/맵 안 id 고치기로 고친다.", fixture);
                 problems++;
             }
             foreach (var group in fixtures.Where(f => f.FixtureId > 0).GroupBy(f => f.FixtureId).Where(g => g.Count() > 1))
             {
-                Debug.LogError($"[맵 검사] 맵 안 id {group.Key}가 겹친다: {string.Join(", ", group.Select(f => $"'{f.name}'"))}. ColorMaze/맵 안 id 고치기로 고친다.", group.First());
+                Debug.LogError($"[맵 검사] 맵 안 id {group.Key}가 겹친다: {string.Join(", ", group.Select(f => $"'{f.name}'"))}. Slime ~ColorMaker~/맵 안 id 고치기로 고친다.", group.First());
                 problems++;
             }
             return problems;

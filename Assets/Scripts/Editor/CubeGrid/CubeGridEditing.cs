@@ -6,7 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작(v1 MazeGeneratorEditor 방식을 v2 구조로).
@@ -25,20 +25,20 @@ namespace ColorMaze
         /// <summary>시험 모델 붓으로 놓을 모델(.vox나 프리팹, 기준점은 바닥면 가운데).</summary>
         public static GameObject TestModelAsset
         {
-            get => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(SessionState.GetString("ColorMaze.CubeGrid.TestModel", "")));
+            get => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(SessionState.GetString("SlimeColorMaker.CubeGrid.TestModel", "")));
             set
             {
-                SessionState.SetString("ColorMaze.CubeGrid.TestModel", value != null ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(value)) : "");
+                SessionState.SetString("SlimeColorMaker.CubeGrid.TestModel", value != null ? AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(value)) : "");
                 BrushChanged?.Invoke();
             }
         }
 
         public static Brush SelectedBrush
         {
-            get => (Brush)SessionState.GetInt("ColorMaze.CubeGrid.Brush", 0);
+            get => (Brush)SessionState.GetInt("SlimeColorMaker.CubeGrid.Brush", 0);
             set
             {
-                SessionState.SetInt("ColorMaze.CubeGrid.Brush", (int)value);
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.Brush", (int)value);
                 BrushChanged?.Invoke();
             }
         }
@@ -46,10 +46,10 @@ namespace ColorMaze
         /// <summary>계단·차단기를 카메라 방향에서 90°씩 더 돌린 횟수(창의 '돌리기').</summary>
         public static int StairTurnOffset
         {
-            get => SessionState.GetInt("ColorMaze.CubeGrid.StairTurn", 0);
+            get => SessionState.GetInt("SlimeColorMaker.CubeGrid.StairTurn", 0);
             set
             {
-                SessionState.SetInt("ColorMaze.CubeGrid.StairTurn", CubeGridRules.Turn(value));
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.StairTurn", CubeGridRules.Turn(value));
                 BrushChanged?.Invoke();
             }
         }

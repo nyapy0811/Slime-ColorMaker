@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 끼운 문의 겉모습(그림 0): 가운데서 갈라진 문짝 둘이 좌우 벽 속으로 문짝 폭만큼 밀려 들어간다(양쪽 미닫이, 모든 문 공통).

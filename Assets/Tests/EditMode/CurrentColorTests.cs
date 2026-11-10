@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     public class CurrentColorTests
     {

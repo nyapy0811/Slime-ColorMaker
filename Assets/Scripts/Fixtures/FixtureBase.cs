@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// v2 기물의 기반. 맵 안 id(맵 안에서 1부터 늘어나는 정수, 에디터가 발급)를 들고, 켜질 때 맵 매니저에 등록한다.
@@ -15,7 +15,7 @@ namespace ColorMaze
         /// </summary>
         public const string LayerName = "Interactable";
 
-        [Tooltip("맵 안 id. 메뉴 ColorMaze/맵 안 id 고치기로 발급한다.")]
+        [Tooltip("맵 안 id. 메뉴 Slime ~ColorMaker~/맵 안 id 고치기로 발급한다.")]
         [SerializeField] int fixtureId;
 
         [Tooltip("상호작용 강조의 겉모습. 상호작용하는 기물에만 단다.")]

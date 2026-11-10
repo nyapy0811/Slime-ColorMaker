@@ -147,7 +147,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70c5b90700803634aa5d78de3175c5b2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.Bootstrap
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Bootstrap
   nextSceneName: MainMenu
 --- !u!4 &1504239225
 Transform:
@@ -192,7 +192,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb5fce12da5bc324cb8e344cbbbc9ce2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.GameAudio
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.GameAudio
   bgm: {fileID: 8300000, guid: 9d880e9813a77aa40bcf675732a40f62, type: 3}
   audioMixer: {fileID: 24100000, guid: 086b19d9d40ee224a96a4f7a9769cc1c, type: 2}
   bgmGroup: {fileID: 5131473065672853390, guid: 086b19d9d40ee224a96a4f7a9769cc1c, type: 2}

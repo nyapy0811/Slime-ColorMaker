@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 맵 환경 수치(2026-11-08, 애셋은 Assets/Data): 하늘·환경 조명·반사·안개·태양. 모든 맵이 MapRoot의 <see cref="MapEnvironment"/>로
     /// 같은 애셋을 쓴다(한 곳만 고치면 모든 맵이 바뀜). 애셋이라 Play 모드에서 고친 값도 남고, 고치면 열린 맵에 바로 보인다.
     /// </summary>
-    [CreateAssetMenu(menuName = "ColorMaze/맵 환경 설정", fileName = "MapEnvironmentSettings")]
+    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/맵 환경 설정", fileName = "MapEnvironmentSettings")]
     public class MapEnvironmentSettings : ScriptableObject
     {
         /// <summary>애셋 값이 바뀌었다(인스펙터에서 고침). 열린 맵의 <see cref="MapEnvironment"/>가 다시 적용한다.</summary>

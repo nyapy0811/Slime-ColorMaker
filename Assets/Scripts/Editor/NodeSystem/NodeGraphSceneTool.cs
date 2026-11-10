@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 씬 뷰의 노드 편집 도구. 노드 그래프를 고르면 씬 뷰 툴바에 나타난다(노드 편집 창의 '씬 뷰 도구 켜기'로도 켬).
@@ -25,7 +25,7 @@ namespace ColorMaze
         bool dragged;
         Vector3Int? hover;
 
-        public override GUIContent toolbarIcon => new("노드", "노드 편집 (ColorMaze)");
+        public override GUIContent toolbarIcon => new("노드", "노드 편집 (Slime ~ColorMaker~)");
 
         public override void OnToolGUI(EditorWindow window)
         {

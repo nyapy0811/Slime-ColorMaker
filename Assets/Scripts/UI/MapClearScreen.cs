@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 클리어 화면(UIScene, 진행 시스템 3단계, 겉모습은 UI 디자인 때). '맵 클리어'를 받아 클리어 시간과 이 맵의 최고 시간을 보이고

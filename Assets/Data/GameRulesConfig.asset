@@ -11,6 +11,6 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb0bbcc96081a914081a051246a5a558, type: 3}
   m_Name: GameRulesConfig
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.GameRulesConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.GameRulesConfig
   interactDistance: 3
   fallDepth: 10

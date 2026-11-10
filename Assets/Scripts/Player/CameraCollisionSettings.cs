@@ -1,12 +1,12 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 3인칭 카메라 당기기 수치(2026-11-08, 애셋은 Assets/Data). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="ThirdPersonCamera"/>.
     /// </summary>
-    [CreateAssetMenu(menuName = "ColorMaze/카메라 당기기 설정", fileName = "CameraCollisionSettings")]
+    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/카메라 당기기 설정", fileName = "CameraCollisionSettings")]
     public class CameraCollisionSettings : ScriptableObject
     {
         [Tooltip("바라보는 점에서 카메라 쪽으로 쏘는 구의 반지름(유닛). 클수록 벽에서 일찍, 멀리 떨어진다.")]

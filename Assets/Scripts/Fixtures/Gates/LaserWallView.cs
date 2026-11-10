@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 레이저 벽의 겉모습(임시): 지나갈 수 있으면 레이저 면이 흐려지고, 막으면 다시 짙어진다(v1 필터의 채움 투명도처럼).

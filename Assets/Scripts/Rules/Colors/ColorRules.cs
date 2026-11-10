@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 색 값의 규칙. 채널 한도는 채널마다 따로인 값(<see cref="ColorValue"/>)을 인자로 받는다(쓰는 곳은 고정 한도 <see cref="Limit"/>를 넘김).

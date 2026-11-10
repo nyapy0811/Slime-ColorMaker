@@ -4,7 +4,7 @@ using UnityEditor.EditorTools;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 씬 뷰의 큐브 맵 편집 도구(v1 MazeGeneratorEditor 조작). 큐브 격자를 고르면 씬 뷰 툴바에 나타난다(큐브 맵 편집 창으로도 켬).
@@ -27,7 +27,7 @@ namespace ColorMaze
         Vector3Int dragStart;
         Vector3Int dragEnd;
 
-        public override GUIContent toolbarIcon => new("큐브", "큐브 맵 편집 (ColorMaze)");
+        public override GUIContent toolbarIcon => new("큐브", "큐브 맵 편집 (Slime ~ColorMaker~)");
 
         public override void OnToolGUI(EditorWindow window)
         {

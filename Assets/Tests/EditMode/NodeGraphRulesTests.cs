@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     public class NodeGraphRulesTests
     {

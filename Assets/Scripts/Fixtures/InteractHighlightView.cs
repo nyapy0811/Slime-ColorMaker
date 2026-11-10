@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 상호작용 강조의 겉모습. 상호작용할 수 있는 동안 늘 약하게 강조한다(2차 Q193).

@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>settings.json으로 저장되는 설정값. v1과 같은 형식이라 v1 설정이 그대로 이어진다.</summary>
     [Serializable]

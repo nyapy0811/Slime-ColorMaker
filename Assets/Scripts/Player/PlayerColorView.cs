@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 지금 색을 캐릭터 몸 색으로 보인다(2026-11-08, 1인칭 뷰모델의 구를 대신함). '지금 색 바뀜'을 받아 캐릭터 모델의

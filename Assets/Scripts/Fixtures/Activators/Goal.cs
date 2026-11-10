@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 목적지(맵당 1개): 문과 같은 방식이다. 닿으면 지금 색이 요구 색과 정확히 같을 때 맵 매니저에 클리어를 요청한다.

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fa24bca74b3957b4caff2b0361f89d5e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.StartPoint
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.StartPoint
   fixtureId: 0
   highlight: {fileID: 0}
 --- !u!1001 &586110661905820362

@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 벽 구간: 양 끝 노드 id, 종류, 재질 번호, 끼운 문(구간당 최대 1개). 벽은 y가 같은 노드끼리만 잇는다.

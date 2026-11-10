@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 지형(블록·계단)의 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다(2026-11-08, Play 시작할 때 <see cref="CubeGrid"/>가 부름).

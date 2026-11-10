@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// Framework.Core의 범용 GameManagerBase를 이 게임의 GameState로 구체화한 전역 상태 관리자.

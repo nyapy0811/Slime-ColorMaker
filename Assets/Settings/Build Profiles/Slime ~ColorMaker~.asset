@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ColorMaze
+  m_Name: Slime ~ColorMaker~
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.Build.Profile.BuildProfile
   m_AssetVersion: 2
   m_BuildTarget: 19
@@ -37,8 +37,8 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: ColorMaze'
-    - line: '|   productName: ColorMaze'
+    - line: '|   companyName: Slime ~ColorMaker~'
+    - line: '|   productName: Slime ~ColorMaker~'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
     - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
@@ -196,7 +196,7 @@ MonoBehaviour:
     - line: '|   androidMinAspectRatio: 1'
     - line: '|   applicationIdentifier:'
     - line: '|     Android: com.UnityTechnologies.com.unity.template.urpblank'
-    - line: '|     Standalone: com.nyapy.colormaze'
+    - line: '|     Standalone: com.nyapy.slimecolormaker'
     - line: '|     iPhone: com.Unity-Technologies.com.unity.template.urp-blank'
     - line: '|   buildNumber:'
     - line: '|     Standalone: 0'
@@ -888,14 +888,14 @@ MonoBehaviour:
     - line: '|   editorAssembliesCompatibilityLevel: 1'
     - line: '|   m_RenderingPath: 1'
     - line: '|   m_MobileRenderingPath: 1'
-    - line: '|   metroPackageName: ColorMaze'
+    - line: '|   metroPackageName: SlimeColorMaker'
     - line: '|   metroPackageVersion: '
     - line: '|   metroCertificatePath: '
     - line: '|   metroCertificatePassword: '
     - line: '|   metroCertificateSubject: '
     - line: '|   metroCertificateIssuer: '
     - line: '|   metroCertificateNotAfter: 0000000000000000'
-    - line: '|   metroApplicationDescription: ColorMaze'
+    - line: '|   metroApplicationDescription: Slime ~ColorMaker~'
     - line: '|   wsaImages: {}'
     - line: '|   metroTileShortName: '
     - line: '|   metroTileShowName: 0'

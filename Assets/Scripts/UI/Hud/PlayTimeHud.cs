@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 진행 시간(화면 오른쪽 위, mm:ss)과 그 아래 이 맵의 최고 클리어 시간(mm:ss.ss, 클리어 화면과 같은 자리수).

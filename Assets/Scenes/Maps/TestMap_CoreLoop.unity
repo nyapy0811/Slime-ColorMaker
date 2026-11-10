@@ -2234,7 +2234,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22326e6f020d708498f292362dfb7224, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.CubeGrid
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CubeGrid
   data:
     blocks:
     - {x: -1, y: -1, z: -1}

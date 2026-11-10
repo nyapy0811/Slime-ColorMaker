@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 출발점 계열(시작 지점, 체크포인트)의 기반. 플레이어는 이 오브젝트의 위치(발밑)에 서서 이 오브젝트가 보는

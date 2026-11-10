@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 일시정지 메뉴(UIScene, v1 PauseMenuController를 참고해 새로 씀). ESC를 읽는 곳이기도 하다:

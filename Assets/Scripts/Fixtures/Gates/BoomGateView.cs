@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 차단기의 겉모습(2026-11-08, 모델 Models/Fixtures/BoomGate): 지나갈 수 있으면 막대가 경첩(막대 끝 칸 가운데)을 축으로

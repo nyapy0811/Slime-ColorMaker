@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>맵 선택 화면의 맵 버튼 하나: 이름과 상태(클리어·최고 시간, 체크포인트). 고른 버튼은 밝게 보인다.</summary>
     public class MapSelectItem : MonoBehaviour

@@ -1,6 +1,6 @@
 {
-    "name": "ColorMaze.Vox",
-    "rootNamespace": "ColorMaze",
+    "name": "SlimeColorMaker.Vox",
+    "rootNamespace": "SlimeColorMaker",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

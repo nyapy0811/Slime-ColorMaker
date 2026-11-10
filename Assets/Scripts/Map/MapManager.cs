@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 맵 씬마다 하나 있는 맵 관리자. 맵 범위의 것은 <see cref="Current"/> 하나로 찾는다(씬과 함께 생기고 사라짐).
@@ -110,7 +110,7 @@ namespace ColorMaze
         {
             if (fixtures.TryGetValue(fixture.FixtureId, out var other) && other != fixture)
             {
-                Debug.LogError($"[MapManager] 맵 안 id {fixture.FixtureId}가 겹친다: '{other.name}', '{fixture.name}'. ColorMaze/맵 안 id 고치기로 고친다.", fixture);
+                Debug.LogError($"[MapManager] 맵 안 id {fixture.FixtureId}가 겹친다: '{other.name}', '{fixture.name}'. Slime ~ColorMaker~/맵 안 id 고치기로 고친다.", fixture);
                 return;
             }
             fixtures[fixture.FixtureId] = fixture;

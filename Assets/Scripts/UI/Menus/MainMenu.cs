@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 메인 메뉴(MainMenu 씬, 진행 시스템 3단계). Play는 맵 선택 화면으로 바로 가고(2차 Q180, Q446),

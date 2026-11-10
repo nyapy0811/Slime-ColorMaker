@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 체크포인트에 상태를 저장하는 기물(4.7, 코드 흐름 Q499). 맵 매니저가 등록부에서 모아 '맵 안 id + 문자열'로 스냅샷에 담고,

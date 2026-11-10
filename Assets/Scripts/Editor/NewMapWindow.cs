@@ -4,10 +4,10 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
-    /// 새 맵 만들기(메뉴 ColorMaze/새 맵 만들기, 2026-11-08). 맵 id·화면 이름·씬 이름을 받아 한 번에 만든다:
+    /// 새 맵 만들기(메뉴 Slime ~ColorMaker~/새 맵 만들기, 2026-11-08). 맵 id·화면 이름·씬 이름을 받아 한 번에 만든다:
     /// 빈 씬에 맵 기본 프리팹(MapRoot, 원점의 시작 지점·맵 환경 포함)과 큐브 격자를 넣고, 시작 칸 아래 (0,−1,0)에 블록 하나를 깔고,
     /// Scenes/Maps에 저장해 맵 목록(맨 뒤, 버전 1)과 Build Settings에 넣은 뒤 큐브 맵 편집 창을 연다. 목적지는 직접 놓는다(맵 검사가 알림).
     /// </summary>
@@ -19,7 +19,7 @@ namespace ColorMaze
         string displayName = "";
         string sceneName = "";
 
-        [MenuItem("ColorMaze/새 맵 만들기")]
+        [MenuItem("Slime ~ColorMaker~/새 맵 만들기")]
         static void Open()
         {
             var window = GetWindow<NewMapWindow>(true, "새 맵 만들기");
@@ -71,7 +71,7 @@ namespace ColorMaze
             AssetDatabase.SaveAssets();
             EditorBuildSettings.scenes = EditorBuildSettings.scenes.Append(new EditorBuildSettingsScene(path, true)).ToArray();
 
-            Debug.Log($"[새 맵] {path}를 만들어 맵 목록과 Build Settings에 넣었다. 목적지를 놓고 ColorMaze/맵 검사로 확인한다.", AssetDatabase.LoadAssetAtPath<SceneAsset>(path));
+            Debug.Log($"[새 맵] {path}를 만들어 맵 목록과 Build Settings에 넣었다. 목적지를 놓고 Slime ~ColorMaker~/맵 검사로 확인한다.", AssetDatabase.LoadAssetAtPath<SceneAsset>(path));
             GetWindow<CubeGridWindow>("큐브 맵 편집");
             Close();
         }

@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 캐릭터가 상호작용 거리 안에 오면 값 표시에 값을 보이는 기물(흡수 전 색 원천, 닫힌 문, 레이저 벽, 목적지).

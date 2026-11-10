@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40e03b2519e02a14bbd8d394c04c5b3c, type: 3}
   m_Name: MapList
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.MapList
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.MapList
   maps:
   - mapId: test_core_loop
     sceneName: TestMap_CoreLoop

@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 'R G B' 값 상자(예: 2 0 0, 그림 2·3·5). 채널마다 글자가 하나라 프리팹 배치만 다르게 해서 같이 쓴다:

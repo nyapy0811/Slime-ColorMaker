@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 게임 전역 상태(v1 구조를 유지, 2차 Q287). 팝업은 상태가 아니다.

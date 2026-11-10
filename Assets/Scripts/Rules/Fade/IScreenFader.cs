@@ -1,6 +1,6 @@
 using System;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 검은 화면 페이드(UIScene의 화면 페이드, 2차 Q202). 체크포인트 복귀와 맵 초기화 때 쓴다.

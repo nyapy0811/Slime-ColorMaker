@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 문 계열의 기반(6.5, 색 시스템 개편): 요구 색과 길을 막는 콜라이더. 막음이 바뀌면 콜라이더만 켜고 끄고,

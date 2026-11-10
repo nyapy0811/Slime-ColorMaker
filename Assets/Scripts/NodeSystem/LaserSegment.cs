@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 레이저 벽 구간의 모양. 레이저 프리팹의 루트에 있다. 노드 사이 구간 하나가 레이저 벽 하나이고,

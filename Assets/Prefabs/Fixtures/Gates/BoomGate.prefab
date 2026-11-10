@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db3a697dcaf901d43a5d7dee9ee5d8a6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.BoomGateView
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.BoomGateView
   hinge: {fileID: 3010670825146016224}
   raisedAngle: 90
   duration: 0.4
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f630c6e5ff45f0346b420d552cc7005e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.LaserWall
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserWall
   fixtureId: 0
   highlight: {fileID: 0}
   requiredColor:
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9cbc9a69565be234291a136d2475cf6c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: ColorMaze.Vox::ColorMaze.VoxPaint
+  m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.VoxPaint
 --- !u!4 &6997116378380220261 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6819635103321835852, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}

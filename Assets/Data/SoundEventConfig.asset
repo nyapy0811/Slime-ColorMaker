@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6411bdf7a441f1c47b0e2e2f5ba369a9, type: 3}
   m_Name: SoundEventConfig
-  m_EditorClassIdentifier: Assembly-CSharp::ColorMaze.SoundEventConfig
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.SoundEventConfig
   colorAbsorbed: {fileID: 8300000, guid: 7004bea058d49bc4eae0a360414ae3ef, type: 3}
   colorRejected: {fileID: 8300000, guid: 5d3fd80ace0eab941995378ba0008c1d, type: 3}
   doorOpened: {fileID: 8300000, guid: 49181efe2b71f7848b0785a9c0c11899, type: 3}

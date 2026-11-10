@@ -1,6 +1,6 @@
 using Framework.Core;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 지금 색이 바뀜. 플레이어가 시작할 때도 한 번 보낸다(처음부터 다시 해도 UIScene은 남아 있음).

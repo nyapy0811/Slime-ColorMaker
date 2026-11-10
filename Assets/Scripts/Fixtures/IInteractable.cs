@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 캐릭터가 닿으면 상호작용하는 기물(색 원천, 문, 목적지, <see cref="TouchInteractionController"/>).

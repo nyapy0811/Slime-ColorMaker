@@ -1,7 +1,7 @@
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 소리 연결(9절, 코드 흐름 Q502). 맵 기본 프리팹(MapRoot)에 두고, 이벤트를 받아 소리 연결 애셋의 효과음을 낸다.

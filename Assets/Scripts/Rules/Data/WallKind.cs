@@ -1,4 +1,4 @@
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>벽 구간의 종류.</summary>
     public enum WallKind

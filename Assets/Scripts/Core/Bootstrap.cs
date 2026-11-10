@@ -2,7 +2,7 @@ using System;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 게임의 단일 진입점. 부팅 씬(Boot)에 두면 전역 서비스를 정해진 순서로 깨운 뒤 다음 씬을 불러온다.

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 체크포인트에 저장하는 맵 상태. 지금은 자리만 두고 체크포인트 단계에서 채운다.

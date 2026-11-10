@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록과 계단 목록(v1 칸 규칙, <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.

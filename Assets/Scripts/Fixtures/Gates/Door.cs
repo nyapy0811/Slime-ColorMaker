@@ -2,7 +2,7 @@ using System;
 using Framework.Core;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 끼운 문(6.5). 모양은 같은 오브젝트의 <see cref="DoorPiece"/>(노드 시스템)가 맡고, 이 컴포넌트는 열림을 맡는다(11.4).

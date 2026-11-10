@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 체크포인트(출발점 계열). 플레이어가 처음 닿으면 활성화되고 맵 매니저에 스냅샷을 요청한다(이미 활성화되면 무시, 2차 Q450).

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 검은 화면 페이드(UIScene, 2차 Q202). 체크포인트 복귀와 맵 초기화 때 쓴다. 맨 위 캔버스의 검은 판을 투명도로 보이고,

@@ -3,7 +3,7 @@ using Framework.Core;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 이 게임의 소리 설정. 부팅 씬에 두고 BGM 클립과 믹서를 연결한다.

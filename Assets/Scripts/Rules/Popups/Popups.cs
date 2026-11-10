@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 팝업 호스트의 정적 접근점(코드 흐름 Q493). 팝업 호스트가 켜질 때 등록하고 꺼질 때 뺀다.

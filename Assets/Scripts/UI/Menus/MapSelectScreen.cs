@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ColorMaze
+namespace SlimeColorMaker
 {
     /// <summary>
     /// 맵 선택 화면(MainMenu 씬, 진행 시스템 3단계, 2차 Q446·Q447·Q468). 왼쪽은 맵 목록 애셋 순서의 맵 버튼(해금 없음),
