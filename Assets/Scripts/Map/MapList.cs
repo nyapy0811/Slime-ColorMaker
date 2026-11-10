@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// 맵 목록(애셋은 Assets/Data, 3차 Q487·Q488). 목록 순서가 맵 선택 화면의 순서이자 '다음 맵' 순서다.
     /// 맵 매니저는 자기 씬 이름으로 자기 항목을 찾는다.
     /// </summary>
-    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/맵 목록", fileName = "MapList")]
+    [CreateAssetMenu(menuName = "Slime~ColorMaker~/맵 목록", fileName = "MapList")]
     public class MapList : ScriptableObject
     {
         public List<MapListEntry> maps = new();

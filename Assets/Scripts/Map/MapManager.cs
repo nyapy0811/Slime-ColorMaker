@@ -110,7 +110,7 @@ namespace SlimeColorMaker
         {
             if (fixtures.TryGetValue(fixture.FixtureId, out var other) && other != fixture)
             {
-                Debug.LogError($"[MapManager] 맵 안 id {fixture.FixtureId}가 겹친다: '{other.name}', '{fixture.name}'. Slime ~ColorMaker~/맵 안 id 고치기로 고친다.", fixture);
+                Debug.LogError($"[MapManager] 맵 안 id {fixture.FixtureId}가 겹친다: '{other.name}', '{fixture.name}'. Slime~ColorMaker~/맵 안 id 고치기로 고친다.", fixture);
                 return;
             }
             fixtures[fixture.FixtureId] = fixture;

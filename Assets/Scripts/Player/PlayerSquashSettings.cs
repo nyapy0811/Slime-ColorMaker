@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// 출렁임은 둘이다: 위아래로 늘고 눌림(부피 유지), 윗부분이 발밑 기준으로 기울어 흔들림(푸딩 느낌).
     /// 반동 값은 출렁임 속도에 한 번 더하는 양이다(위아래는 늘어나는 비율/초, 기울기는 도/초).
     /// </summary>
-    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/므엥 출렁임 설정", fileName = "PlayerSquashSettings")]
+    [CreateAssetMenu(menuName = "Slime~ColorMaker~/므엥 출렁임 설정", fileName = "PlayerSquashSettings")]
     public class PlayerSquashSettings : ScriptableObject
     {
         [Header("위아래 출렁임")]

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 에디터의 Play를 늘 부팅 씬(Boot)부터 시작하게 하고, 메뉴 'Slime ~ColorMaker~/Play: 열린 맵에서 바로 시작'이 켜져 있으면
+    /// 에디터의 Play를 늘 부팅 씬(Boot)부터 시작하게 하고, 메뉴 'Slime~ColorMaker~/Play: 열린 맵에서 바로 시작'이 켜져 있으면
     /// 부팅 뒤 Play를 누를 때 열려 있던 씬을 바로 불러온다(Build Settings에 없어도 경로로 불러옴).
     /// 부팅 순서를 그대로 쓰므로 부팅 씬에만 있는 설정이 빠지지 않는다. 빌드에서는 아무 일도 하지 않는다.
     /// </summary>
@@ -29,7 +29,7 @@ namespace SlimeColorMaker
 
 #if UNITY_EDITOR
         const string BootScenePath = "Assets/Scenes/Boot.unity";
-        const string MenuPath = "Slime ~ColorMaker~/Play: 열린 맵에서 바로 시작";
+        const string MenuPath = "Slime~ColorMaker~/Play: 열린 맵에서 바로 시작";
         const string EnabledKey = "SlimeColorMaker.DirectPlay.Enabled";
         const string OpenedSceneKey = "SlimeColorMaker.DirectPlay.OpenedScene";
 

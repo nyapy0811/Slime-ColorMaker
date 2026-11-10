@@ -7,7 +7,7 @@ namespace SlimeColorMaker
     /// 임시 회색 프리팹은 1×1×1 상자이고 벽 빌더가 이 치수로 늘린다. 모듈 길이(0.25)는 끼운 문의 위치 단위라
     /// 코어 규칙의 상수(<see cref="NodeGraphRules.ModuleLength"/>)를 쓴다.
     /// </summary>
-    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/기준 치수", fileName = "NodeBuildConfig")]
+    [CreateAssetMenu(menuName = "Slime~ColorMaker~/기준 치수", fileName = "NodeBuildConfig")]
     public class NodeBuildConfig : ScriptableObject
     {
         [Header("기준 치수")]

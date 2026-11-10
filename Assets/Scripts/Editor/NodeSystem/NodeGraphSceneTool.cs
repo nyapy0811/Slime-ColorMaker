@@ -25,7 +25,7 @@ namespace SlimeColorMaker
         bool dragged;
         Vector3Int? hover;
 
-        public override GUIContent toolbarIcon => new("노드", "노드 편집 (Slime ~ColorMaker~)");
+        public override GUIContent toolbarIcon => new("노드", "노드 편집 (Slime~ColorMaker~)");
 
         public override void OnToolGUI(EditorWindow window)
         {

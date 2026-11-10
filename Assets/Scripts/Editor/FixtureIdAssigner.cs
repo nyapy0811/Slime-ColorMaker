@@ -13,7 +13,7 @@ namespace SlimeColorMaker
     /// </summary>
     public static class FixtureIdAssigner
     {
-        [MenuItem("Slime ~ColorMaker~/맵 안 id 고치기")]
+        [MenuItem("Slime~ColorMaker~/맵 안 id 고치기")]
         static void FixActiveScene()
         {
             int changed = FixIds(SceneManager.GetActiveScene());

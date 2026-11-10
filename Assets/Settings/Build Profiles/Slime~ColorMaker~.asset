@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: Slime ~ColorMaker~
+  m_Name: Slime~ColorMaker~
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.Build.Profile.BuildProfile
   m_AssetVersion: 2
   m_BuildTarget: 19
@@ -28,7 +28,7 @@ MonoBehaviour:
     m_Settings:
     - line: '| PlayerSettings:'
     - line: '|   m_ObjectHideFlags: 0'
-    - line: '|   serializedVersion: 29'
+    - line: '|   serializedVersion: 30'
     - line: '|   productGUID: 2eea153fab354a44281491d69845a6a1'
     - line: '|   AndroidProfiler: 0'
     - line: '|   AndroidFilterTouchesWhenObscured: 0'
@@ -37,12 +37,11 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: Slime ~ColorMaker~'
-    - line: '|   productName: Slime ~ColorMaker~'
+    - line: '|   companyName: nyapy'
+    - line: '|   productName: Slime~ColorMaker~'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
-    - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b:
-        0.1254902, a: 1}'
+    - line: '|   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}'
     - line: '|   m_ShowUnitySplashScreen: 0'
     - line: '|   m_ShowUnitySplashLogo: 1'
     - line: '|   m_SplashScreenOverlayOpacity: 1'
@@ -80,7 +79,7 @@ MonoBehaviour:
     - line: '|   mipStripping: 0'
     - line: '|   numberOfMipsStripped: 0'
     - line: '|   numberOfMipsStrippedPerMipmapLimitGroup: {}'
-    - line: '|   m_StackTraceTypes: 010000000100000001000000010000000100000001000000'
+    - line: '|   m_StackTraceTypes: 010000000100000001000000010000000100000001000000i'
     - line: '|   iosShowActivityIndicatorOnLoading: -1'
     - line: '|   androidShowActivityIndicatorOnLoading: -1'
     - line: '|   iosUseCustomAppBackgroundBehavior: 0'
@@ -114,6 +113,7 @@ MonoBehaviour:
     - line: '|   defaultIsNativeResolution: 1'
     - line: '|   macRetinaSupport: 1'
     - line: '|   runInBackground: 0'
+    - line: '|   callOnDisableOnAssetBundleUnload: 1'
     - line: '|   muteOtherAudioSources: 0'
     - line: '|   Prepare IOS For Recording: 0'
     - line: '|   Force IOS Speakers When Recording: 0'
@@ -187,7 +187,7 @@ MonoBehaviour:
     - line: '|   allowHDRDisplaySupport: 0'
     - line: '|   useHDRDisplay: 0'
     - line: '|   hdrBitDepth: 0'
-    - line: '|   m_ColorGamuts: 00000000'
+    - line: '|   m_ColorGamuts: 00000000i'
     - line: '|   targetPixelDensity: 30'
     - line: '|   resolutionScalingMode: 0'
     - line: '|   resetResolutionOnWindowResize: 0'
@@ -329,8 +329,7 @@ MonoBehaviour:
     - line: '|   - m_BuildTarget: '
     - line: '|     m_Icons:'
     - line: '|     - serializedVersion: 2'
-    - line: '|       m_Icon: {fileID: 2800000, guid: e822120461fd37642910bd2e9d118a59,
-        type: 3}'
+    - line: '|       m_Icon: {fileID: 2800000, guid: e822120461fd37642910bd2e9d118a59, type: 3}'
     - line: '|       m_Width: 128'
     - line: '|       m_Height: 128'
     - line: '|       m_Kind: 0'
@@ -570,10 +569,10 @@ MonoBehaviour:
     - line: '|   m_BuildTargetGraphicsJobMode: []'
     - line: '|   m_BuildTargetGraphicsAPIs:'
     - line: '|   - m_BuildTarget: iOSSupport'
-    - line: '|     m_APIs: 10000000'
+    - line: '|     m_APIs: 10000000i'
     - line: '|     m_Automatic: 1'
     - line: '|   - m_BuildTarget: AndroidPlayer'
-    - line: '|     m_APIs: 150000000b000000'
+    - line: '|     m_APIs: 150000000b000000i'
     - line: '|     m_Automatic: 0'
     - line: '|   m_DefaultShaderChunkSizeInMB: 16'
     - line: '|   m_DefaultShaderChunkCount: 0'
@@ -598,7 +597,7 @@ MonoBehaviour:
     - line: '|   m_BuildTargetDefaultTextureCompressionFormat:'
     - line: '|   - serializedVersion: 3'
     - line: '|     m_BuildTarget: Android'
-    - line: '|     m_Formats: 03000000'
+    - line: '|     m_Formats: 03000000i'
     - line: '|   playModeTestRunnerEnabled: 0'
     - line: '|   runPlayModeTestAsEditModeTest: 0'
     - line: '|   actionOnDotNetUnhandledException: 1'
@@ -866,6 +865,7 @@ MonoBehaviour:
     - line: '|   webGLCloseOnQuit: 0'
     - line: '|   webWasm2023: 1'
     - line: '|   webEnableSubmoduleStrippingCompatibility: 0'
+    - line: '|   webProgressiveAssetLoading: 0'
     - line: '|   scriptingDefineSymbols: {}'
     - line: '|   additionalCompilerArguments: {}'
     - line: '|   platformArchitecture: {}'
@@ -884,6 +884,7 @@ MonoBehaviour:
     - line: '|   scriptingRuntimeVersion: 1'
     - line: '|   gcIncremental: 1'
     - line: '|   gcWBarrierValidation: 0'
+    - line: '|   managedCodeVariant: {}'
     - line: '|   apiCompatibilityLevelPerPlatform: {}'
     - line: '|   editorAssembliesCompatibilityLevel: 1'
     - line: '|   m_RenderingPath: 1'
@@ -895,7 +896,7 @@ MonoBehaviour:
     - line: '|   metroCertificateSubject: '
     - line: '|   metroCertificateIssuer: '
     - line: '|   metroCertificateNotAfter: 0000000000000000'
-    - line: '|   metroApplicationDescription: Slime ~ColorMaker~'
+    - line: '|   metroApplicationDescription: Slime~ColorMaker~'
     - line: '|   wsaImages: {}'
     - line: '|   metroTileShortName: '
     - line: '|   metroTileShowName: 0'
@@ -906,10 +907,8 @@ MonoBehaviour:
     - line: '|   metroLastRequiredScene: 0'
     - line: '|   metroDefaultTileSize: 1'
     - line: '|   metroTileForegroundText: 2'
-    - line: '|   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628,
-        a: 0}'
-    - line: '|   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902,
-        b: 0.21568628, a: 1}'
+    - line: '|   metroTileBackgroundColor: {r: 0.13333334, g: 0.17254902, b: 0.21568628, a: 0}'
+    - line: '|   metroSplashScreenBackgroundColor: {r: 0.12941177, g: 0.17254902, b: 0.21568628, a: 1}'
     - line: '|   metroSplashScreenUseBackgroundColor: 0'
     - line: '|   syncCapabilities: 0'
     - line: '|   platformCapabilities: {}'
@@ -983,6 +982,7 @@ MonoBehaviour:
     - line: '|   androidVulkanAllowFilterList: []'
     - line: '|   androidVulkanDeviceFilterListAsset: {instanceID: 0}'
     - line: '|   d3d12DeviceFilterListAsset: {instanceID: 0}'
+    - line: '|   webGPUDeviceFilterListAsset: {instanceID: 0}'
     - line: '|   allowedHttpConnections: 3'
     - line: '| '
   requiredComponents: []

@@ -7,7 +7,7 @@ namespace SlimeColorMaker
     /// 카메라와 므엥 사이를 가리는 물체를 흐리게 하는 수치(2026-11-08, 애셋은 Assets/Data). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="CameraOcclusionFader"/>.
     /// </summary>
-    [CreateAssetMenu(menuName = "Slime ~ColorMaker~/카메라 가림 흐림 설정", fileName = "CameraFadeSettings")]
+    [CreateAssetMenu(menuName = "Slime~ColorMaker~/카메라 가림 흐림 설정", fileName = "CameraFadeSettings")]
     public class CameraFadeSettings : ScriptableObject
     {
         [Tooltip("투명 시작 반지름(유닛, 므엥 깊이에서). 카메라에서 본 시선이 므엥 깊이에서 므엥 몸 가운데로부터 이 거리 안을 지나면 그 시선 위의 지형·기물이 흐려지기 시작한다(화면에서 므엥 둘레의 원).")]

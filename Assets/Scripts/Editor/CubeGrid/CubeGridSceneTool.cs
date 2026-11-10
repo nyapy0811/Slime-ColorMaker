@@ -27,7 +27,7 @@ namespace SlimeColorMaker
         Vector3Int dragStart;
         Vector3Int dragEnd;
 
-        public override GUIContent toolbarIcon => new("큐브", "큐브 맵 편집 (Slime ~ColorMaker~)");
+        public override GUIContent toolbarIcon => new("큐브", "큐브 맵 편집 (Slime~ColorMaker~)");
 
         public override void OnToolGUI(EditorWindow window)
         {
