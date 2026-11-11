@@ -13,14 +13,19 @@ namespace SlimeColorMaker
     /// </summary>
     public static class DirectPlayLoader
     {
-        /// <summary>바로 시작할 씬이 있으면 불러오고 true를 돌려준다. Bootstrap이 부른다.</summary>
+        /// <summary>바로 시작할 씬이 있으면 (에디터의 다음 갱신 때) 불러오고 true를 돌려준다. Bootstrap이 부른다.</summary>
         public static bool TryLoadOpenedScene()
         {
 #if UNITY_EDITOR
             string path = SessionState.GetString(OpenedSceneKey, "");
             SessionState.EraseString(OpenedSceneKey);
             if (string.IsNullOrEmpty(path)) return false;
-            EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Single));
+            // Play 첫 프레임에 씬을 바로 바꾸면 다시 만들어지는 중인 Hierarchy 창이 단언 오류('manager != NULL')를 낸다(2026-11-11, Unity 6000.6.8f1).
+            // 에디터가 첫 갱신을 마친 뒤에 바꾼다.
+            EditorApplication.delayCall += () =>
+            {
+                if (EditorApplication.isPlaying) EditorSceneManager.LoadSceneAsyncInPlayMode(path, new LoadSceneParameters(LoadSceneMode.Single));
+            };
             return true;
 #else
             return false;

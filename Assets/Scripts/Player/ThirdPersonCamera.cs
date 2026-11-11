@@ -40,6 +40,9 @@ namespace SlimeColorMaker
         /// <summary>이 방향을 뒤에서 보게 좌우 각도를 맞춘다(위아래 각도는 그대로).</summary>
         public void LookAlong(Quaternion rotation) => yaw = rotation.eulerAngles.y;
 
+        /// <summary>카메라의 좌우 각도만 담은 방향. 이동의 앞은 이것으로 정한다(보는 방향을 바닥에 눕히면 꼭대기에서 볼 때 0이 됨).</summary>
+        public Quaternion Heading => Quaternion.Euler(0f, yaw, 0f);
+
         void LateUpdate()
         {
             if (target == null) return;

@@ -57,9 +57,9 @@ namespace SlimeColorMaker
             bool locked = InputManager.Instance.IsGameplayLocked;
             Vector2 input = locked ? Vector2.zero : InputManager.Instance.ReadMove();
 
-            // 카메라가 보는 방향을 바닥에 눕힌 것이 앞이다.
-            var view = playerCamera != null ? playerCamera.transform : transform;
-            Vector3 forward = Vector3.ProjectOnPlane(view.forward, Vector3.up).normalized;
+            // 카메라의 좌우 각도가 앞이다(위아래 각도와 상관없어 꼭대기에서 내려다봐도 정해진다).
+            Vector3 forward = (playerCamera != null ? playerCamera.Heading : transform.rotation) * Vector3.forward;
+            forward = Vector3.ProjectOnPlane(forward, Vector3.up).normalized;
             Vector3 right = Vector3.Cross(Vector3.up, forward);
             Vector3 move = forward * input.y + right * input.x;
             if (move.sqrMagnitude > 1f) move.Normalize();
