@@ -25,5 +25,8 @@ namespace SlimeColorMaker
 
         [Tooltip("차단기(레이저 벽 역할, 칸 뒤쪽 가장자리에 섬, 앞(+z)으로 지나감)")]
         public GameObject boomGatePrefab;
+
+        [Tooltip("방벽(문 역할, 칸의 한 면을 덮는 반투명 판, 면은 CellFaceMount로 고름)")]
+        public GameObject barrierPrefab;
     }
 }

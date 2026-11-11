@@ -130,15 +130,15 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
-    - target: {fileID: 530052706474138050, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+    - target: {fileID: 592458409993508865, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
       propertyPath: color.b
       value: 0.2
       objectReference: {fileID: 0}
-    - target: {fileID: 530052706474138050, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+    - target: {fileID: 592458409993508865, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
       propertyPath: color.g
       value: 0.2
       objectReference: {fileID: 0}
-    - target: {fileID: 530052706474138050, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+    - target: {fileID: 592458409993508865, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
       propertyPath: color.r
       value: 0.4
       objectReference: {fileID: 0}
@@ -201,7 +201,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: -9137962142385034750, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
 --- !u!114 &461295762799513432 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 530052706474138050, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
+  m_CorrespondingSourceObject: {fileID: 592458409993508865, guid: 931bb53e06e6e30498b0a851e6ba94fe, type: 3}
   m_PrefabInstance: {fileID: 89502641208350362}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

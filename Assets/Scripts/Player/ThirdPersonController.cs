@@ -6,7 +6,6 @@ namespace SlimeColorMaker
     /// 3인칭 플레이어 이동(2026-11-08, 1인칭을 없애고 정식 플레이어가 됨). WASD는 카메라가 보는 방향 기준이고 캐릭터는 가는 방향으로 돈다.
     /// 지면에서는 가속해 움직이고, 공중에서는 수평 속도를 유지한다. 게임플레이 입력이 잠기면 이동을 받지 않고(중력은 계속), 일시정지 중에는 멈춘다.
     /// 점프는 없다(2026-11-07): 위 칸으로는 계단으로만 간다. 피벗은 발밑이다. 시작 지점·체크포인트로 옮기기와 낙사는 맵 매니저가 맡는다.
-    /// 같은 오브젝트의 상자 콜라이더(닿음 상호작용용)와 CharacterController는 서로 부딪히지 않게 한다.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class ThirdPersonController : MonoBehaviour
@@ -33,8 +32,6 @@ namespace SlimeColorMaker
         void Awake()
         {
             cc = GetComponent<CharacterController>();
-            // 모델 크기의 상자 콜라이더가 같은 오브젝트에 있다. 이동하는 CharacterController가 그 상자에 걸리지 않게 둘 사이 충돌을 끈다.
-            if (TryGetComponent<BoxCollider>(out var box)) Physics.IgnoreCollision(cc, box);
         }
 
         void Start()

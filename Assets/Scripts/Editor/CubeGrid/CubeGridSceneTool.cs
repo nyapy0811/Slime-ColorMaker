@@ -156,6 +156,15 @@ namespace SlimeColorMaker
                 foreach (float side in new[] { -0.4f, 0f, 0.4f })
                     Handles.DrawLine(center + rotation * new Vector3(side, -0.5f, -0.5f), center + rotation * new Vector3(side, 0.5f, 0.5f));
             }
+            // 방벽 붓이면 판이 놓일 면에 사각형을 그린다.
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Barrier && cells.Count == 1)
+            {
+                var rotation = CellFaceMount.Rotation(CubeGridEditing.BarrierFace(CubeGridEditing.StairTurn(CameraForward())));
+                var center = CubeGridRules.CellCenter(cells[0]);
+                var corners = new[] { new Vector3(-0.45f, -0.45f, -0.45f), new Vector3(-0.45f, 0.45f, -0.45f), new Vector3(-0.45f, 0.45f, 0.45f), new Vector3(-0.45f, -0.45f, 0.45f) };
+                for (int i = 0; i < 4; i++) Handles.DrawLine(center + rotation * corners[i], center + rotation * corners[(i + 1) % 4]);
+                Handles.DrawLine(center + rotation * corners[0], center + rotation * corners[2]);
+            }
             // 차단기 붓이면 칸 뒤쪽(카메라 쪽) 가장자리에 막대 자리를 보인다.
             if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.BoomGate && cells.Count == 1)
             {

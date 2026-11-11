@@ -5,16 +5,17 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 닿으면 상호작용(2026-11-08, 조준+좌클릭을 대신함). 캐릭터의 상자 콜라이더가 상호작용하는 기물(색 원천, 문, 목적지)에
+    /// 닿으면 상호작용(2026-11-08, 조준+좌클릭을 대신함). 캐릭터 몸(CharacterController 캡슐)을 조금 키운 모양이 상호작용하는 기물(색 원천, 문, 목적지)에
     /// 새로 닿은 순간 한 번 상호작용한다(계속 닿아 있으면 되풀이하지 않고, 떨어졌다 다시 닿으면 또 함). 트리거(오브)도 닿음으로 친다.
+    /// 몸 모양을 쓰므로 막힌 기물 앞에서 멈춘 자리에서 방향과 상관없이 닿고, 캐릭터 크기를 바꿔도 닿는 범위가 따라간다(2026-11-11, 따로 둔 상자는 몸보다 작아 돌아설 때만 닿았음).
     /// 상호작용 거리 안에서 값이 있는 기물 전부의 (윗면 가운데, 값)을 '가까운 값들 바뀜'으로 보낸다(목록이 달라질 때만).
     /// 입력이 잠겨 있거나 일시정지 중이면 상호작용하지 않고 값도 숨긴다(팝업·일시정지·클리어 화면).
     /// 기물 레이어(<see cref="FixtureBase.LayerName"/>)만 찾아 블록은 결과에 들지 않는다. 매 프레임 도는 코드라 결과 배열·목록은 재사용한다.
     /// </summary>
-    [RequireComponent(typeof(BoxCollider), typeof(PlayerColor))]
+    [RequireComponent(typeof(CharacterController), typeof(PlayerColor))]
     public class TouchInteractionController : MonoBehaviour
     {
-        [Tooltip("닿음을 찾을 때 상자를 둘레로 이만큼(유닛) 키운다. 막힌 기물(문·목적지)은 겉면에서 멈추므로 밀거나 위에 서도 닿게 한다.")]
+        [Tooltip("닿음을 찾을 때 캐릭터 몸(반지름 + 피부 두께)을 둘레로 이만큼(유닛) 키운다. 막힌 기물(문·목적지)은 겉면에서 멈추므로 밀거나 위에 서도 닿게 한다.")]
         [SerializeField] float touchMargin = 0.05f;
 
         readonly HashSet<IInteractable> touching = new();
@@ -25,12 +26,12 @@ namespace SlimeColorMaker
         readonly List<Collider> parts = new();
         Collider[] hits = new Collider[16];
         int fixtureMask;
-        BoxCollider box;
+        CharacterController body;
         PlayerContext context;
 
         void Awake()
         {
-            box = GetComponent<BoxCollider>();
+            body = GetComponent<CharacterController>();
             context = new PlayerContext(GetComponent<PlayerColor>());
             fixtureMask = LayerMask.GetMask(FixtureBase.LayerName);
             if (fixtureMask == 0) Debug.LogError($"[TouchInteractionController] '{FixtureBase.LayerName}' 레이어가 없다(Project Settings > Tags and Layers).", this);
@@ -44,14 +45,16 @@ namespace SlimeColorMaker
             ReportValue(idle);
         }
 
-        Vector3 Center => transform.TransformPoint(box.center);
+        Vector3 Center => transform.TransformPoint(body.center);
 
         void Touch()
         {
-            var halfExtents = Vector3.Scale(box.size, transform.lossyScale) / 2f + Vector3.one * touchMargin;
+            // 캡슐의 양 끝 구 중심. 높이가 지름보다 작으면 구 하나다(CharacterController와 같음).
+            var half = transform.up * Mathf.Max(body.height / 2f - body.radius, 0f);
+            float radius = body.radius + body.skinWidth + touchMargin;
             int count;
             // 결과가 배열을 꽉 채우면 빠진 것이 있을 수 있으므로 두 배로 늘려 다시 찾는다.
-            while ((count = Physics.OverlapBoxNonAlloc(Center, halfExtents, hits, transform.rotation, fixtureMask, QueryTriggerInteraction.Collide)) == hits.Length)
+            while ((count = Physics.OverlapCapsuleNonAlloc(Center + half, Center - half, radius, hits, fixtureMask, QueryTriggerInteraction.Collide)) == hits.Length)
                 hits = new Collider[hits.Length * 2];
             touchingNow.Clear();
             for (int i = 0; i < count; i++)

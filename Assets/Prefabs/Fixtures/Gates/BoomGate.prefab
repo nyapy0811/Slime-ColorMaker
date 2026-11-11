@@ -215,15 +215,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -1464564898068438636, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
+    - target: {fileID: -8501176854726430633, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
       propertyPath: color.b
       value: 0.2
       objectReference: {fileID: 0}
-    - target: {fileID: -1464564898068438636, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
+    - target: {fileID: -8501176854726430633, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
       propertyPath: color.g
       value: 0.2
       objectReference: {fileID: 0}
-    - target: {fileID: -1464564898068438636, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
+    - target: {fileID: -8501176854726430633, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
       propertyPath: color.r
       value: 0.4
       objectReference: {fileID: 0}
@@ -242,7 +242,7 @@ PrefabInstance:
   m_SourcePrefab: {fileID: -9137962142385034750, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
 --- !u!114 &3165427711158247493 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -1464564898068438636, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
+  m_CorrespondingSourceObject: {fileID: -8501176854726430633, guid: a4e4409e7cc777040a2e73e338a365c6, type: 3}
   m_PrefabInstance: {fileID: 4629993193882780113}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

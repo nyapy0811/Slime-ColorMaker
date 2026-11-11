@@ -16,9 +16,14 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, TestModel }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, TestModel }
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "시험 모델" };
+        /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
+        public enum BarrierSide { Side, Up, Down }
+
+        public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
+
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "시험 모델" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -56,6 +61,26 @@ namespace SlimeColorMaker
 
         /// <summary>지금 놓을 계단·차단기의 방향: 씬 카메라가 보는 쪽 + 돌린 횟수.</summary>
         public static int StairTurn(Vector3 cameraForward) => CubeGridRules.Turn(CubeGridRules.TurnFacing(cameraForward) + StairTurnOffset);
+
+        public static BarrierSide SelectedBarrierSide
+        {
+            get => (BarrierSide)SessionState.GetInt("SlimeColorMaker.CubeGrid.BarrierSide", 0);
+            set
+            {
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.BarrierSide", (int)value);
+                BrushChanged?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 놓을 방벽의 면. 옆이면 차단기처럼 칸의 카메라 쪽 옆면(<paramref name="turn"/>이 지나가는 방향, 0 = +z이면 남쪽 면), 위·아래는 칸 윗면·바닥면.
+        /// </summary>
+        public static CellFace BarrierFace(int turn) => SelectedBarrierSide switch
+        {
+            BarrierSide.Up => CellFace.Up,
+            BarrierSide.Down => CellFace.Down,
+            _ => CubeGridRules.Turn(turn) switch { 0 => CellFace.South, 1 => CellFace.West, 2 => CellFace.North, _ => CellFace.East },
+        };
 
         public static event Action BrushChanged;
 
@@ -157,6 +182,12 @@ namespace SlimeColorMaker
             if (parent != null) Undo.SetTransformParent(go.transform, parent, "기물 놓기");
             var rotation = brush == Brush.BoomGate ? CubeGridRules.StairRotation(turn) : Quaternion.identity;
             go.transform.SetPositionAndRotation(CubeGridRules.CellBottom(cell), rotation);
+            if (brush == Brush.Barrier && go.TryGetComponent(out CellFaceMount mount))
+            {
+                mount.Face = BarrierFace(turn);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(mount);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(mount.Pivot);
+            }
             Selection.activeGameObject = go;
             return go.GetComponent<FixtureBase>();
         }
@@ -183,7 +214,7 @@ namespace SlimeColorMaker
         // 기물은 종류별 묶음 오브젝트 아래에 둔다(시험 맵의 구성과 같음).
         static Transform FolderFor(UnityEngine.SceneManagement.Scene scene, Brush brush)
         {
-            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate => "Gates", Brush.TestModel => TestModelsFolder, _ => null };
+            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate or Brush.Barrier => "Gates", Brush.TestModel => TestModelsFolder, _ => null };
             if (name == null) return null;
             var existing = scene.GetRootGameObjects().FirstOrDefault(root => root.name == name);
             if (existing != null) return existing.transform;
@@ -203,6 +234,7 @@ namespace SlimeColorMaker
             Brush.ColorSource => config.colorSourcePrefab,
             Brush.Goal => config.goalPrefab,
             Brush.BoomGate => config.boomGatePrefab,
+            Brush.Barrier => config.barrierPrefab,
             _ => config.blockPrefab,
         };
 
