@@ -28,5 +28,8 @@ namespace SlimeColorMaker
 
         [Tooltip("방벽(문 역할, 칸의 한 면을 덮는 반투명 판, 면은 CellFaceMount로 고름)")]
         public GameObject barrierPrefab;
+
+        [Tooltip("컨베이어 벨트(이동 계열, 블록 자리에 깔림, 모델 기준 −z로 흐름)")]
+        public GameObject conveyorBeltPrefab;
     }
 }

@@ -98,13 +98,13 @@ namespace SlimeColorMaker
             return CubeGridRules.Raycast(ray.origin, ray.direction, MaxDistance, c => CubeGridEditing.IsFilled(grid, objects, c), out cell, out normal);
         }
 
-        // 높이 0의 바닥면 위 칸: 블록은 바닥면 아래 칸(윗면이 0), 기물은 바닥면 위 칸.
+        // 높이 0의 바닥면 위 칸: 블록과 컨베이어는 바닥면 아래 칸(윗면이 0), 기물은 바닥면 위 칸.
         static Vector3Int? GroundCell(Vector2 mouse, CubeGridEditing.Brush brush)
         {
             var ray = HandleUtility.GUIPointToWorldRay(mouse);
             if (!new Plane(Vector3.up, Vector3.zero).Raycast(ray, out float distance) || distance > MaxDistance) return null;
             var point = ray.GetPoint(distance);
-            return new Vector3Int(Mathf.RoundToInt(point.x), brush == CubeGridEditing.Brush.Block ? -1 : 0, Mathf.RoundToInt(point.z));
+            return new Vector3Int(Mathf.RoundToInt(point.x), brush is CubeGridEditing.Brush.Block or CubeGridEditing.Brush.ConveyorBelt ? -1 : 0, Mathf.RoundToInt(point.z));
         }
 
         static Vector3 CameraForward()
@@ -172,6 +172,16 @@ namespace SlimeColorMaker
                 var center = CubeGridRules.CellCenter(cells[0]);
                 foreach (float height in new[] { -0.3f, -0.25f })
                     Handles.DrawLine(center + rotation * new Vector3(-0.5f, height, -0.45f), center + rotation * new Vector3(0.5f, height, -0.45f));
+            }
+            // 컨베이어 붓이면 윗면에 흐르는 방향 화살표를 그린다.
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorBelt && cells.Count == 1)
+            {
+                var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
+                var top = CubeGridRules.CellCenter(cells[0]) + Vector3.up * 0.5f;
+                var tip = top + rotation * new Vector3(0f, 0f, 0.4f);
+                Handles.DrawLine(top + rotation * new Vector3(0f, 0f, -0.4f), tip);
+                Handles.DrawLine(tip, top + rotation * new Vector3(-0.2f, 0f, 0.2f));
+                Handles.DrawLine(tip, top + rotation * new Vector3(0.2f, 0f, 0.2f));
             }
             Handles.zTest = zTest;
         }

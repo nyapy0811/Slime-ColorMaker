@@ -16,14 +16,14 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, TestModel }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, ConveyorBelt, TestModel }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "시험 모델" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "컨베이어", "시험 모델" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -83,6 +83,52 @@ namespace SlimeColorMaker
         };
 
         public static event Action BrushChanged;
+
+        /// <summary>놓기 전에 값을 정하는 붓의 값 칸(색 원천은 흡수하면 더하는 색, 목적지·차단기·방벽은 요구 색). 없으면 null.</summary>
+        public static string ValueField(Brush brush) => brush switch
+        {
+            Brush.ColorSource => "value",
+            Brush.Goal or Brush.BoomGate or Brush.Barrier => "requiredColor",
+            _ => null,
+        };
+
+        /// <summary>붓으로 놓을 값. 이 세션에서 정한 적이 없으면 그 붓 프리팹의 값이다.</summary>
+        public static ColorValue BrushValue(Brush brush)
+        {
+            string json = SessionState.GetString(BrushValueKey(brush), "");
+            if (json.Length > 0) return JsonUtility.FromJson<ColorValue>(json);
+            var config = FindConfig();
+            var prefab = config != null ? PrefabFor(config, brush) : null;
+            return prefab != null && ValueProperty(prefab, brush) is { } property ? ReadColor(property) : default;
+        }
+
+        public static void SetBrushValue(Brush brush, ColorValue value)
+        {
+            SessionState.SetString(BrushValueKey(brush), JsonUtility.ToJson(value));
+            BrushChanged?.Invoke();
+        }
+
+        static string BrushValueKey(Brush brush) => $"SlimeColorMaker.CubeGrid.Value.{brush}";
+
+        // 오브젝트 루트 컴포넌트 중 붓의 값 칸을 가진 것의 그 칸.
+        static SerializedProperty ValueProperty(GameObject go, Brush brush)
+        {
+            if (ValueField(brush) is not { } field) return null;
+            foreach (var component in go.GetComponents<MonoBehaviour>())
+                if (new SerializedObject(component).FindProperty(field) is { } property) return property;
+            return null;
+        }
+
+        static ColorValue ReadColor(SerializedProperty property) => new(
+            property.FindPropertyRelative("r").intValue, property.FindPropertyRelative("g").intValue, property.FindPropertyRelative("b").intValue);
+
+        static void WriteColor(SerializedProperty property, ColorValue value)
+        {
+            property.FindPropertyRelative("r").intValue = value.R;
+            property.FindPropertyRelative("g").intValue = value.G;
+            property.FindPropertyRelative("b").intValue = value.B;
+            property.serializedObject.ApplyModifiedProperties(); // 프리팹 덮어쓰기와 Undo로 남고, OnValidate가 겉모습을 칠한다.
+        }
 
         public static CubeGridConfig FindConfig()
         {
@@ -180,7 +226,13 @@ namespace SlimeColorMaker
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, grid.gameObject.scene);
             Undo.RegisterCreatedObjectUndo(go, "기물 놓기");
             if (parent != null) Undo.SetTransformParent(go.transform, parent, "기물 놓기");
-            var rotation = brush == Brush.BoomGate ? CubeGridRules.StairRotation(turn) : Quaternion.identity;
+            // 컨베이어 모델은 −z로 흐르므로 반 바퀴 더 돌려 turn 방향으로 흐르게 한다.
+            var rotation = brush switch
+            {
+                Brush.BoomGate => CubeGridRules.StairRotation(turn),
+                Brush.ConveyorBelt => CubeGridRules.StairRotation(turn + 2),
+                _ => Quaternion.identity,
+            };
             go.transform.SetPositionAndRotation(CubeGridRules.CellBottom(cell), rotation);
             if (brush == Brush.Barrier && go.TryGetComponent(out CellFaceMount mount))
             {
@@ -188,7 +240,8 @@ namespace SlimeColorMaker
                 PrefabUtility.RecordPrefabInstancePropertyModifications(mount);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(mount.Pivot);
             }
-            Selection.activeGameObject = go;
+            if (ValueProperty(go, brush) is { } value) WriteColor(value, BrushValue(brush));
+            // 놓은 기물은 고르지 않는다: 큐브 격자가 골라진 채여야 씬 뷰 도구가 꺼지지 않고 이어서 놓을 수 있다.
             return go.GetComponent<FixtureBase>();
         }
 
@@ -207,14 +260,13 @@ namespace SlimeColorMaker
             holder.AddComponent<CubeTestModel>();
             var view = (GameObject)PrefabUtility.InstantiatePrefab(model, holder.transform);
             view.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-            Selection.activeGameObject = holder;
             return holder;
         }
 
         // 기물은 종류별 묶음 오브젝트 아래에 둔다(시험 맵의 구성과 같음).
         static Transform FolderFor(UnityEngine.SceneManagement.Scene scene, Brush brush)
         {
-            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate or Brush.Barrier => "Gates", Brush.TestModel => TestModelsFolder, _ => null };
+            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate or Brush.Barrier => "Gates", Brush.ConveyorBelt => "Movers", Brush.TestModel => TestModelsFolder, _ => null };
             if (name == null) return null;
             var existing = scene.GetRootGameObjects().FirstOrDefault(root => root.name == name);
             if (existing != null) return existing.transform;
@@ -235,6 +287,7 @@ namespace SlimeColorMaker
             Brush.Goal => config.goalPrefab,
             Brush.BoomGate => config.boomGatePrefab,
             Brush.Barrier => config.barrierPrefab,
+            Brush.ConveyorBelt => config.conveyorBeltPrefab,
             _ => config.blockPrefab,
         };
 

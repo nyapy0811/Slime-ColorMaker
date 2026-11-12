@@ -20,3 +20,4 @@ MonoBehaviour:
   goalPrefab: {fileID: 4808676435208310991, guid: 01a273b20d99a9e47a2f3811a6e275ea, type: 3}
   boomGatePrefab: {fileID: 3416490124843020887, guid: bddacfdd76f2823428bb4eae14456a75, type: 3}
   barrierPrefab: {fileID: 538709850565625351, guid: edae89a2554acb940a1a2885921ba99d, type: 3}
+  conveyorBeltPrefab: {fileID: 3017853490229241096, guid: 0cf325026f599384c8296866a4b6bcfa, type: 3}
