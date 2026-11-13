@@ -30,6 +30,9 @@ namespace SlimeColorMaker
 
         CharacterController cc;
         Vector3 horizontalVelocity;
+
+        /// <summary>플레이어가 직접 움직이는 중인가(입력으로 생긴 수평 속도, 벨트가 미는 속도는 빼고). 바닥 흔적이 쓴다.</summary>
+        public bool IsWalking => horizontalVelocity.sqrMagnitude > 0.0001f;
         float verticalVelocity;
         Collider[] floorHits = new Collider[8];
         readonly List<ConveyorBelt> touchedBelts = new();

@@ -422,6 +422,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6806087724032474307}
+    - targetCorrespondingSourceObject: {fileID: -8486289066783517786, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1220247806621539538}
   m_SourcePrefab: {fileID: -9137962142385034750, guid: 6b4d6bad5e687c744b835c750c19cdb3, type: 3}
 --- !u!4 &64597484756707751 stripped
 Transform:
@@ -531,3 +534,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerSquashView
   settings: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
   body: {fileID: 64597484756707751}
+--- !u!114 &1220247806621539538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8607976655849679367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39f4f06316f616344b4ffc59644e068a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.SlimeTrail
+  settings: {fileID: 11400000, guid: fd0826970e348884cbbbae1f92abd020, type: 2}
+  material: {fileID: 2100000, guid: 3967e84cd5260ed4ea0bb5ddc0394176, type: 2}
+  cubeGrid: {fileID: 11400000, guid: cb506736049f0644c9d2bd9fbe77c5e0, type: 2}

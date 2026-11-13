@@ -14,8 +14,8 @@ namespace SlimeColorMaker
     /// </summary>
     public class ConveyorBelt : FixtureBase
     {
-        /// <summary>무늬 한 장마다 흐르는 거리(복셀 한 칸, 유닛).</summary>
-        const float StepPerFrame = 1f / 16f;
+        /// <summary>무늬 한 장마다 흐르는 거리(복셀 한 칸, 유닛). 바닥 흔적의 픽셀 한 칸과 같다.</summary>
+        public const float StepPerFrame = 1f / 16f;
 
         static readonly Dictionary<Vector3Int, ConveyorBelt> ByCell = new();
         static readonly List<Vector2Int> TouchedCells = new();
@@ -54,6 +54,37 @@ namespace SlimeColorMaker
             return new Vector3(direction.x, 0f, direction.y) * touched[0].settings.speed;
         }
 
+        /// <summary>
+        /// 무늬가 몇 칸 흘렀는지(게임 시간 × 속도 ÷ 1/16). 모든 벨트가 같은 값을 쓰고, 이 값이 하나 늘 때 무늬와 벨트 위 바닥 흔적이 한 칸 움직인다.
+        /// 켜진 벨트가 없으면 false.
+        /// </summary>
+        public static bool TryGetStep(out int step)
+        {
+            foreach (var belt in ByCell.Values)
+            {
+                step = belt.Step;
+                return true;
+            }
+            step = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// 한 점(바닥 흔적의 픽셀 가운데)이 벨트를 따라 움직일 방향(바닥 평면 x, z의 4방향 단위). 점 바로 아래 칸이 벨트면
+        /// 캐릭터와 같은 규칙(걸친 칸 = 그 칸 하나, 중심점 = 그 점)으로 정하고, 아니면 0.
+        /// </summary>
+        public static Vector2Int PointDirection(Vector3 point)
+        {
+            var below = CubeGridRules.CellAt(point + Vector3.down * 0.05f);
+            if (!ByCell.ContainsKey(below)) return Vector2Int.zero;
+            TouchedCells.Clear();
+            TouchedCells.Add(new Vector2Int(below.x, below.z));
+            level = below.y;
+            return ConveyorRules.PushDirection(new Vector2(point.x, point.z), TouchedCells, FlowAtLevel);
+        }
+
+        int Step => (int)(Time.time * settings.speed / StepPerFrame);
+
         protected override void OnEnable()
         {
             base.OnEnable();
@@ -69,7 +100,7 @@ namespace SlimeColorMaker
 
         void Update()
         {
-            int index = (int)(Time.time * settings.speed / StepPerFrame) % frames.Length;
+            int index = Step % frames.Length;
             if (index == shown) return;
             for (int i = 0; i < frames.Length; i++) frames[i].SetActive(i == index);
             shown = index;
