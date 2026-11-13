@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82beeecce1f0f9449ae28c956bb86507, type: 3}
   m_Name: ConveyorBeltSettings
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ConveyorBeltSettings
-  frameTime: 0.1
+  speed: 0.625

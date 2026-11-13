@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SlimeColorMaker
@@ -7,6 +8,7 @@ namespace SlimeColorMaker
     /// 지면에서는 가속해 움직이고, 공중에서는 수평 속도를 유지한다. 게임플레이 입력이 잠기면 이동을 받지 않고(중력은 계속), 일시정지 중에는 멈춘다.
     /// 점프는 없다(2026-11-07): 위 칸으로는 계단으로만 간다. 피벗은 발밑이다. 시작 지점·체크포인트로 옮기기와 낙사는 맵 매니저가 맡는다.
     /// 컨베이어 벨트 위에 서 있으면 벨트가 흐르는 속도를 이동에 그대로 더한다(2026-11-12, 가속 없음, 내려오면 바로 멈춤).
+    /// 발바닥(몸 반지름을 반 변으로 하는, 캐릭터와 함께 도는 정사각형)이 조금이라도 벨트에 걸치면 민다(2026-11-13). 방향은 <see cref="ConveyorBelt.PushVelocity"/>가 정한다.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class ThirdPersonController : MonoBehaviour
@@ -29,7 +31,8 @@ namespace SlimeColorMaker
         CharacterController cc;
         Vector3 horizontalVelocity;
         float verticalVelocity;
-        Vector3 conveyorVelocity; // 지난 이동에서 발밑에 닿은 벨트의 속도
+        Collider[] floorHits = new Collider[8];
+        readonly List<ConveyorBelt> touchedBelts = new();
 
         void Awake()
         {
@@ -76,16 +79,26 @@ namespace SlimeColorMaker
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(move), turnSpeed * Time.deltaTime);
 
             verticalVelocity -= gravity * Time.deltaTime;
-            Vector3 velocity = horizontalVelocity + conveyorVelocity;
+            Vector3 velocity = horizontalVelocity + ConveyorVelocity();
             velocity.y = verticalVelocity;
-            conveyorVelocity = Vector3.zero; // 이번 이동에서 다시 벨트에 닿으면 채워진다.
             cc.Move(velocity * Time.deltaTime);
         }
 
-        // 이동(cc.Move) 중에 부른다. 발밑(위를 향한 면)이 벨트면 다음 이동에 그 속도를 더한다.
-        void OnControllerColliderHit(ControllerColliderHit hit)
+        // 발밑 바로 아래(피부 두께 + 0.005 ~ 0.105)에 발바닥 크기의 얇은 상자를 대고 걸친 벨트를 모아 미는 속도를 받는다. 공중이면 0.
+        // 상자 윗면이 발 높이보다 아래라 옆에 벽처럼 선 벨트(바닥이 발 높이)는 잡지 않는다.
+        Vector3 ConveyorVelocity()
         {
-            if (hit.normal.y > 0.5f && hit.collider.GetComponentInParent<ConveyorBelt>() is { } belt) conveyorVelocity = belt.SurfaceVelocity;
+            if (!cc.isGrounded) return Vector3.zero;
+            float half = cc.radius;
+            var feet = transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius));
+            int count;
+            // 결과가 배열을 꽉 채우면 빠진 것이 있을 수 있으므로 두 배로 늘려 다시 찾는다.
+            while ((count = Physics.OverlapBoxNonAlloc(feet + Vector3.down * (cc.skinWidth + 0.055f), new Vector3(half, 0.05f, half), floorHits, transform.rotation, ~0, QueryTriggerInteraction.Ignore)) == floorHits.Length)
+                floorHits = new Collider[floorHits.Length * 2];
+            touchedBelts.Clear();
+            for (int i = 0; i < count; i++)
+                if (floorHits[i].GetComponentInParent<ConveyorBelt>() is { } belt && !touchedBelts.Contains(belt)) touchedBelts.Add(belt);
+            return ConveyorBelt.PushVelocity(feet, touchedBelts);
         }
     }
 }
