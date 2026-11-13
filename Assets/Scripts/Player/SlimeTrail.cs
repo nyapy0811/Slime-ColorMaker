@@ -7,9 +7,8 @@ namespace SlimeColorMaker
     /// 캐릭터 바닥 흔적(2026-11-13, 픽셀). 바닥 평면을 1/16유닛(복셀 한 칸) 격자로 나누고, 발바닥(몸 반지름을 반 변으로 하는,
     /// 캐릭터와 함께 도는 정사각형) 안에 가운데가 든 픽셀을 플레이어가 직접 움직이는 동안(<see cref="ThirdPersonController.IsWalking"/>,
     /// 벨트에 실려 가기만 하거나 가만히 있으면 안 칠함) 프레임마다 지금 색(몸 색과 같은 방식)으로 칠한다.
-    /// 픽셀마다 바로 밑에 실제로 있는 면을 광선으로 찾아 그 높이에 칠하고(블록·벨트·방벽 판 등), 면이 없거나 너무 아래면(공중) 칠하지 않는다.
-    /// 맞은 면이 계단의 경사면 충돌이면 보이는 디딤판 높이에 그린다(2026-11-13). 디딤판 높이는 계단 모델의 위를 향한 면을
-    /// 오르는 방향 1/16 줄마다 모은 높이표로, 처음에 한 번 만든다(계단 모양을 바꿔도 따라감).
+    /// 픽셀마다 바로 밑에 실제로 있는 면을 광선으로 찾아 그 높이에 칠하고(블록·계단 디딤판·벨트·방벽 판 등, 계단 충돌은 복셀 모델과 같음),
+    /// 면이 없거나 너무 아래면(공중) 칠하지 않는다.
     /// 픽셀은 마지막으로 칠한 순간부터 점점 투명해져 유지 시간 뒤 없어진다. 공중이거나 지금 색이 (0,0,0)이면 칠하지 않는다.
     /// 벨트 위 픽셀은 벨트 무늬가 한 칸 흐를 때(<see cref="ConveyorBelt.TryGetStep"/>) 각자 미는 방향으로 한 칸 옮긴다
     /// (<see cref="ConveyorBelt.PointDirection"/>, 꺾이는 칸 규칙 포함). 옮긴 자리가 겹치면 더 최근에 칠한 픽셀이 남고,
@@ -40,20 +39,15 @@ namespace SlimeColorMaker
         [Tooltip("흔적 재질(셰이더 Slime~ColorMaker~/Trail)")]
         [SerializeField] Material material;
 
-        [Tooltip("큐브 맵 설정. 계단 프리팹의 모델로 디딤판 높이표를 만든다.")]
-        [SerializeField] CubeGridConfig cubeGrid;
-
         // 키 = (x 픽셀, 바닥 칸 높이, z 픽셀)
         Dictionary<Vector3Int, Pixel> pixels = new();
         Dictionary<Vector3Int, Pixel> moved = new();
         readonly List<Vector3Int> keys = new();
         readonly HashSet<Vector2Int> footprint = new(); // 이번 프레임 발바닥 픽셀 (x, z)
-        readonly float[] stairTreads = new float[16]; // 오르는 방향 1/16 줄마다 디딤판 높이(계단 루트 = 칸 가운데 기준)
         readonly List<Vector3> vertices = new();
         readonly List<Color> colors = new();
         readonly List<int> triangles = new();
         RaycastHit[] rayHits = new RaycastHit[8];
-        Mesh stairRamp; // 계단 경사면 충돌 메시(맞은 면이 계단인지 가림)
         CharacterController cc;
         PlayerColor playerColor;
         ThirdPersonController mover;
@@ -77,42 +71,8 @@ namespace SlimeColorMaker
             renderer.receiveShadows = false;
         }
 
-        void Start()
-        {
-            stairRamp = cubeGrid.stairPrefab.GetComponent<MeshCollider>().sharedMesh;
-            BuildStairTreads(cubeGrid.stairPrefab);
-        }
-
-        // 계단 프리팹(루트 = 칸 가운데, 돌리지 않으면 +z로 오름)의 위를 향한 삼각형마다 그 z 범위에 든 줄의 높이를 그 면 높이로 올린다.
-        void BuildStairTreads(GameObject stair)
-        {
-            System.Array.Fill(stairTreads, float.NegativeInfinity);
-            var toRoot = stair.transform.worldToLocalMatrix;
-            foreach (var filter in stair.GetComponentsInChildren<MeshFilter>(true))
-            {
-                var matrix = toRoot * filter.transform.localToWorldMatrix;
-                var mesh = filter.sharedMesh;
-                var meshVertices = mesh.vertices;
-                var meshTriangles = mesh.triangles;
-                for (int t = 0; t < meshTriangles.Length; t += 3)
-                {
-                    var a = matrix.MultiplyPoint3x4(meshVertices[meshTriangles[t]]);
-                    var b = matrix.MultiplyPoint3x4(meshVertices[meshTriangles[t + 1]]);
-                    var c = matrix.MultiplyPoint3x4(meshVertices[meshTriangles[t + 2]]);
-                    if (Vector3.Cross(b - a, c - a).normalized.y < 0.9f) continue;
-                    float minZ = Mathf.Min(a.z, Mathf.Min(b.z, c.z)), maxZ = Mathf.Max(a.z, Mathf.Max(b.z, c.z));
-                    float y = Mathf.Max(a.y, Mathf.Max(b.y, c.y));
-                    for (int i = 0; i < stairTreads.Length; i++)
-                    {
-                        float z = -0.5f + (i + 0.5f) * PixelSize;
-                        if (z >= minZ && z <= maxZ) stairTreads[i] = Mathf.Max(stairTreads[i], y);
-                    }
-                }
-            }
-        }
-
         // 픽셀 가운데 (x, z) 바로 밑에 실제로 있는 면의 높이. 발 높이 + RayStart에서 아래로, 발 높이 − (발바닥 반 너비 + 0.05)까지 찾는다
-        // (45° 계단 내리막 쪽 픽셀까지). 캐릭터 자신과 트리거는 무시하고, 계단 경사면이면 디딤판 높이. 없으면 false(공중).
+        // (계단 내리막 쪽 픽셀까지). 캐릭터 자신과 트리거는 무시한다. 없으면 false(공중).
         bool TrySurface(Vector3 center, float feetY, out float height)
         {
             var origin = new Vector3(center.x, feetY + RayStart, center.z);
@@ -129,15 +89,7 @@ namespace SlimeColorMaker
                 height = 0f;
                 return false;
             }
-            var hit = rayHits[nearest];
-            if (hit.collider is MeshCollider meshCollider && meshCollider.sharedMesh == stairRamp)
-            {
-                var stair = hit.collider.transform;
-                var local = Quaternion.Inverse(stair.rotation) * (center - stair.position);
-                int slice = Mathf.Clamp(Mathf.FloorToInt((local.z + 0.5f) / PixelSize), 0, stairTreads.Length - 1);
-                height = stair.position.y + stairTreads[slice];
-            }
-            else height = hit.point.y;
+            height = rayHits[nearest].point.y;
             return true;
         }
 

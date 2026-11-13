@@ -95,6 +95,7 @@ namespace SlimeColorMaker
 
         float ClampZoom(float value) => Mathf.Clamp(value, settings.minDistance, Mathf.Max(settings.minDistance, settings.maxDistance));
 
-        Vector3 LookPoint() => target.position + Vector3.up * settings.lookHeight;
+        // 턱을 오르내린 직후에는 몸 모델처럼 바뀐 높이를 부드럽게 따라간다(2026-11-13).
+        Vector3 LookPoint() => target.position + Vector3.up * (settings.lookHeight + (target.TryGetComponent<ThirdPersonController>(out var mover) ? mover.VisualOffset : 0f));
     }
 }

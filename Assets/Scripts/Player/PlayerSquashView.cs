@@ -115,7 +115,7 @@ namespace SlimeColorMaker
             if (motion == Motion.Moving)
             {
                 phase = Mathf.Repeat(phase + speed * dt * settings.bouncesPerUnit, 1f);
-                float ratio = Mathf.Clamp01(speed / Mathf.Max(movement.moveSpeed, 0.01f));
+                float ratio = Mathf.Clamp01(speed / Mathf.Max(movement.MoveSpeed, 0.01f));
                 stretchTarget = settings.walkBounce * ratio * Mathf.Sin(phase * 2f * Mathf.PI);
             }
             else phase = 0f;

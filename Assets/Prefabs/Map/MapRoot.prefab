@@ -478,11 +478,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1182b552df66194aadd6eda2b238be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ThirdPersonTestController
-  moveSpeed: 2
-  accelerationTime: 0.2
-  turnSpeed: 720
-  gravity: 13.125
+  settings: {fileID: 11400000, guid: 12721cd793c1fe64e8a5e47ffd203e62, type: 2}
   playerCamera: {fileID: 6417382920895058914}
+  body: {fileID: 64597484756707751}
 --- !u!114 &3674812717793696406
 MonoBehaviour:
   m_ObjectHideFlags: 0
