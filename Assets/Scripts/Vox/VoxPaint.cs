@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// 칠할 색은 값 색(ValueColor)과 반투명 값 색(GlassValueColor) 렌더러에, 반투명 정도는 두 반투명 렌더러(Glass, GlassValueColor)에
     /// <c>_BaseColor</c>로 준다(밝기 텍스처와 곱해짐). Play 모드가 아니어도 인스펙터에서 바꾸면 바로 보인다.
     /// 이 모델을 칠하는 곳은 여기 하나로 둔다: 기물·캐릭터 코드는 렌더러를 직접 칠하지 않고 <see cref="Color"/>를 바꾼다.
-    /// 부위(일반·값 색·반투명)마다 재질감(<see cref="SurfaceFinish"/>, 광택·반사)을 고른다(2026-11-14): 에디터가 렌더러에 '원래 재질 + 재질감' 재질을 끼워
+    /// 부위(일반·값 색·반투명)마다 재질감(<see cref="SurfaceFinish"/>, 광택·반사)을 고른다: 에디터가 렌더러에 '원래 재질 + 재질감' 재질을 끼워
     /// 프리팹에 저장하므로 실행 중에는 할 일이 없다. 비우면 가져온 재질 그대로(광택 0.2, 반사 0, 빛 맺힘·주변 반사 켬)다.
     /// </summary>
     [ExecuteAlways]

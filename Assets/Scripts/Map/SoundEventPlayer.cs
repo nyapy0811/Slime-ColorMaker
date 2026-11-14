@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 소리 연결(9절, 코드 흐름 Q502). 맵 기본 프리팹(MapRoot)에 두고, 이벤트를 받아 소리 연결 애셋의 효과음을 낸다.
+    /// 소리 연결. 맵 기본 프리팹(MapRoot)에 두고, 이벤트를 받아 소리 연결 애셋의 효과음을 낸다.
     /// 기물은 소리를 직접 내지 않으므로 소리를 바꾸거나 더할 때 이곳과 애셋만 고친다.
     /// </summary>
     public class SoundEventPlayer : MonoBehaviour

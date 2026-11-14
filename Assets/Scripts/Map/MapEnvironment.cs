@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 환경(2026-11-08). MapRoot에 붙어 맵 환경 설정(<see cref="MapEnvironmentSettings"/>)을 그 맵에 적용한다: 하늘·환경 조명·반사·안개
+    /// 맵 환경. MapRoot에 붙어 맵 환경 설정(<see cref="MapEnvironmentSettings"/>)을 그 맵에 적용한다: 하늘·환경 조명·반사·안개
     /// (씬의 조명 설정)와 태양. 에디터 편집 화면에서도 돈다(씬을 열 때, 애셋을 고칠 때). 맵 씬은 하나만 열고 그 씬이 활성 씬이라
     /// 씬의 조명 설정(RenderSettings)이 곧 이 맵의 것이다.
     /// 태양은 씬에 저장하지 않는 숨긴 방향광으로 만든다: 값이 애셋에만 있어 맵마다 프리팹 오버라이드가 생기지 않는다(맵에 다른 방향광은 두지 않음, 맵 검사가 알림).

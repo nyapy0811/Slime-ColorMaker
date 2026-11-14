@@ -4,8 +4,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 레이저 벽(6.5). 막음을 맡고, 겉모습은 <see cref="PassableView"/>가 맡는다: 노드 시스템의 레이저 면(<see cref="LaserSegment"/>,
-    /// <see cref="LaserWallView"/>)이나 칸 기물 차단기(2026-11-08, 프리팹 `BoomGate`, <see cref="BoomGateView"/>, 막대가 들리고 내려옴).
+    /// 레이저 벽(문 계열). 막음을 맡고, 겉모습은 <see cref="PassableView"/>가 맡는다: 칸 기물 차단기(프리팹 `BoomGate`, <see cref="BoomGateView"/>, 막대가 들리고 내려옴).
     /// 요구 색은 빼는 색이다: 지금 색의 모든 채널이 빼는 색 이상이면 막지 않고(레이저가 흐려짐), 레이저를 다 지나 반대쪽으로
     /// 나가면 지금 색에서 빼고 '레이저 통과'를 보낸다(들어갔다 되돌아오면 빼지 않음). 모자라면 막는다. 상호작용은 없다.
     /// 지나감은 막는 콜라이더와 같은 자리의 트리거로 잰다: 트리거 가운데를 기준으로 들어온 쪽과 나간 쪽(앞 축)이 다르면 지나간 것이다.

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 차단기의 겉모습(2026-11-08, 모델 Models/Fixtures/BoomGate): 지나갈 수 있으면 막대가 경첩(막대 끝 칸 가운데)을 축으로
+    /// 차단기의 겉모습(모델 Models/Fixtures/BoomGate): 지나갈 수 있으면 막대가 경첩(막대 끝 칸 가운데)을 축으로
     /// 들리고, 막으면 내려온다. 경첩은 앞(+Z) 축으로 돌고, 막대는 경첩에서 −X 쪽으로 뻗어 있다.
     /// </summary>
     public class BoomGateView : PassableView

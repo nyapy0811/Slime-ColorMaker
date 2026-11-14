@@ -3,8 +3,8 @@ using System;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 검은 화면 페이드(UIScene의 화면 페이드, 2차 Q202). 체크포인트 복귀와 맵 초기화 때 쓴다.
-    /// 월드는 UI 클래스를 모르므로 팝업처럼 코어 규칙 쪽에 두고 <see cref="ScreenFade"/>로 접근한다.
+    /// 검은 화면 페이드(UIScene의 화면 페이드). 체크포인트 복귀와 맵 초기화 때 쓴다.
+    /// 월드는 UI 클래스를 모르므로 코어 규칙 쪽에 두고 <see cref="ScreenFade"/>로 접근한다.
     /// </summary>
     public interface IScreenFader
     {

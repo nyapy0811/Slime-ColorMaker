@@ -3,7 +3,7 @@ using System;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 플레이어가 든 지금 색(코어 규칙, 색 시스템 개편). (0,0,0)에서 시작해 흡수하면 더하고(채널마다 한도에서 자름),
+    /// 플레이어가 든 지금 색(코어 규칙). (0,0,0)에서 시작해 흡수하면 더하고(채널마다 한도에서 자름),
     /// 문·목적지에 정확히 같은 값을 쓰면 비우고, 레이저 벽을 지나면 뺀다. 값이 바뀔 때만 <see cref="Changed"/>를 부른다.
     /// </summary>
     public sealed class CurrentColor

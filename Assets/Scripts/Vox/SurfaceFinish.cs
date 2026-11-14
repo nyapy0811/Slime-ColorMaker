@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 재질감(2026-11-14, 애셋은 Assets/Data/Finishes): 광택·반사와 빛 맺힘·주변 반사 켜기. 프리팹의 <see cref="VoxPaint"/>가 부위(일반·값 색·반투명)마다,
+    /// 재질감(애셋은 Assets/Data/Finishes): 광택·반사와 빛 맺힘·주변 반사 켜기. 프리팹의 <see cref="VoxPaint"/>가 부위(일반·값 색·반투명)마다,
     /// 미끄러운 코팅 설정이 종류(기름·얼음)마다 고른다. 같은 애셋을 여러 곳이 같이 쓰고, 값을 고치면 쓰는 곳이 모두 바뀐다.
     /// 복셀 모델에는 '원래 재질 + 이 재질감' 재질을 이 애셋의 하위 애셋으로 만들어 쓴다(에디터의 SurfaceFinishMaterials, 같은 프리팹끼리 재질을 같이 써 묶어 그리기 유지).
     /// </summary>

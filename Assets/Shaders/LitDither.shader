@@ -1,4 +1,4 @@
-// Slime~ColorMaker~: URP 17.6 Lit(Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader)을 복사해 점무늬(디더) 투명을 더한 셰이더(2026-11-08).
+// Slime~ColorMaker~: URP 17.6 Lit(Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader)을 복사해 점무늬(디더) 투명을 더한 셰이더.
 // 맵의 지형·기물 재질 사본이 이 셰이더를 쓴다(CameraOcclusionFader). 카메라에서 므엥을 보는 시선 구멍만큼 화면 4x4 점무늬로 픽셀을 뚫는다
 // (색·깊이·깊이 법선·GBuffer 단계, 그림자는 그대로, 자세한 것은 LitDither.hlsl). 나머지는 Lit과 같다. URP를 올리면 다시 복사한다.
 Shader "Slime~ColorMaker~/Lit Dither"

@@ -5,10 +5,10 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 가까운 값 표시(UIScene HUD, 2차 Q461 ← 2026-11-08 조준을 없앰). '가까운 값들 바뀜'을 받아 범위 안 기물마다 그 기물 위에
+    /// 가까운 값 표시(UIScene HUD). '가까운 값들 바뀜'을 받아 범위 안 기물마다 그 기물 위에
     /// 'R G B' 상자를 하나씩 보인다. 상자는 화면에 그리고(거리와 상관없이 크기가 같고 벽에 가려지지 않음), 매 프레임 기물 윗면에서
     /// 조금 위의 점을 지금 카메라(<see cref="Camera.main"/>)로 화면 자리로 바꿔 맞춘다. 카메라 뒤쪽 기물의 상자는 숨긴다.
-    /// 팝업이 열리면 입력이 잠겨 값이 비므로 따로 듣지 않아도 숨는다.
+    /// 입력이 잠기면 값이 비므로 따로 듣지 않아도 숨는다.
     /// </summary>
     public class NearbyValueLabel : MonoBehaviour
     {

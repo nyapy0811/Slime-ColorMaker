@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 방벽의 겉모습(2026-11-11, 모델 Models/Fixtures/Barrier): 열리면 반투명 판이 흐려지며 사라진다(복셀 모델의 반투명 정도를 0까지 내리고 끔).
+    /// 방벽의 겉모습(모델 Models/Fixtures/Barrier): 열리면 반투명 판이 흐려지며 사라진다(복셀 모델의 반투명 정도를 0까지 내리고 끔).
     /// </summary>
     public class BarrierView : OpenableView
     {

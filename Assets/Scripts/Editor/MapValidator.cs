@@ -8,8 +8,8 @@ using UnityEngine.SceneManagement;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 검사(첫 버전). 메뉴 Slime~ColorMaker~/맵 검사로 지금 맵을 검사해 콘솔에 알린다(항목을 누르면 그 오브젝트로 감).
-    /// 맵 씬을 저장할 때는 가벼운 검사(맵 안 id)만 자동으로 한다. 검사 항목은 기물을 만드는 단계마다 더한다.
+    /// 맵 검사. 메뉴 Slime~ColorMaker~/맵 검사로 지금 맵을 검사해 콘솔에 알린다(항목을 누르면 그 오브젝트로 감).
+    /// 맵 씬을 저장할 때는 가벼운 검사(맵 안 id)만 자동으로 한다.
     /// </summary>
     [InitializeOnLoad]
     public static class MapValidator
@@ -108,7 +108,7 @@ namespace SlimeColorMaker
             return problems;
         }
 
-        /// <summary>상호작용하거나 값을 보이는 기물의 콜라이더는 기물 레이어에 있어야 캐릭터가 닿고 값을 본다(2026-11-08).</summary>
+        /// <summary>상호작용하거나 값을 보이는 기물의 콜라이더는 기물 레이어에 있어야 캐릭터가 닿고 값을 본다.</summary>
         static int CheckFixtureLayers(Scene scene)
         {
             int layer = LayerMask.NameToLayer(FixtureBase.LayerName);
@@ -153,7 +153,7 @@ namespace SlimeColorMaker
 
         /// <summary>
         /// 큐브 격자 1개(원점에 두고 돌리거나 늘리지 않음), 칸 바닥 가운데에 놓이지 않은 기물, 한 칸에 둘 이상인 기물,
-        /// 블록이나 계단과 같은 칸에 있는 기물(v1 칸 규칙, 한 칸에 하나). 시험 모델도 기물처럼 본다.
+        /// 블록이나 계단과 같은 칸에 있는 기물(한 칸에 하나). 시험 모델도 기물처럼 본다.
         /// </summary>
         static int CheckCubeGrid(Scene scene)
         {
@@ -204,8 +204,8 @@ namespace SlimeColorMaker
         }
 
         /// <summary>
-        /// 맵 환경(하늘·조명·태양)은 MapRoot의 맵 환경(<see cref="MapEnvironment"/>)이 설정 애셋에서 적용한다(2026-11-08, 2026-11-07의
-        /// 'MapRoot 안 공유 방향광'을 대신함). 맵 환경이 없거나 설정이 비었음, 씬에 저장된 방향광(태양은 맵 환경이 숨겨서 만듦)을 알린다.
+        /// 맵 환경(하늘·조명·태양)은 MapRoot의 맵 환경(<see cref="MapEnvironment"/>)이 설정 애셋에서 적용한다.
+        /// 맵 환경이 없거나 설정이 비었음, 씬에 저장된 방향광(태양은 맵 환경이 숨겨서 만듦)을 알린다.
         /// </summary>
         static int CheckEnvironment(Scene scene, MapManager manager)
         {

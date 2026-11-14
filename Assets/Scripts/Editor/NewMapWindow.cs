@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 새 맵 만들기(메뉴 Slime~ColorMaker~/새 맵 만들기, 2026-11-08). 맵 id·화면 이름·씬 이름을 받아 한 번에 만든다:
+    /// 새 맵 만들기(메뉴 Slime~ColorMaker~/새 맵 만들기). 맵 id·화면 이름·씬 이름을 받아 한 번에 만든다:
     /// 빈 씬에 맵 기본 프리팹(MapRoot, 원점의 시작 지점·맵 환경 포함)과 큐브 격자를 넣고, 시작 칸 아래 (0,−1,0)에 블록 하나를 깔고,
     /// Scenes/Maps에 저장해 맵 목록(맨 뒤, 버전 1)과 Build Settings에 넣은 뒤 큐브 맵 편집 창을 연다. 목적지는 직접 놓는다(맵 검사가 알림).
     /// </summary>

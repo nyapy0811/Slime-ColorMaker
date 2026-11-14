@@ -5,11 +5,11 @@ using UnityEngine.SceneManagement;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 씬 사이 이동(진행 시스템 3단계, 1단계의 '처음부터'를 넓힘): 맵 시작(처음부터·이어하기), '처음부터', 메인 메뉴로.
+    /// 씬 사이 이동: 맵 시작(처음부터·이어하기), '처음부터', 메인 메뉴로.
     /// 모두 검은 화면으로 어두워진 뒤 시간을 되돌리고 씬을 불러온다. UI 씬은 UI 관리자가 다시 얹고(새 화면 페이드가 검은 화면에서 밝아짐),
     /// 상태는 맵 매니저(Playing)나 메인 메뉴(MainMenu)가 맞춘다.
     /// 불러온 씬에 넘길 것(이어서 시작할지, 맵 선택 화면을 바로 열지)은 요청으로 남기고 받는 쪽이 한 번 꺼낸다.
-    /// 요청 없이 맵이 열리면(에디터의 '열린 맵에서 바로 시작') 처음부터 시작한다(3단계 구상 채팅).
+    /// 요청 없이 맵이 열리면(에디터의 '열린 맵에서 바로 시작') 처음부터 시작한다.
     /// </summary>
     public static class SceneFlow
     {
@@ -34,7 +34,7 @@ namespace SlimeColorMaker
             return requested;
         }
 
-        /// <summary>맵을 처음부터 시작한다. 필요하면 먼저 확인 창으로 경고하고(2차 Q449, Q456), 그 맵의 체크포인트 기록은 지운다.</summary>
+        /// <summary>맵을 처음부터 시작한다. 필요하면 먼저 확인 창으로 경고하고, 그 맵의 체크포인트 기록은 지운다.</summary>
         public static void AskAndStartMap(MapListEntry entry)
         {
             switch (ProgressStore.Current.StartWarning(entry.mapId))
@@ -58,7 +58,7 @@ namespace SlimeColorMaker
             FadeAndLoad(entry.sceneName, () => continueRequested = continueFromCheckpoint);
         }
 
-        /// <summary>'처음부터': 그 맵의 체크포인트 기록을 지우고(2차 Q449) 지금 맵 씬을 다시 불러온다(씬 재로드).</summary>
+        /// <summary>'처음부터': 그 맵의 체크포인트 기록을 지우고 지금 맵 씬을 다시 불러온다(씬 재로드).</summary>
         public static void Restart()
         {
             if (MapManager.Current != null && ProgressStore.Current.ClearCheckpoint(MapManager.Current.MapId)) ProgressStore.Save();

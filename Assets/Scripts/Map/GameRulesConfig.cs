@@ -6,7 +6,7 @@ namespace SlimeColorMaker
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/게임 규칙", fileName = "GameRulesConfig")]
     public class GameRulesConfig : ScriptableObject
     {
-        [Tooltip("값이 보이는 거리(유닛, 캐릭터에서 기물까지). 코어 루프 9단계에서 조준 거리로 정했고(v1은 1.3), 2026-11-08 조준을 없애며 가까운 값 표시 거리로 바뀜.")]
+        [Tooltip("값이 보이는 거리(유닛, 캐릭터에서 기물까지).")]
         public float interactDistance = 3f;
 
         [Tooltip("낙사 안전망: 가장 낮은 블록의 바닥보다 이만큼 아래로 떨어지면 마지막 체크포인트(없으면 시작 지점)로 옮긴다.")]

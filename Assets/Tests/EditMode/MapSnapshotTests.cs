@@ -14,7 +14,6 @@ namespace SlimeColorMaker
                 mapVersion = 1,
                 playerPosition = new Vector3(1f, 0f, 2f),
                 playerYaw = 90f,
-                playerPitch = -10f,
                 currentColor = new ColorValue(3, 1, 0),
                 playTime = 12.5f,
             };

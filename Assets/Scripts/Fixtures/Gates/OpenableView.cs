@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 문(<see cref="Door"/>)의 겉모습 기반(2026-11-11): 열림을 받는다. 노드 끼운 문(<see cref="DoorView"/>)과 칸 기물 방벽(<see cref="BarrierView"/>)이 상속한다.
+    /// 문(<see cref="Door"/>)의 겉모습 기반: 열림을 받는다. 칸 기물 방벽(<see cref="BarrierView"/>)이 상속한다.
     /// </summary>
     public abstract class OpenableView : MonoBehaviour
     {

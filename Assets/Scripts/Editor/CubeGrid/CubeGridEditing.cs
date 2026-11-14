@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작(v1 MazeGeneratorEditor 방식을 v2 구조로).
+    /// 큐브 맵 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작.
     /// 고른 붓으로 칸에 블록·계단·기둥·기물·시험 모델을 놓고 지운다. 한 칸에는 하나만 두며, 블록과 계단, 기둥은 큐브 격자 데이터에, 기물과 시험 모델은
     /// 씬의 오브젝트로 칸 바닥 가운데에 놓는다(맵 안 id는 기물을 놓을 때 고침). 계단은 씬 카메라가 보는 쪽으로 오르게, 차단기는 씬 카메라가
     /// 보는 쪽으로 지나가게(앞이 그쪽) 놓고, '돌리기'로 90°씩 더 돌린다(둘이 같은 돌림 값을 씀). 편집 한 번이 Undo 하나다.
@@ -31,7 +31,7 @@ namespace SlimeColorMaker
         public static bool IsConveyor(Brush brush) => brush == Brush.ConveyorBelt;
 
         /// <summary>
-        /// 놓을 컨베이어가 나가는 방향. 들어가는 방향(<paramref name="entryTurn"/>, 씬 카메라가 보는 쪽 + 돌림, 2026-11-14)에서
+        /// 놓을 컨베이어가 나가는 방향. 들어가는 방향(<paramref name="entryTurn"/>, 씬 카메라가 보는 쪽 + 돌림)에서
         /// 우회전은 90° 오른쪽(+1), 좌회전은 왼쪽(−1)으로 꺾여 나가고 직진은 그대로다.
         /// </summary>
         public static int ConveyorExitTurn(int entryTurn) =>
@@ -41,7 +41,7 @@ namespace SlimeColorMaker
         public static readonly ConveyorShape[] ConveyorShapeOrder = { ConveyorShape.Straight, ConveyorShape.Left, ConveyorShape.Right };
         public static readonly string[] ConveyorShapeNames = { "직진", "좌회전", "우회전" };
 
-        /// <summary>놓을 컨베이어의 모양: 직진, 우회전(들어와서 오른쪽으로 꺾여 나감), 좌회전(2026-11-14, 꺾임 붓 둘을 합침).</summary>
+        /// <summary>놓을 컨베이어의 모양: 직진, 우회전(들어와서 오른쪽으로 꺾여 나감), 좌회전.</summary>
         public static ConveyorShape SelectedConveyorShape
         {
             get => (ConveyorShape)SessionState.GetInt("SlimeColorMaker.CubeGrid.ConveyorShape", 0);
@@ -225,7 +225,7 @@ namespace SlimeColorMaker
             return guids.Length == 0 ? null : AssetDatabase.LoadAssetAtPath<CubeGridConfig>(AssetDatabase.GUIDToAssetPath(guids[0]));
         }
 
-        /// <summary>새 맵의 큐브 격자를 만든다. 하늘·조명은 MapRoot의 맵 환경이 맡는다(2026-11-08).</summary>
+        /// <summary>새 맵의 큐브 격자를 만든다. 하늘·조명은 MapRoot의 맵 환경이 맡는다.</summary>
         public static CubeGrid CreateGrid()
         {
             var go = new GameObject("CubeGrid");

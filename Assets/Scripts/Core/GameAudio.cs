@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// <summary>
     /// 이 게임의 소리 설정. 부팅 씬에 두고 BGM 클립과 믹서를 연결한다.
     /// BGM을 틀고, Framework.Core AudioManager의 소스를 믹서 그룹(BGM/SFX)에 잇고, settings.json의 음량을 적용한다.
-    /// 효과음은 소리 연결(이벤트 → 클립, 코어 루프 8단계)이 맡는다.
+    /// 효과음은 소리 연결(이벤트 → 클립)이 맡는다.
     /// </summary>
     public class GameAudio : MonoSingleton<GameAudio>
     {

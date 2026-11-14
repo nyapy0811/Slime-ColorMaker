@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 체크포인트에 저장하는 맵 상태. 지금은 자리만 두고 체크포인트 단계에서 채운다.
+    /// 체크포인트에 저장하는 맵 상태.
     /// JsonUtility로 저장하므로 공개 필드로 둔다.
     /// </summary>
     [Serializable]
@@ -17,8 +17,6 @@ namespace SlimeColorMaker
         public Vector3 playerPosition;
         /// <summary>몸통의 좌우 회전(도).</summary>
         public float playerYaw;
-        /// <summary>카메라의 위아래 회전(도).</summary>
-        public float playerPitch;
 
         /// <summary>지금 색.</summary>
         public ColorValue currentColor;

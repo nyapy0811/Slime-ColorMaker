@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 3인칭 카메라 당기기 수치(2026-11-08, 애셋은 Assets/Data/Camera). 애셋이라 Play 모드에서 고친 값도 남는다.
+    /// 3인칭 카메라 당기기 수치(애셋은 Assets/Data/Camera). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="ThirdPersonCamera"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/카메라 당기기 설정", fileName = "CameraCollisionSettings")]

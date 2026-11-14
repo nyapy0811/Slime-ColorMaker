@@ -13,10 +13,10 @@ namespace SlimeColorMaker
     /// MagicaVoxel <c>.vox</c>를 프리팹 겉모습으로 가져온다(약속은 Docs/v2 복셀 모델링 규칙 1~5절). 오브젝트 하나가 자식 하나이고,
     /// 값 색 칸(33~40, 밝기 8단계)은 자식 아래 별도 렌더러 하나(ValueColor)로 떼어낸다. 그 렌더러의 칸은 자기 색의 가장 큰 채널을
     /// 밝기로 남긴 회색이라, 기물 컴포넌트가 렌더러의 _BaseColor를 바꾸면 그 색과 곱해진다(값 색 안의 음영).
-    /// 반투명 칸(규칙 2절, 2026-11-07)도 같은 방식으로 떼어낸다: 반투명 값 색 41~48은 GlassValueColor(칠함), 반투명 회색 49~56은 Glass.
+    /// 반투명 칸(규칙 2절)도 같은 방식으로 떼어낸다: 반투명 값 색 41~48은 GlassValueColor(칠함), 반투명 회색 49~56은 Glass.
     /// 칠할 색과 반투명 정도는 맨 위 오브젝트에 붙이는 <see cref="VoxPaint"/>가 렌더러마다 준다(놓인 모델마다 바꿀 수 있음). 반투명 부분은 바깥 껍질만 만들고,
     /// 렌더러 하나에 재질 둘을 걸어 뒷면(먼 쪽 벽의 안쪽)을 먼저, 앞면을 나중에 그린다(유리 상자처럼 반대편 벽이 비침).
-    /// 반투명 재질은 깊이를 카메라 쪽으로 조금 당기는 Lit 사본(Assets/Shaders/LitGlass.shader)을 써서, 다른 면에 붙어도 깊이 다툼으로 깨지지 않는다(2026-11-14).
+    /// 반투명 재질은 깊이를 카메라 쪽으로 조금 당기는 Lit 사본(Assets/Shaders/LitGlass.shader)을 써서, 다른 면에 붙어도 깊이 다툼으로 깨지지 않는다.
     /// 나머지 칸은 파일의 팔레트를 256 × 1 텍스처로 만들어 면마다 자기 색 칸을 가리키게 한다(URP Lit은 버텍스 색을 읽지 않음).
     /// </summary>
     [ScriptedImporter(7, "vox")]
@@ -24,7 +24,7 @@ namespace SlimeColorMaker
     {
         public enum PivotMode { BottomBackEdge, BottomCenter, TopCenter }
 
-        /// <summary>한 칸의 길이(유닛). 1유닛 = 16칸(블록 한 칸이 16³, 2026-11-07).</summary>
+        /// <summary>한 칸의 길이(유닛). 1유닛 = 16칸(블록 한 칸이 16³).</summary>
         public const float VoxelSize = 0.0625f;
 
         /// <summary>값 색 칸: 33(가장 밝음) ~ 40(가장 어두움).</summary>
@@ -43,7 +43,7 @@ namespace SlimeColorMaker
 
         const string LitShaderPath = "Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader";
 
-        // 반투명 재질의 셰이더: Lit 사본에 깊이 당기기(Offset)를 더해, 다른 면과 같은 평면에 붙어도 깊이 다툼 없이 앞에 그린다(2026-11-14).
+        // 반투명 재질의 셰이더: Lit 사본에 깊이 당기기(Offset)를 더해, 다른 면과 같은 평면에 붙어도 깊이 다툼 없이 앞에 그린다.
         const string GlassShaderPath = "Assets/Shaders/LitGlass.shader";
 
         [Tooltip("기준점. 모든 오브젝트의 모델 크기 상자를 합친 상자에서 고른다(규칙 5절): 바닥면 뒤쪽 가장자리의 가운데(기물 기준, 기본), " +

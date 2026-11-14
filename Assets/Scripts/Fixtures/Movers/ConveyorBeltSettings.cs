@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 컨베이어 벨트 수치(2026-11-12, 애셋은 Assets/Data/Fixtures). 애셋이라 Play 모드에서 고친 값도 남는다.
+    /// 컨베이어 벨트 수치(애셋은 Assets/Data/Fixtures). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="ConveyorBelt"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/컨베이어 벨트 설정", fileName = "ConveyorBeltSettings")]

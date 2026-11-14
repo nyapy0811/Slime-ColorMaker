@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 미끄러운 코팅 설정(2026-11-14, 애셋은 Assets/Data/Map). 종류(기름·얼음)마다 그 위에서 쓰는 관성 시간과 겉모습 재질.
+    /// 미끄러운 코팅 설정(애셋은 Assets/Data/Map). 종류(기름·얼음)마다 그 위에서 쓰는 관성 시간과 겉모습 재질.
     /// 재질의 색·반투명도·무늬(16 × 16, 칸마다 반복)는 재질 애셋에서, 광택·반사는 재질감(<see cref="SurfaceFinish"/>)에서 고친다.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/미끄러운 코팅 설정", fileName = "SlipperyCoatingSettings")]

@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 미끄러운 코팅 설정 인스펙터(2026-11-14): 종류(기름·얼음)마다 관성 시간, 재질, 재질감 한 줄(애셋 칸 + 새로 만들기 + 펼쳐서 값 고치기, <see cref="SurfaceFinishGUI"/>).
+    /// 미끄러운 코팅 설정 인스펙터: 종류(기름·얼음)마다 관성 시간, 재질, 재질감 한 줄(애셋 칸 + 새로 만들기 + 펼쳐서 값 고치기, <see cref="SurfaceFinishGUI"/>).
     /// </summary>
     [CustomEditor(typeof(SlipperyCoatingSettings))]
     class SlipperyCoatingSettingsEditor : Editor

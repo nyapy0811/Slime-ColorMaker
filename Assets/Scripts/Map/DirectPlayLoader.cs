@@ -20,7 +20,7 @@ namespace SlimeColorMaker
             string path = SessionState.GetString(OpenedSceneKey, "");
             SessionState.EraseString(OpenedSceneKey);
             if (string.IsNullOrEmpty(path)) return false;
-            // Play 첫 프레임에 씬을 바로 바꾸면 다시 만들어지는 중인 Hierarchy 창이 단언 오류('manager != NULL')를 낸다(2026-11-11, Unity 6000.6.8f1).
+            // Play 첫 프레임에 씬을 바로 바꾸면 다시 만들어지는 중인 Hierarchy 창이 단언 오류('manager != NULL')를 낸다(Unity 6000.6.8f1).
             // 에디터가 첫 갱신을 마친 뒤에 바꾼다.
             EditorApplication.delayCall += () =>
             {

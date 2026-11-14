@@ -2,11 +2,11 @@ using UnityEngine;
 
 namespace SlimeColorMaker
 {
-    /// <summary>칸의 면 여섯(2026-11-11): 북 +Z, 동 +X, 남 −Z, 서 −X, 위 +Y(칸 윗면), 아래 −Y(칸 바닥면).</summary>
+    /// <summary>칸의 면 여섯: 북 +Z, 동 +X, 남 −Z, 서 −X, 위 +Y(칸 윗면), 아래 −Y(칸 바닥면).</summary>
     public enum CellFace { North, East, South, West, Up, Down }
 
     /// <summary>
-    /// 칸의 한 면에 붙는 기물의 자리(2026-11-11, 방벽). 피벗(칸 가운데)을 돌려, 서쪽(−X) 면에 만든 모델과 막는 상자를 고른 면으로 보낸다.
+    /// 칸의 한 면에 붙는 기물의 자리(방벽). 피벗(칸 가운데)을 돌려, 서쪽(−X) 면에 만든 모델과 막는 상자를 고른 면으로 보낸다.
     /// 기물 루트는 칸 바닥 가운데에 돌리지 않고 두고, 면은 이 값으로 정한다(큐브 맵 편집의 방벽 붓이 정함).
     /// </summary>
     public class CellFaceMount : MonoBehaviour

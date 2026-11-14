@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// </summary>
     public static class ColorRules
     {
-        /// <summary>채널의 가장 큰 값. 모든 채널, 모든 맵이 같고 바뀌지 않는다(2026-11-08 색 시스템 수정: 0~5에서 0~15로).</summary>
+        /// <summary>채널의 가장 큰 값. 모든 채널, 모든 맵이 같고 바뀌지 않는다.</summary>
         public const int ChannelMax = 15;
 
         /// <summary>채널 한도 (15, 15, 15). 넘치면 순환하지 않고 여기서 자른다.</summary>
@@ -39,7 +39,7 @@ namespace SlimeColorMaker
             value.R >= 0 && value.G >= 0 && value.B >= 0 && !IsAllEqual(value);
 
         /// <summary>
-        /// 값의 색. 채널마다 값 ÷ 가장 큰 채널 값이라, 그 비율에서 가장 밝은 색이 된다(2026-11-08, '값 ÷ 15 밝기'에서 되돌림):
+        /// 값의 색. 채널마다 값 ÷ 가장 큰 채널 값이라, 그 비율에서 가장 밝은 색이 된다:
         /// (3,0,0)과 (15,0,0)은 같은 빨강, (6,3,3)은 (1, 0.5, 0.5), 세 채널이 같으면 흰색, (0,0,0)은 검정.
         /// </summary>
         public static Color ToColor(ColorValue value)
@@ -51,7 +51,7 @@ namespace SlimeColorMaker
 
         /// <summary>
         /// 흑백 색(흡수한 색 원천). 채도만 0으로 내리고 밝기는 세 채널의 평균이라,
-        /// 순수한 빨강·초록·파랑이 모두 같은 회색이 된다(밝기 가중이 아님, 코어 루프 4단계).
+        /// 순수한 빨강·초록·파랑이 모두 같은 회색이 된다(밝기 가중이 아님).
         /// </summary>
         public static Color ToGrayscale(Color color)
         {

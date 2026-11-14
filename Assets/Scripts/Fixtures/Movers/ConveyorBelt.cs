@@ -7,11 +7,11 @@ using UnityEngine.Serialization;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 컨베이어 벨트(2026-11-12, 이동 계열, 프리팹 `ConveyorBelt` 하나, 2026-11-14 꺾임 프리팹 둘을 합침). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
+    /// 컨베이어 벨트(이동 계열, 프리팹 `ConveyorBelt` 하나). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
     /// 모양(<see cref="Shape"/>: 직진·우회전·좌회전)마다 무늬 모델 넷(직선 `ConveyorBelt1~4`, 우회전 `ConveyorBeltCurve1~4`, 좌회전 `ConveyorBeltCurveL1~4`)을 두고,
     /// 지금 모양의 넷만 1 → 2 → 3 → 4 → 1 차례로 하나씩 켠다(다른 모양의 무늬는 모두 끔).
     /// 차례는 게임 시간으로 정해 씬의 모든 벨트가 같은 순간에 같은 번호를 보이고, 일시정지하면 멈춘다. 모델 기준 흐름(나가는 쪽)은 −Z이고 놓을 때 Y축으로 90°씩 돌린다.
-    /// 캐릭터 중심점이 벨트 구역(난간 빼고) 안에 있으면 <see cref="ThirdPersonController"/>가 <see cref="TryPush"/>만큼 민다(벨트 속도, 2026-11-14).
+    /// 캐릭터 중심점이 벨트 구역(난간 빼고) 안에 있으면 <see cref="ThirdPersonController"/>가 <see cref="TryPush"/>만큼 민다(벨트 속도).
     /// 직선은 똑바로, 꺾임은 안쪽 모서리를 중심으로 돌림판처럼 돌린다(<see cref="ConveyorRules"/>). 켜져 있는 벨트는 칸으로 찾을 수 있게 등록해 둔다.
     /// </summary>
     public class ConveyorBelt : FixtureBase

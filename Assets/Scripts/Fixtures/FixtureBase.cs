@@ -5,13 +5,12 @@ namespace SlimeColorMaker
     /// <summary>
     /// v2 기물의 기반. 맵 안 id(맵 안에서 1부터 늘어나는 정수, 에디터가 발급)를 들고, 켜질 때 맵 매니저에 등록한다.
     /// 상호작용하는 기물(<see cref="IInteractable"/>)은 상호작용할 수 있는 동안 강조를 켠다.
-    /// 상태 저장 기본 구현은 체크포인트 단계에서 더한다.
     /// </summary>
     public abstract class FixtureBase : MonoBehaviour
     {
         /// <summary>
         /// 상호작용하거나 값을 보이는 기물의 콜라이더가 있을 레이어. 캐릭터의 닿음·가까운 값 찾기가 이 레이어만 보므로 블록이 결과에 들지 않는다
-        /// (맵 검사가 알림, 2026-11-08).
+        /// (맵 검사가 알림).
         /// </summary>
         public const string LayerName = "Interactable";
 

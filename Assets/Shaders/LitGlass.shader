@@ -1,4 +1,4 @@
-// Slime~ColorMaker~: URP 17.6 Lit(Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader)을 복사해 반투명 면의 깊이를 카메라 쪽으로 조금 당긴 셰이더(2026-11-14).
+// Slime~ColorMaker~: URP 17.6 Lit(Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader)을 복사해 반투명 면의 깊이를 카메라 쪽으로 조금 당긴 셰이더.
 // 복셀 가져오기(VoxImporter)의 반투명 재질(Glass·GlassPaint와 뒷면)이 쓴다. 반투명 면이 다른 면(불투명 블록 등)과 같은 평면에 붙어도
 // 깊이 다툼 없이 앞에 그려진다(ForwardLit 단계에 Offset -1, -1, 바닥 흔적 Trail.shader와 같은 방식). 나머지는 Lit과 같다. URP를 올리면 다시 복사한다.
 Shader "Slime~ColorMaker~/Lit Glass"

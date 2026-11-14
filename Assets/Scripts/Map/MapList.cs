@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 목록(애셋은 Assets/Data/Map, 3차 Q487·Q488). 목록 순서가 맵 선택 화면의 순서이자 '다음 맵' 순서다.
+    /// 맵 목록(애셋은 Assets/Data/Map). 목록 순서가 맵 선택 화면의 순서이자 '다음 맵' 순서다.
     /// 맵 매니저는 자기 씬 이름으로 자기 항목을 찾는다.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/맵 목록", fileName = "MapList")]
@@ -17,7 +17,7 @@ namespace SlimeColorMaker
 
         public MapListEntry FindById(string mapId) => maps.Find(entry => entry.mapId == mapId);
 
-        /// <summary>목록에서 그 맵 다음 맵('다음 맵', 2차 Q447). 마지막 맵이면 null.</summary>
+        /// <summary>목록에서 그 맵 다음 맵('다음 맵'). 마지막 맵이면 null.</summary>
         public MapListEntry NextAfter(MapListEntry entry)
         {
             int index = maps.IndexOf(entry);

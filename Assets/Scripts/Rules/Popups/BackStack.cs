@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 뒤로 가기 스택(코드 흐름 Q494). 닫을 수 있는 화면(팝업, 일시정지 메뉴, 나중에 확인 창·설정 패널)은 열 때 자기 '닫기'를
+    /// 뒤로 가기 스택. 닫을 수 있는 화면(일시정지 메뉴, 확인 창 등)은 열 때 자기 '닫기'를
     /// 넣고 닫을 때 뺀다. ESC는 맨 위의 닫기를 부르고, 스택이 비어 있을 때만 일시정지 메뉴가 열린다.
     /// </summary>
     public static class BackStack

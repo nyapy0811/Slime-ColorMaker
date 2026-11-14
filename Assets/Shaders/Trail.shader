@@ -1,4 +1,4 @@
-// Slime~ColorMaker~: 캐릭터 바닥 흔적(SlimeTrail, 2026-11-13)용 URP 셰이더. 조명 없이 꼭짓점 색(선형 색, 알파 = 진하기)만 그린다.
+// Slime~ColorMaker~: 캐릭터 바닥 흔적(SlimeTrail)용 URP 셰이더. 조명 없이 꼭짓점 색(선형 색, 알파 = 진하기)만 그린다.
 // URP 기본 Unlit은 꼭짓점 색을 쓰지 않아 따로 둔다. 바닥 바로 위에 깔리므로 깊이를 쓰지 않고 바닥 쪽으로 깊이를 조금 당긴다.
 Shader "Slime~ColorMaker~/Trail"
 {

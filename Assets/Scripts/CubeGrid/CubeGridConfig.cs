@@ -4,7 +4,7 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵의 프리팹(애셋은 Assets/Data/Map). 블록은 아직 한 종류이고, 블록과 계단의 겉모습은 임시 복셀 모델이다.
-    /// 기물 프리팹은 큐브 맵 편집 도구의 팔레트가 쓴다(지금은 체크포인트·색 원천·목적지·차단기, 2026-11-08 체크포인트·차단기 더함, 시작 지점은 MapRoot 안으로 옮겨 뺌).
+    /// 기물 프리팹은 큐브 맵 편집 도구의 팔레트가 쓴다(시작 지점은 MapRoot 안에 있어 팔레트에 없음).
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/큐브 맵 설정", fileName = "CubeGridConfig")]
     public class CubeGridConfig : ScriptableObject

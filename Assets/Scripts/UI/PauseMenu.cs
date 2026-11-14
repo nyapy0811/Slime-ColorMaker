@@ -4,11 +4,11 @@ using UnityEngine.UI;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 일시정지 메뉴(UIScene, v1 PauseMenuController를 참고해 새로 씀). ESC를 읽는 곳이기도 하다:
-    /// 뒤로 가기 스택에 닫을 화면이 있으면 맨 위를 닫고, 스택이 비어 있고 게임 중일 때만 일시정지를 연다(설계 문서 7.1, 2차 Q194).
+    /// 일시정지 메뉴(UIScene). ESC를 읽는 곳이기도 하다:
+    /// 뒤로 가기 스택에 닫을 화면이 있으면 맨 위를 닫고, 스택이 비어 있고 게임 중일 때만 일시정지를 연다.
     /// 일시정지는 잠금이 아니라 <c>Time.timeScale = 0</c>으로 멈추고, 열린 동안 스택에 '계속하기'를 넣어 ESC로 닫힌다.
-    /// 버튼은 계속하기·처음부터·체크포인트로·메인메뉴이고, 진행이 사라지는 세 버튼은 확인 창을 거친다(2차 Q184, Q448, Q453).
-    /// '설정'은 설정 화면을 만들 때 더한다(3단계 구상 채팅). 화면 페이드 중에는 ESC를 받지 않는다.
+    /// 버튼은 계속하기·처음부터·체크포인트로·메인메뉴이고, 진행이 사라지는 세 버튼은 확인 창을 거친다.
+    /// '설정'은 설정 화면을 만들 때 더한다. 화면 페이드 중에는 ESC를 받지 않는다.
     /// </summary>
     public class PauseMenu : MonoBehaviour
     {
@@ -63,7 +63,7 @@ namespace SlimeColorMaker
             SceneFlow.Restart();
         });
 
-        // 맵 씬은 그대로이므로 메뉴를 닫고 게임으로 돌아간 뒤 되돌린다. 체크포인트가 없으면 '처음부터'와 같다(2차 Q450).
+        // 맵 씬은 그대로이므로 메뉴를 닫고 게임으로 돌아간 뒤 되돌린다. 체크포인트가 없으면 '처음부터'와 같다.
         void AskReturnToCheckpoint()
         {
             string message = MapManager.Current.HasCheckpoint
