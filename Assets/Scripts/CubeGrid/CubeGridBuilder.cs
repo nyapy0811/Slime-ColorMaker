@@ -7,7 +7,8 @@ using UnityEditor;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
+    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 그 칸 모양의 기둥 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
+    /// 기둥 모양은 지을 때마다 그룹으로 계산하므로(<see cref="CubeGridRules.PillarShapes"/>) 모양이 바뀐 칸은 다른 묶음으로 옮겨진다.
     /// 에디터(Play 밖)에서는 프리팹 연결을 지키고 Undo에 기록하고, 런타임(나중의 UGC 맵)에는 보통의 Instantiate·Destroy다.
     /// 지금 있는 것은 자리와 방향으로 데이터와 비교해 남은 칸은 그대로 두고, 없어지거나 돌아간 칸은 지우고, 새 칸만 만든다.
     /// </summary>
@@ -27,6 +28,21 @@ namespace SlimeColorMaker
             var stairs = new Dictionary<Vector3Int, Quaternion>();
             foreach (var stair in grid.Data.stairs) stairs.TryAdd(stair.cell, CubeGridRules.StairRotation(stair.turn));
             BuildKind(Child(parts, "계단"), stairs, config.stairPrefab, "Stair");
+
+            var pillars = Child(parts, "기둥");
+            var shapes = CubeGridRules.PillarShapes(grid.Data);
+            BuildPillars(Child(pillars, "위아래"), shapes, PillarShape.Full, config.pillarPrefab, "Pillar");
+            BuildPillars(Child(pillars, "아래"), shapes, PillarShape.Base, config.pillarBasePrefab, "PillarBase");
+            BuildPillars(Child(pillars, "중간"), shapes, PillarShape.Shaft, config.pillarShaftPrefab, "PillarShaft");
+            BuildPillars(Child(pillars, "위"), shapes, PillarShape.Top, config.pillarTopPrefab, "PillarTop");
+        }
+
+        static void BuildPillars(Transform parent, Dictionary<Vector3Int, PillarShape> shapes, PillarShape shape, GameObject prefab, string namePrefix)
+        {
+            var wanted = new Dictionary<Vector3Int, Quaternion>();
+            foreach (var (cell, cellShape) in shapes)
+                if (cellShape == shape) wanted.Add(cell, Quaternion.identity);
+            BuildKind(parent, wanted, prefab, namePrefix);
         }
 
         // 한 종류: 칸 중심에 놓고, 자리와 방향이 데이터와 같은 것만 남긴다.
@@ -62,7 +78,7 @@ namespace SlimeColorMaker
             return child;
         }
 
-        /// <summary>블록과 계단을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
+        /// <summary>블록과 계단, 기둥을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
         public static void Rebuild(CubeGrid grid, CubeGridConfig config)
         {
             var parts = grid.transform.Find(GeneratedPartsName);

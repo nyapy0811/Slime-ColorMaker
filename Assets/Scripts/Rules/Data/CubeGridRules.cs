@@ -7,7 +7,7 @@ namespace SlimeColorMaker
     /// <summary>
     /// 큐브 맵의 순수 계산(v1 칸 규칙). 한 칸은 1×1×1이고 칸 좌표는 정수 (x, y, z)다. 칸은 x·z가 좌표 ±0.5, y가 좌표 ~ 좌표 + 1인
     /// 상자라 칸 중심은 (x, y + 0.5, z), 칸 바닥 가운데는 (x, y, z)다. 그래서 y = −1 칸의 블록 윗면이 높이 0이다.
-    /// 높이 제한과 천장은 없다. 한 칸에는 블록, 계단, 기물 중 하나만 둔다(기물 검사는 편집 도구와 맵 검사).
+    /// 높이 제한과 천장은 없다. 한 칸에는 블록, 계단, 기둥, 기물 중 하나만 둔다(기물 검사는 편집 도구와 맵 검사).
     /// </summary>
     public static class CubeGridRules
     {
@@ -32,8 +32,10 @@ namespace SlimeColorMaker
 
         public static bool HasStair(CubeGridData data, Vector3Int cell) => data.stairs.Exists(stair => stair.cell == cell);
 
-        /// <summary>블록이나 계단이 칸을 차지하는가.</summary>
-        public static bool IsOccupied(CubeGridData data, Vector3Int cell) => HasBlock(data, cell) || HasStair(data, cell);
+        public static bool HasPillar(CubeGridData data, Vector3Int cell) => data.pillars.Exists(pillar => pillar.cell == cell);
+
+        /// <summary>블록이나 계단, 기둥이 칸을 차지하는가.</summary>
+        public static bool IsOccupied(CubeGridData data, Vector3Int cell) => HasBlock(data, cell) || HasStair(data, cell) || HasPillar(data, cell);
 
         /// <summary>블록을 놓는다. 칸이 차 있으면 false.</summary>
         public static bool AddBlock(CubeGridData data, Vector3Int cell)
@@ -51,9 +53,40 @@ namespace SlimeColorMaker
             return true;
         }
 
-        /// <summary>칸의 블록이나 계단을 지운다. 없었으면 false.</summary>
+        /// <summary>기둥을 놓는다(그룹에 머리·받침을 둘지). 칸이 차 있으면 false.</summary>
+        public static bool AddPillar(CubeGridData data, Vector3Int cell, bool hasTop, bool hasBase)
+        {
+            if (IsOccupied(data, cell)) return false;
+            data.pillars.Add(new CubePillar(cell, hasTop, hasBase));
+            return true;
+        }
+
+        /// <summary>칸의 블록이나 계단, 기둥을 지운다. 없었으면 false.</summary>
         public static bool Remove(CubeGridData data, Vector3Int cell) =>
-            data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0;
+            data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0;
+
+        /// <summary>
+        /// 기둥마다 칸 모양(2026-11-14). 바로 위·아래 칸에 설정(머리·받침)이 같은 기둥이 있으면 한 그룹이다(동서남북은 보지 않음, 설정이 다르면 붙어 있어도 다른 그룹).
+        /// 그룹 맨 아래 칸은 받침 설정이면 받침을, 맨 위 칸은 머리 설정이면 머리를 두고, 나머지는 몸통이다(한 칸 그룹은 둘 다 그 칸에).
+        /// 저장하지 않고 지을 때마다 계산하므로, 그룹 일부를 지우면 남은 기둥이 다시 묶여 모양이 바뀐다.
+        /// </summary>
+        public static Dictionary<Vector3Int, PillarShape> PillarShapes(CubeGridData data)
+        {
+            var byCell = new Dictionary<Vector3Int, CubePillar>();
+            foreach (var pillar in data.pillars) byCell.TryAdd(pillar.cell, pillar);
+            var shapes = new Dictionary<Vector3Int, PillarShape>();
+            foreach (var (cell, pillar) in byCell)
+            {
+                bool groupBelow = byCell.TryGetValue(cell + Vector3Int.down, out var below) && SameGroup(pillar, below);
+                bool groupAbove = byCell.TryGetValue(cell + Vector3Int.up, out var above) && SameGroup(pillar, above);
+                bool baseHere = pillar.hasBase && !groupBelow;
+                bool topHere = pillar.hasTop && !groupAbove;
+                shapes[cell] = baseHere ? (topHere ? PillarShape.Full : PillarShape.Base) : topHere ? PillarShape.Top : PillarShape.Shaft;
+            }
+            return shapes;
+        }
+
+        static bool SameGroup(CubePillar a, CubePillar b) => a.hasTop == b.hasTop && a.hasBase == b.hasBase;
 
         /// <summary>방향 횟수를 0~3으로 맞춘다.</summary>
         public static int Turn(int turn) => (turn % 4 + 4) % 4;
@@ -78,13 +111,14 @@ namespace SlimeColorMaker
             return cells;
         }
 
-        /// <summary>가장 낮은 블록·계단 칸의 y. 둘 다 없으면 false.</summary>
+        /// <summary>가장 낮은 블록·계단·기둥 칸의 y. 셋 다 없으면 false.</summary>
         public static bool TryLowestY(CubeGridData data, out int lowest)
         {
             lowest = int.MaxValue;
             foreach (var cell in data.blocks) lowest = Math.Min(lowest, cell.y);
             foreach (var stair in data.stairs) lowest = Math.Min(lowest, stair.cell.y);
-            return data.blocks.Count + data.stairs.Count > 0;
+            foreach (var pillar in data.pillars) lowest = Math.Min(lowest, pillar.cell.y);
+            return data.blocks.Count + data.stairs.Count + data.pillars.Count > 0;
         }
 
         /// <summary>

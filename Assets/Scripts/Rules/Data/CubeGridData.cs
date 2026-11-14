@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록과 계단 목록(v1 칸 규칙, <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
+    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록(v1 칸 규칙, <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
     /// 씬의 큐브 격자와 나중의 UGC 맵 파일이 같은 클래스를 쓴다(JsonUtility).
     /// </summary>
     [Serializable]
@@ -13,6 +13,7 @@ namespace SlimeColorMaker
     {
         public List<Vector3Int> blocks = new();
         public List<CubeStair> stairs = new();
+        public List<CubePillar> pillars = new();
     }
 
     /// <summary>
@@ -31,4 +32,30 @@ namespace SlimeColorMaker
             this.turn = turn;
         }
     }
+
+    /// <summary>
+    /// 장식 기둥 하나(2026-11-14): 한 칸을 차지하고, 놓을 때 정한 설정(그룹에 머리·받침을 둘지)을 든다. 칸별 모양은 저장하지 않고
+    /// <see cref="CubeGridRules.PillarShapes"/>가 위아래로 붙은 같은 설정의 기둥(그룹)을 보고 정한다.
+    /// </summary>
+    [Serializable]
+    public struct CubePillar
+    {
+        public Vector3Int cell;
+
+        /// <summary>그룹 맨 위 칸에 머리를 둘지.</summary>
+        public bool hasTop;
+
+        /// <summary>그룹 맨 아래 칸에 받침을 둘지.</summary>
+        public bool hasBase;
+
+        public CubePillar(Vector3Int cell, bool hasTop, bool hasBase)
+        {
+            this.cell = cell;
+            this.hasTop = hasTop;
+            this.hasBase = hasBase;
+        }
+    }
+
+    /// <summary>기둥 한 칸의 모양: 몸통만, 받침 + 몸통, 몸통 + 머리, 받침 + 몸통 + 머리.</summary>
+    public enum PillarShape { Shaft, Base, Top, Full }
 }

@@ -123,5 +123,78 @@ namespace SlimeColorMaker
             Assert.IsFalse(CubeGridRules.Raycast(origin, direction, 2f, c => CubeGridRules.HasBlock(data, c), out _, out _));
             Assert.IsFalse(CubeGridRules.Raycast(origin, Vector3.up, 100f, c => CubeGridRules.HasBlock(data, c), out _, out _));
         }
+
+        [Test]
+        public void Pillar_SharesOneThingPerCell()
+        {
+            var data = new CubeGridData();
+            var cell = new Vector3Int(0, 0, 0);
+            Assert.IsTrue(CubeGridRules.AddPillar(data, cell, true, true));
+            Assert.IsFalse(CubeGridRules.AddBlock(data, cell));
+            Assert.IsFalse(CubeGridRules.AddPillar(data, cell, false, false));
+            Assert.IsTrue(CubeGridRules.IsOccupied(data, cell));
+            Assert.IsTrue(CubeGridRules.TryLowestY(data, out int lowest));
+            Assert.AreEqual(0, lowest);
+            Assert.IsTrue(CubeGridRules.Remove(data, cell));
+            Assert.IsFalse(CubeGridRules.IsOccupied(data, cell));
+        }
+
+        [Test]
+        public void PillarShapes_SingleCellFollowsSetting()
+        {
+            var data = new CubeGridData();
+            CubeGridRules.AddPillar(data, new Vector3Int(0, 0, 0), true, true);
+            CubeGridRules.AddPillar(data, new Vector3Int(2, 0, 0), false, true);
+            CubeGridRules.AddPillar(data, new Vector3Int(4, 0, 0), true, false);
+            CubeGridRules.AddPillar(data, new Vector3Int(6, 0, 0), false, false);
+            var shapes = CubeGridRules.PillarShapes(data);
+            Assert.AreEqual(PillarShape.Full, shapes[new Vector3Int(0, 0, 0)]);
+            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(2, 0, 0)]);
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(4, 0, 0)]);
+            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(6, 0, 0)]);
+        }
+
+        [Test]
+        public void PillarShapes_GroupPutsBaseBottomAndTopTop()
+        {
+            var data = new CubeGridData();
+            for (int y = 0; y < 4; y++) CubeGridRules.AddPillar(data, new Vector3Int(0, y, 0), true, true);
+            CubeGridRules.AddPillar(data, new Vector3Int(1, 0, 0), true, true); // 옆 칸은 다른 그룹
+            var shapes = CubeGridRules.PillarShapes(data);
+            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
+            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 1, 0)]);
+            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 2, 0)]);
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 3, 0)]);
+            Assert.AreEqual(PillarShape.Full, shapes[new Vector3Int(1, 0, 0)]);
+        }
+
+        [Test]
+        public void PillarShapes_DifferentSettingsAreDifferentGroups()
+        {
+            var data = new CubeGridData();
+            CubeGridRules.AddPillar(data, new Vector3Int(0, 0, 0), true, true);
+            CubeGridRules.AddPillar(data, new Vector3Int(0, 1, 0), true, true);
+            CubeGridRules.AddPillar(data, new Vector3Int(0, 2, 0), true, false);
+            CubeGridRules.AddPillar(data, new Vector3Int(0, 3, 0), true, false);
+            var shapes = CubeGridRules.PillarShapes(data);
+            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 1, 0)]);   // 아래 그룹의 맨 위
+            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 2, 0)]); // 위 그룹은 받침 없음
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 3, 0)]);
+        }
+
+        [Test]
+        public void PillarShapes_RemovingMiddleSplitsGroup()
+        {
+            var data = new CubeGridData();
+            for (int y = 0; y < 5; y++) CubeGridRules.AddPillar(data, new Vector3Int(0, y, 0), true, true);
+            CubeGridRules.Remove(data, new Vector3Int(0, 2, 0));
+            var shapes = CubeGridRules.PillarShapes(data);
+            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 1, 0)]);
+            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 3, 0)]);
+            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 4, 0)]);
+            Assert.IsFalse(shapes.ContainsKey(new Vector3Int(0, 2, 0)));
+        }
     }
 }

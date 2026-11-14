@@ -175,6 +175,7 @@ namespace SlimeColorMaker
 
             var blocks = new HashSet<Vector3Int>(grid.Data.blocks);
             foreach (var stair in grid.Data.stairs) blocks.Add(stair.cell);
+            foreach (var pillar in grid.Data.pillars) blocks.Add(pillar.cell);
             var occupied = new Dictionary<Vector3Int, Component>();
             var placed = FixtureIdAssigner.FixturesIn(scene).Cast<Component>().Concat(CubeGridEditing.TestModelsIn(scene));
             foreach (var fixture in placed)
@@ -189,7 +190,7 @@ namespace SlimeColorMaker
                 var cell = CubeGridRules.CellAt(position);
                 if (blocks.Contains(cell))
                 {
-                    Debug.LogError($"[맵 검사] '{fixture.name}'이 블록이나 계단과 같은 칸 {cell}에 있다.", fixture);
+                    Debug.LogError($"[맵 검사] '{fixture.name}'이 블록이나 계단, 기둥과 같은 칸 {cell}에 있다.", fixture);
                     problems++;
                 }
                 if (occupied.TryGetValue(cell, out var other))

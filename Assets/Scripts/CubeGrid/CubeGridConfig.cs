@@ -37,5 +37,18 @@ namespace SlimeColorMaker
 
         [Tooltip("컨베이어 왼쪽 꺾임(모델 기준 +x 쪽에서 들어와 −z로 나감)")]
         public GameObject conveyorCurveLeftPrefab;
+
+        [Header("장식 기둥 (피벗은 칸 가운데, 콜라이더는 모델 형태, static)")]
+        [Tooltip("위아래: 받침 + 몸통 + 머리(머리·받침 설정의 한 칸 그룹)")]
+        public GameObject pillarPrefab;
+
+        [Tooltip("아래: 받침 + 몸통(받침 설정 그룹의 맨 아래 칸)")]
+        public GameObject pillarBasePrefab;
+
+        [Tooltip("중간: 몸통만(그룹의 가운데 칸, 또는 머리·받침이 없는 설정)")]
+        public GameObject pillarShaftPrefab;
+
+        [Tooltip("위: 몸통 + 머리(머리 설정 그룹의 맨 위 칸)")]
+        public GameObject pillarTopPrefab;
     }
 }

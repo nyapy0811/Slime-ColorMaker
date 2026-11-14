@@ -174,7 +174,7 @@ namespace SlimeColorMaker
                     Handles.DrawLine(center + rotation * new Vector3(-0.5f, height, -0.45f), center + rotation * new Vector3(0.5f, height, -0.45f));
             }
             // 컨베이어 붓이면 윗면에 흐르는 방향 화살표를 그린다.
-            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorBelt && cells.Count == 1)
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorBelt && CubeGridEditing.SelectedConveyorShape == ConveyorShape.Straight && cells.Count == 1)
             {
                 var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
                 var top = CubeGridRules.CellCenter(cells[0]) + Vector3.up * 0.5f;
@@ -184,11 +184,11 @@ namespace SlimeColorMaker
                 Handles.DrawLine(tip, top + rotation * new Vector3(0.2f, 0f, 0.2f));
             }
             // 컨베이어 꺾임 붓이면 윗면에 들어와 꺾여 나가는 화살표를 그린다(안쪽 모서리 중심, 반지름 0.5의 호).
-            if (!dragging && !remove && CubeGridEditing.SelectedBrush is CubeGridEditing.Brush.ConveyorCurveRight or CubeGridEditing.Brush.ConveyorCurveLeft && cells.Count == 1)
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorBelt && CubeGridEditing.SelectedConveyorShape != ConveyorShape.Straight && cells.Count == 1)
             {
-                var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
+                var rotation = CubeGridRules.StairRotation(CubeGridEditing.ConveyorExitTurn(CubeGridEditing.StairTurn(CameraForward())));
                 var top = CubeGridRules.CellCenter(cells[0]) + Vector3.up * 0.5f;
-                float side = CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorCurveRight ? 1f : -1f; // 들어오는 면(x)
+                float side = CubeGridEditing.SelectedConveyorShape == ConveyorShape.Right ? 1f : -1f; // 들어오는 면(x)
                 var corner = new Vector3(0.5f * side, 0f, 0.5f);
                 var previous = top + rotation * (corner + new Vector3(0f, 0f, -0.5f));
                 for (int i = 1; i <= 8; i++)

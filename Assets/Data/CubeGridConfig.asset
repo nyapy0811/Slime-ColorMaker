@@ -23,3 +23,7 @@ MonoBehaviour:
   conveyorBeltPrefab: {fileID: 3017853490229241096, guid: 0cf325026f599384c8296866a4b6bcfa, type: 3}
   conveyorCurveRightPrefab: {fileID: 40478438903186587, guid: 69eb461ab93fd424d88d7d3801f05a04, type: 3}
   conveyorCurveLeftPrefab: {fileID: 4254319222179188414, guid: 91eaf4d24c9539e49aa1dab1d9e3136e, type: 3}
+  pillarPrefab: {fileID: 1787815124256400881, guid: 9a67a53c01a762e4bb302507128860a2, type: 3}
+  pillarBasePrefab: {fileID: 7397574732181597681, guid: dd580c84b4f99ff4ab9b4359b84d4aff, type: 3}
+  pillarShaftPrefab: {fileID: 6332820204324220663, guid: 079b5b1c5a721bc47a807a374422f0ce, type: 3}
+  pillarTopPrefab: {fileID: 7210759450636818624, guid: c1117f7a39178f54689e67bc09050258, type: 3}
