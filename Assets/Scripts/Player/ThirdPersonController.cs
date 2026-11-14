@@ -4,11 +4,11 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 3인칭 플레이어 이동(2026-11-08, 1인칭을 없애고 정식 플레이어가 됨). WASD는 카메라가 보는 방향 기준이고 캐릭터는 가는 방향으로 돈다.
-    /// 지면에서는 가속해 움직이고, 공중에서는 수평 속도를 유지한다. 게임플레이 입력이 잠기면 이동을 받지 않고(중력은 계속), 일시정지 중에는 멈춘다.
+    /// 지면에서는 관성 시간 동안 일정하게 빨라져 출발하고, 키를 떼면 그때 속도에서 관성 시간 동안 일정하게 느려져 멈춘다(2026-11-14). 공중에서는 수평 속도를 유지한다. 게임플레이 입력이 잠기면 이동을 받지 않고(중력은 계속), 일시정지 중에는 멈춘다.
     /// 점프는 없다(2026-11-07): 위 칸으로는 계단으로만 간다. 피벗은 발밑이다. 시작 지점·체크포인트로 옮기기와 낙사는 맵 매니저가 맡는다.
     /// 컨베이어 벨트 위에 서 있으면 벨트가 흐르는 속도를 이동에 그대로 더한다(2026-11-12, 가속 없음, 내려오면 바로 멈춤).
     /// 중심점(발밑)이 벨트 구역(난간 빼고) 안에 있으면 민다(2026-11-14, <see cref="ConveyorBelt.TryPush"/>). 중심점이 벨트 구역을 벗어나는 순간
-    /// 벨트가 밀던 속도로 그 방향을 따라 0.5칸을 점점 느려지며 간다(관성, <see cref="ConveyorInertia"/>, 조작과 따로 더함). 관성은 다 가거나 같은 직선 방향으로
+    /// 벨트가 밀던 속도로 그 방향을 따라 관성 시간 동안 점점 느려지며 간다(관성, <see cref="ConveyorInertia"/>, 조작과 따로 더함). 관성은 멈추거나 같은 직선 방향으로
     /// 미는 벨트에 올라서면 끝난다. 마주 보는 벨트의 경계에 닿으면 벨트 방향으로는 조작이 막히고(직각으로만) 거기서 벗어나도 관성이 없다.
     /// 턱 넘기(2026-11-13): 가는 쪽에 턱 넘기 높이 이하의 턱이 있으면 CharacterController가 올라가고, 바닥에 서 있다가 그 높이 이하로 내려가는 곳에서는
     /// 떨어지지 않고 바로 내려선다(아래로 구를 쏴 바닥이 있으면 붙임). 충돌은 한 번에 오르내리고, 몸 모델과 카메라는 바뀐 높이를 짧게 따라간다(<see cref="VisualOffset"/>).
@@ -33,9 +33,12 @@ namespace SlimeColorMaker
         Vector3 bodyPosition; // 몸 모델의 원래 위치(부모 기준)
         RaycastHit[] groundHits = new RaycastHit[8];
         ConveyorInertia inertia;
+        float stopRate; // 키를 뗀 순간 정한 느려지는 정도(유닛/초²)
 
-        /// <summary>플레이어가 직접 움직이는 중인가(입력으로 생긴 수평 속도, 벨트가 미는 속도는 빼고). 바닥 흔적이 쓴다.</summary>
-        public bool IsWalking => horizontalVelocity.sqrMagnitude > 0.0001f;
+        /// <summary>
+        /// 캐릭터가 스스로 움직이는 중인가(직접 이동과 그 출발·멈춤 관성, 벨트를 벗어난 관성). 벨트에 실려 가기만 하는 이동은 빼고. 바닥 흔적이 쓴다.
+        /// </summary>
+        public bool IsSelfMoving => horizontalVelocity.sqrMagnitude > 0.0001f || inertia.Active;
 
         /// <summary>이동 속도(유닛/초). 출렁임이 쓴다.</summary>
         public float MoveSpeed => settings.moveSpeed;
@@ -62,6 +65,7 @@ namespace SlimeColorMaker
             transform.SetPositionAndRotation(position, rotation);
             cc.enabled = true;
             horizontalVelocity = Vector3.zero;
+            stopRate = 0f;
             verticalVelocity = 0f;
             inertia = default;
             visualOffset = visualOffsetVelocity = 0f;
@@ -91,8 +95,13 @@ namespace SlimeColorMaker
             if (lockedAxis != Vector3.zero) move -= lockedAxis * Vector3.Dot(move, lockedAxis);
             if (wasGrounded)
             {
-                float accel = settings.moveSpeed / Mathf.Max(settings.accelerationTime, 0.0001f);
-                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, move * settings.moveSpeed, accel * Time.deltaTime);
+                // 출발·방향 바꾸기는 관성 시간에 이동 속도에 이르는 빠르기로, 키를 떼면 그때 속도에서 관성 시간 동안 멈춘다.
+                float time = Mathf.Max(settings.inertiaTime, 0.0001f);
+                bool moving = move.sqrMagnitude > 0.0001f;
+                if (moving) stopRate = 0f;
+                else if (stopRate <= 0f) stopRate = horizontalVelocity.magnitude / time;
+                float rate = moving ? settings.moveSpeed / time : stopRate;
+                horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, move * settings.moveSpeed, rate * Time.deltaTime);
                 if (verticalVelocity < 0f) verticalVelocity = -2f; // 경사·계단에서 땅에 붙어 있게 살짝 누른다.
             }
             if (lockedAxis != Vector3.zero) horizontalVelocity -= lockedAxis * Vector3.Dot(horizontalVelocity, lockedAxis);
@@ -110,7 +119,7 @@ namespace SlimeColorMaker
             float yBefore = transform.position.y;
             cc.Move(velocity * Time.deltaTime);
             // 중심점이 벨트 구역을 벗어나면 그 순간 밀던 속도로 관성(마주 보는 벨트에서는 없음).
-            if (onBelt && !facing && !ConveyorBelt.IsOnBelt(Feet())) inertia = ConveyorInertia.Start(flatPush);
+            if (onBelt && !facing && !ConveyorBelt.IsOnBelt(Feet())) inertia = ConveyorInertia.Start(flatPush, settings.inertiaTime);
             // 바닥에 서 있다가 턱 높이 이하로 내려가는 곳이면 떨어지지 않고 바로 내려선다.
             if (wasGrounded && !cc.isGrounded && verticalVelocity <= 0f && HasGroundBelow(settings.stepHeight))
             {

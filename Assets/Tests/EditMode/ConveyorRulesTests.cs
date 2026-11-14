@@ -193,9 +193,10 @@ namespace SlimeColorMaker
         }
 
         [Test]
-        public void Inertia_GoesHalfCellAndSlowsDown()
+        public void Inertia_StopsInTimeAndSlowsDown()
         {
-            var inertia = ConveyorInertia.Start(new Vector2(3f, 0f));
+            // 속도 3, 관성 시간 1/3초 → 0.5칸.
+            var inertia = ConveyorInertia.Start(new Vector2(3f, 0f), 1f / 3f);
             Assert.IsTrue(inertia.Active);
             var first = inertia.Step(0.02f);
             var total = first;
@@ -206,7 +207,7 @@ namespace SlimeColorMaker
                 total += last;
             }
             Assert.IsFalse(inertia.Active);
-            AreClose(new Vector2(ConveyorInertia.Distance, 0f), total);
+            AreClose(new Vector2(0.5f, 0f), total);
             Assert.That(last.x, Is.LessThan(first.x));
             // 처음 빠르기 = 밀던 빠르기.
             Assert.That(first.x / 0.02f, Is.EqualTo(3f).Within(0.1f));
@@ -215,9 +216,12 @@ namespace SlimeColorMaker
         [Test]
         public void Inertia_DiagonalAndNone()
         {
-            var inertia = ConveyorInertia.Start(new Vector2(1f, -1f));
-            AreClose(new Vector2(1f, -1f).normalized * ConveyorInertia.Distance, inertia.Step(100f));
-            Assert.IsFalse(ConveyorInertia.Start(Vector2.zero).Active);
+            // 거리 = 속도 × 시간 ÷ 2: 속도 6이면 1칸, 대각선도 같은 식.
+            AreClose(new Vector2(1f, 0f), ConveyorInertia.Start(new Vector2(6f, 0f), 1f / 3f).Step(100f));
+            var diagonal = new Vector2(3f, -4f); // 빠르기 5
+            AreClose(diagonal.normalized * (5f / 3f / 2f), ConveyorInertia.Start(diagonal, 1f / 3f).Step(100f));
+            Assert.IsFalse(ConveyorInertia.Start(Vector2.zero, 1f / 3f).Active);
+            Assert.IsFalse(ConveyorInertia.Start(Vector2.one, 0f).Active);
         }
     }
 }

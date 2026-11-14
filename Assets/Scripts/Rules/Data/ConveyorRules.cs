@@ -22,26 +22,23 @@ namespace SlimeColorMaker
     }
 
     /// <summary>
-    /// 벨트 관성(2026-11-14). 캐릭터 중심점이 벨트 구역을 벗어나는 순간 벨트가 밀던 속도로 그 방향을 따라 똑바로 <see cref="Distance"/>만큼 가며,
-    /// 일정하게 느려져 그 거리를 다 가는 순간 멈춘다(걸리는 시간 = 2 × 거리 ÷ 처음 빠르기). 플레이어 조작과 따로 더한다.
+    /// 벨트 관성(2026-11-14). 캐릭터 중심점이 벨트 구역을 벗어나는 순간 벨트가 밀던 속도로 그 방향을 따라 똑바로 가며,
+    /// 관성 시간(<see cref="PlayerMoveSettings.inertiaTime"/>) 동안 일정하게 느려져 멈춘다(거리 = 처음 빠르기 × 관성 시간 ÷ 2). 플레이어 조작과 따로 더한다.
     /// </summary>
     public struct ConveyorInertia
     {
-        /// <summary>관성으로 가는 거리(칸).</summary>
-        public const float Distance = 0.5f;
-
         public Vector2 direction; // 단위 방향
         public float speed; // 지금 빠르기(칸/초)
         public float deceleration; // 느려지는 정도(칸/초²)
 
         public bool Active => speed > 0f;
 
-        /// <summary>벗어나는 순간 벨트가 밀던 속도 <paramref name="velocity"/>(칸/초)로 시작한다. 0이면 관성 없음.</summary>
-        public static ConveyorInertia Start(Vector2 velocity)
+        /// <summary>벗어나는 순간 벨트가 밀던 속도 <paramref name="velocity"/>(칸/초)로 시작해 <paramref name="time"/>초 뒤 멈춘다. 속도나 시간이 0이면 관성 없음.</summary>
+        public static ConveyorInertia Start(Vector2 velocity, float time)
         {
             float speed = velocity.magnitude;
-            if (speed <= 0f) return default;
-            return new ConveyorInertia { direction = velocity / speed, speed = speed, deceleration = speed * speed / (2f * Distance) };
+            if (speed <= 0f || time <= 0f) return default;
+            return new ConveyorInertia { direction = velocity / speed, speed = speed, deceleration = speed / time };
         }
 
         /// <summary><paramref name="deltaTime"/>초 동안 가는 이동. 다 가면 멈춘다.</summary>

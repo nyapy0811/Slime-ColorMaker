@@ -6,8 +6,8 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 캐릭터 바닥 흔적(2026-11-13, 픽셀). 바닥 평면을 1/16유닛(복셀 한 칸) 격자로 나누고, 발바닥(몸 반지름을 반 변으로 하는,
-    /// 캐릭터와 함께 도는 정사각형) 안에 가운데가 든 픽셀을 플레이어가 직접 움직이는 동안(<see cref="ThirdPersonController.IsWalking"/>,
-    /// 벨트에 실려 가기만 하거나 가만히 있으면 안 칠함) 프레임마다 지금 색(몸 색과 같은 방식)으로 칠한다.
+    /// 캐릭터와 함께 도는 정사각형) 안에 가운데가 든 픽셀을 캐릭터가 스스로 움직이는 동안(<see cref="ThirdPersonController.IsSelfMoving"/>, 직접 이동과
+    /// 출발·멈춤 관성, 벨트를 벗어난 관성 포함, 벨트에 실려 가기만 하거나 가만히 있으면 안 칠함) 프레임마다 지금 색(몸 색과 같은 방식)으로 칠한다.
     /// 픽셀마다 바로 밑에 실제로 있는 면을 광선으로 찾아 그 높이에 칠하고(블록·계단 디딤판·벨트·방벽 판 등, 계단 충돌은 복셀 모델과 같음),
     /// 면이 없거나 너무 아래면(공중) 칠하지 않는다. 공중이거나 지금 색이 (0,0,0)이면 칠하지 않는다.
     /// 픽셀은 마지막으로 칠한 순간부터 점점 투명해져 유지 시간 뒤 없어진다.
@@ -189,11 +189,11 @@ namespace SlimeColorMaker
             return ConveyorBelt.TryCurveSlot(cell, position, out var slot) ? (cell, slot) : (GridKey(position), GridSlot);
         }
 
-        // 플레이어가 직접 움직이는 동안 바닥에 서 있으면 발바닥 안 자리를 그 밑 면에 칠하고, 그 자리에 있던 픽셀을 새 픽셀로 바꾼다.
+        // 캐릭터가 스스로 움직이는 동안 바닥에 서 있으면 발바닥 안 자리를 그 밑 면에 칠하고, 그 자리에 있던 픽셀을 새 픽셀로 바꾼다.
         void Paint(float now)
         {
             var value = playerColor.Current.Value;
-            if (!cc.isGrounded || !mover.IsWalking || value == default) return;
+            if (!cc.isGrounded || !mover.IsSelfMoving || value == default) return;
             footprint.Clear();
             painted.Clear();
             curveCells.Clear();

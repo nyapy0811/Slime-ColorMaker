@@ -12,8 +12,9 @@ namespace SlimeColorMaker
         [Tooltip("이동 속도(유닛/초)")]
         [Min(0f)] public float moveSpeed = 2f;
 
-        [Tooltip("정지 상태에서 최대 속도까지 걸리는 시간(초, 지면 전용)")]
-        [Min(0f)] public float accelerationTime = 0.2f;
+        [Tooltip("관성 시간(초, 지면 전용). 직접 이동은 출발할 때 이 시간 동안 일정하게 빨라져 이동 속도에 이르고, 키를 떼면 그때 속도에서 이 시간 동안 일정하게 느려져 멈춘다. " +
+                 "컨베이어 벨트를 벗어날 때도 벨트가 밀던 속도에서 이 시간 동안 느려진다. 미끄러지는 거리 = 속도 × 시간 ÷ 2(1/3초면 벨트 속도 3에서 0.5칸, 이동 속도 2에서 약 0.33칸). 0이면 바로.")]
+        [Min(0f)] public float inertiaTime = 1f / 3f;
 
         [Tooltip("가는 방향으로 도는 빠르기(도/초)")]
         [Min(0f)] public float turnSpeed = 720f;

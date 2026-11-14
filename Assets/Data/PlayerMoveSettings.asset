@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerMoveSettings
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlayerMoveSettings
   moveSpeed: 2
-  accelerationTime: 0.2
+  inertiaTime: 0.33333
   turnSpeed: 720
   gravity: 13.125
   stepHeight: 0.3
