@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14bf32ccdfad24a49a01c07ffcdc9ccd, type: 3}
+  m_Name: SlipperyCoatingSettings
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.SlipperyCoatingSettings
+  oil:
+    inertiaTime: 2
+    material: {fileID: 2100000, guid: 2e01f8338d24f6a43b5f6472195df717, type: 2}
+  ice:
+    inertiaTime: 1.5
+    material: {fileID: 2100000, guid: 53004d925dc0aa141845aef5e57d6717, type: 2}

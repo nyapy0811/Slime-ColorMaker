@@ -34,6 +34,7 @@ namespace SlimeColorMaker
         RaycastHit[] groundHits = new RaycastHit[8];
         ConveyorInertia inertia;
         float stopRate; // 키를 뗀 순간 정한 느려지는 정도(유닛/초²)
+        float stopTime; // stopRate를 정한 관성 시간(밟은 바닥의 관성 시간이 바뀌면 그때 속도로 다시 정함)
 
         /// <summary>
         /// 캐릭터가 스스로 움직이는 중인가(직접 이동과 그 출발·멈춤 관성, 벨트를 벗어난 관성). 벨트에 실려 가기만 하는 이동은 빼고. 바닥 흔적이 쓴다.
@@ -96,8 +97,11 @@ namespace SlimeColorMaker
             if (wasGrounded)
             {
                 // 출발·방향 바꾸기는 관성 시간에 이동 속도에 이르는 빠르기로, 키를 떼면 그때 속도에서 관성 시간 동안 멈춘다.
-                float time = Mathf.Max(settings.inertiaTime, 0.0001f);
+                // 중심점 아래가 미끄러운 코팅이면 그 종류의 관성 시간을 쓴다.
+                float time = Mathf.Max(InertiaTime(), 0.0001f);
                 bool moving = move.sqrMagnitude > 0.0001f;
+                if (time != stopTime) stopRate = 0f;
+                stopTime = time;
                 if (moving) stopRate = 0f;
                 else if (stopRate <= 0f) stopRate = horizontalVelocity.magnitude / time;
                 float rate = moving ? settings.moveSpeed / time : stopRate;
@@ -119,7 +123,7 @@ namespace SlimeColorMaker
             float yBefore = transform.position.y;
             cc.Move(velocity * Time.deltaTime);
             // 중심점이 벨트 구역을 벗어나면 그 순간 밀던 속도로 관성(마주 보는 벨트에서는 없음).
-            if (onBelt && !facing && !ConveyorBelt.IsOnBelt(Feet())) inertia = ConveyorInertia.Start(flatPush, settings.inertiaTime);
+            if (onBelt && !facing && !ConveyorBelt.IsOnBelt(Feet())) inertia = ConveyorInertia.Start(flatPush, InertiaTime());
             // 바닥에 서 있다가 턱 높이 이하로 내려가는 곳이면 떨어지지 않고 바로 내려선다.
             if (wasGrounded && !cc.isGrounded && verticalVelocity <= 0f && HasGroundBelow(settings.stepHeight))
             {
@@ -154,6 +158,9 @@ namespace SlimeColorMaker
         }
 
         // 발밑 가운데: 캡슐 바닥에서 피부 두께만큼 아래(바닥에 서 있으면 바닥 높이).
+        // 지금 밟은 바닥의 관성 시간: 중심점 아래 블록 윗면 픽셀이 코팅이면 그 종류의 값, 아니면 이동 설정의 값.
+        float InertiaTime() => SlipperyCoatingView.TryGetInertiaTime(Feet(), out float time) ? time : settings.inertiaTime;
+
         Vector3 Feet() => transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius)) + Vector3.down * cc.skinWidth;
     }
 }

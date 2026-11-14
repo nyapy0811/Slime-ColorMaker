@@ -9,6 +9,8 @@ namespace SlimeColorMaker
     /// <summary>
     /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 그 칸 모양의 기둥 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
     /// 기둥 모양은 지을 때마다 그룹으로 계산하므로(<see cref="CubeGridRules.PillarShapes"/>) 모양이 바뀐 칸은 다른 묶음으로 옮겨진다.
+    /// 묶음은 '만든 부분' 바로 아래 한 단계다(지형 면 숨기기 <see cref="CubeFaceCuller"/>가 묶음 아래 오브젝트를 칸 하나로 본다).
+    /// 블록 윗면 코팅은 '코팅' 오브젝트의 <see cref="SlipperyCoatingView"/>가 데이터에서 다시 그린다.
     /// 에디터(Play 밖)에서는 프리팹 연결을 지키고 Undo에 기록하고, 런타임(나중의 UGC 맵)에는 보통의 Instantiate·Destroy다.
     /// 지금 있는 것은 자리와 방향으로 데이터와 비교해 남은 칸은 그대로 두고, 없어지거나 돌아간 칸은 지우고, 새 칸만 만든다.
     /// </summary>
@@ -29,12 +31,16 @@ namespace SlimeColorMaker
             foreach (var stair in grid.Data.stairs) stairs.TryAdd(stair.cell, CubeGridRules.StairRotation(stair.turn));
             BuildKind(Child(parts, "계단"), stairs, config.stairPrefab, "Stair");
 
-            var pillars = Child(parts, "기둥");
             var shapes = CubeGridRules.PillarShapes(grid.Data);
-            BuildPillars(Child(pillars, "위아래"), shapes, PillarShape.Full, config.pillarPrefab, "Pillar");
-            BuildPillars(Child(pillars, "아래"), shapes, PillarShape.Base, config.pillarBasePrefab, "PillarBase");
-            BuildPillars(Child(pillars, "중간"), shapes, PillarShape.Shaft, config.pillarShaftPrefab, "PillarShaft");
-            BuildPillars(Child(pillars, "위"), shapes, PillarShape.Top, config.pillarTopPrefab, "PillarTop");
+            BuildPillars(Child(parts, "기둥 위아래"), shapes, PillarShape.Full, config.pillarPrefab, "Pillar");
+            BuildPillars(Child(parts, "기둥 아래"), shapes, PillarShape.Base, config.pillarBasePrefab, "PillarBase");
+            BuildPillars(Child(parts, "기둥 중간"), shapes, PillarShape.Shaft, config.pillarShaftPrefab, "PillarShaft");
+            BuildPillars(Child(parts, "기둥 위"), shapes, PillarShape.Top, config.pillarTopPrefab, "PillarTop");
+
+            var coating = Child(parts, "코팅");
+            if (!coating.TryGetComponent(out SlipperyCoatingView view)) view = coating.gameObject.AddComponent<SlipperyCoatingView>();
+            view.Settings = config.coatingSettings;
+            view.Rebuild();
         }
 
         static void BuildPillars(Transform parent, Dictionary<Vector3Int, PillarShape> shapes, PillarShape shape, GameObject prefab, string namePrefix)
@@ -78,7 +84,7 @@ namespace SlimeColorMaker
             return child;
         }
 
-        /// <summary>블록과 계단, 기둥을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
+        /// <summary>블록과 계단, 기둥, 코팅을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
         public static void Rebuild(CubeGrid grid, CubeGridConfig config)
         {
             var parts = grid.transform.Find(GeneratedPartsName);

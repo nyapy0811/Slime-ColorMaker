@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록(v1 칸 규칙, <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
+    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록, 블록 윗면 코팅 목록(v1 칸 규칙, <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
     /// 씬의 큐브 격자와 나중의 UGC 맵 파일이 같은 클래스를 쓴다(JsonUtility).
     /// </summary>
     [Serializable]
@@ -14,6 +14,7 @@ namespace SlimeColorMaker
         public List<Vector3Int> blocks = new();
         public List<CubeStair> stairs = new();
         public List<CubePillar> pillars = new();
+        public List<CubeCoating> coatings = new();
     }
 
     /// <summary>
@@ -58,4 +59,18 @@ namespace SlimeColorMaker
 
     /// <summary>기둥 한 칸의 모양: 몸통만, 받침 + 몸통, 몸통 + 머리, 받침 + 몸통 + 머리.</summary>
     public enum PillarShape { Shaft, Base, Top, Full }
+
+    /// <summary>블록 윗면 코팅의 종류(미끄러운 바닥, 2026-11-14). 없음, 기름, 얼음.</summary>
+    public enum CoatingKind : byte { None, Oil, Ice }
+
+    /// <summary>
+    /// 블록 하나의 윗면 코팅(2026-11-14): 윗면 16 × 16 픽셀(1/16칸, 바닥 흔적과 같은 크기)마다 <see cref="CoatingKind"/>.
+    /// <see cref="pixels"/>의 번호는 z × 16 + x(x·z는 칸의 −x·−z 모서리에서 셈)다. 블록이 없어지면 함께 지운다.
+    /// </summary>
+    [Serializable]
+    public struct CubeCoating
+    {
+        public Vector3Int cell;
+        public byte[] pixels;
+    }
 }

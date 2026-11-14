@@ -16,14 +16,14 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, ConveyorBelt, Pillar, TestModel }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, ConveyorBelt, Pillar, Coating, TestModel }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "컨베이어", "기둥", "시험 모델" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "컨베이어", "기둥", "코팅", "시험 모델" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -86,6 +86,48 @@ namespace SlimeColorMaker
 
         /// <summary>지금 놓을 계단·차단기의 방향: 씬 카메라가 보는 쪽 + 돌린 횟수.</summary>
         public static int StairTurn(Vector3 cameraForward) => CubeGridRules.Turn(CubeGridRules.TurnFacing(cameraForward) + StairTurnOffset);
+
+        /// <summary>코팅 붓의 종류 이름(<see cref="CoatingKind"/>의 기름·얼음 순서).</summary>
+        public static readonly string[] CoatingKindNames = { "기름", "얼음" };
+
+        /// <summary>코팅 붓으로 칠할 종류(기름·얼음, 기본 기름).</summary>
+        public static CoatingKind SelectedCoatingKind
+        {
+            get => (CoatingKind)SessionState.GetInt("SlimeColorMaker.CubeGrid.CoatingKind", (int)CoatingKind.Oil);
+            set
+            {
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.CoatingKind", (int)value);
+                BrushChanged?.Invoke();
+            }
+        }
+
+        /// <summary>코팅 붓의 지름(픽셀 1~16, 원형, 기본 4).</summary>
+        public static int CoatingBrushSize
+        {
+            get => SessionState.GetInt("SlimeColorMaker.CubeGrid.CoatingSize", 4);
+            set
+            {
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.CoatingSize", Mathf.Clamp(value, 1, CubeGridRules.CoatingPixels));
+                BrushChanged?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// 블록 윗면 픽셀들을 칠한다(None이면 지움, 블록이 없는 칸은 건너뜀). 붓 한 번(드래그 한 번)의 Undo 묶음은 씬 뷰 도구가 정한다.
+        /// </summary>
+        public static void PaintCoating(CubeGrid grid, List<(Vector3Int cell, int x, int z)> pixels, CoatingKind kind)
+        {
+            var config = RequireConfig();
+            if (config == null) return;
+            Undo.RecordObject(grid, "코팅 칠하기");
+            bool changed = false;
+            foreach (var (cell, x, z) in pixels) changed |= CubeGridRules.SetCoating(grid.Data, cell, x, z, kind);
+            if (!changed) return;
+            var view = grid.GetComponentInChildren<SlipperyCoatingView>(true);
+            if (view == null) CubeGridBuilder.Build(grid, config);
+            else view.Rebuild();
+            EditorSceneManager.MarkSceneDirty(grid.gameObject.scene);
+        }
 
         /// <summary>놓을 기둥의 설정: 그룹 맨 위 칸에 머리를 둘지(기본 둠).</summary>
         public static bool PillarHasTop
@@ -321,7 +363,7 @@ namespace SlimeColorMaker
             return folder.transform;
         }
 
-        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.TestModel);
+        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel);
 
         static GameObject PrefabFor(CubeGridConfig config, Brush brush) => brush switch
         {

@@ -22,6 +22,11 @@ namespace SlimeColorMaker
         static readonly Color RemoveColor = new(1f, 0.25f, 0.25f, 1f);
 
         bool dragging;
+        bool painting;      // 코팅 붓으로 칠하는(지우는) 중
+        bool paintErase;
+        int paintGroup;
+        bool hasLastPaint;
+        Vector3 lastPaint;
         bool dragRemove;
         int dragAxis;
         Vector3Int dragStart;
@@ -47,6 +52,17 @@ namespace SlimeColorMaker
                 case EventType.MouseDown when e.button == 0 && !e.alt:
                     OnMouseDown(grid, e, control);
                     break;
+                case EventType.MouseDrag when painting && GUIUtility.hotControl == control:
+                    PaintAt(grid, e.mousePosition);
+                    window.Repaint();
+                    e.Use();
+                    break;
+                case EventType.MouseUp when painting && GUIUtility.hotControl == control:
+                    GUIUtility.hotControl = 0;
+                    painting = false;
+                    Undo.CollapseUndoOperations(paintGroup);
+                    e.Use();
+                    break;
                 case EventType.MouseDrag when dragging && GUIUtility.hotControl == control:
                     UpdateDrag(e.mousePosition);
                     window.Repaint();
@@ -68,6 +84,20 @@ namespace SlimeColorMaker
 
         void OnMouseDown(CubeGrid grid, Event e, int control)
         {
+            // 코팅 붓: 드래그 한 번이 칠하기(Ctrl이면 지우기) 한 번이다.
+            if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Coating)
+            {
+                Undo.IncrementCurrentGroup();
+                paintGroup = Undo.GetCurrentGroup();
+                Undo.SetCurrentGroupName(e.control ? "코팅 지우기" : "코팅 칠하기");
+                painting = true;
+                paintErase = e.control;
+                hasLastPaint = false;
+                GUIUtility.hotControl = control;
+                PaintAt(grid, e.mousePosition);
+                e.Use();
+                return;
+            }
             bool hit = Pick(grid, e.mousePosition, out var cell, out var normal);
             if (e.shift)
             {
@@ -96,6 +126,56 @@ namespace SlimeColorMaker
             var objects = CubeGridEditing.ObjectCells(grid);
             var ray = HandleUtility.GUIPointToWorldRay(mouse);
             return CubeGridRules.Raycast(ray.origin, ray.direction, MaxDistance, c => CubeGridEditing.IsFilled(grid, objects, c), out cell, out normal);
+        }
+
+        // 마우스가 가리킨 블록 윗면의 점(블록 윗면이 아니면 false). 블록만 막는 것으로 본다: 기물·기둥·계단 칸은 한 칸 상자로 잡혀
+        // 그 옆 바닥을 가리켜도 시선을 막으므로, 코팅(블록 윗면만 칠함)은 그 칸을 지나 뒤의 블록 윗면을 찾는다.
+        static bool PickTop(CubeGrid grid, Vector2 mouse, out Vector3 point)
+        {
+            point = default;
+            var ray = HandleUtility.GUIPointToWorldRay(mouse);
+            if (!CubeGridRules.Raycast(ray.origin, ray.direction, MaxDistance, c => CubeGridRules.HasBlock(grid.Data, c), out var cell, out var normal)
+                || normal != Vector3Int.up) return false;
+            if (Mathf.Abs(ray.direction.y) < 1e-5f) return false;
+            point = ray.GetPoint((cell.y + 1f - ray.origin.y) / ray.direction.y);
+            return true;
+        }
+
+        // 가리킨 블록 윗면을 붓으로 칠한다. 같은 높이에서 이어 끌면 앞 점과의 사이도 채워 빠르게 끌어도 끊기지 않는다.
+        void PaintAt(CubeGrid grid, Vector2 mouse)
+        {
+            if (!PickTop(grid, mouse, out var point)) return;
+            int size = CubeGridEditing.CoatingBrushSize;
+            var pixels = new List<(Vector3Int, int, int)>();
+            if (hasLastPaint && Mathf.Abs(lastPaint.y - point.y) < 0.001f)
+            {
+                int steps = Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(lastPaint, point) * CubeGridRules.CoatingPixels * 2f));
+                for (int i = 1; i <= steps; i++) pixels.AddRange(CubeGridRules.CoatingBrush(Vector3.Lerp(lastPaint, point, (float)i / steps), point.y, size));
+            }
+            else pixels.AddRange(CubeGridRules.CoatingBrush(point, point.y, size));
+            lastPaint = point;
+            hasLastPaint = true;
+            CubeGridEditing.PaintCoating(grid, pixels, paintErase ? CoatingKind.None : CubeGridEditing.SelectedCoatingKind);
+        }
+
+        // 코팅 붓이 덮을 픽셀 범위의 테두리(픽셀 경계를 따라).
+        static void DrawCoatingBrush(Vector3 point)
+        {
+            const float pixel = 1f / CubeGridRules.CoatingPixels;
+            var covered = new HashSet<Vector2Int>();
+            foreach (var (cell, x, z) in CubeGridRules.CoatingBrush(point, point.y, CubeGridEditing.CoatingBrushSize))
+                covered.Add(new Vector2Int(cell.x * CubeGridRules.CoatingPixels + x, cell.z * CubeGridRules.CoatingPixels + z));
+            float y = point.y + 0.002f;
+            var lines = new List<Vector3>();
+            foreach (var p in covered)
+            {
+                float x0 = p.x * pixel - 0.5f, z0 = p.y * pixel - 0.5f, x1 = x0 + pixel, z1 = z0 + pixel;
+                if (!covered.Contains(p + Vector2Int.left)) { lines.Add(new Vector3(x0, y, z0)); lines.Add(new Vector3(x0, y, z1)); }
+                if (!covered.Contains(p + Vector2Int.right)) { lines.Add(new Vector3(x1, y, z0)); lines.Add(new Vector3(x1, y, z1)); }
+                if (!covered.Contains(p + Vector2Int.down)) { lines.Add(new Vector3(x0, y, z0)); lines.Add(new Vector3(x1, y, z0)); }
+                if (!covered.Contains(p + Vector2Int.up)) { lines.Add(new Vector3(x0, y, z1)); lines.Add(new Vector3(x1, y, z1)); }
+            }
+            Handles.DrawLines(lines.ToArray());
         }
 
         // 높이 0의 바닥면 위 칸: 블록과 컨베이어는 바닥면 아래 칸(윗면이 0), 기물은 바닥면 위 칸.
@@ -129,6 +209,16 @@ namespace SlimeColorMaker
 
         void Draw(CubeGrid grid, Event e)
         {
+            if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Coating)
+            {
+                if (!PickTop(grid, e.mousePosition, out var point)) return;
+                var zTestBefore = Handles.zTest;
+                Handles.zTest = CompareFunction.LessEqual;
+                Handles.color = (painting ? paintErase : e.control) ? RemoveColor : PlaceColor;
+                DrawCoatingBrush(point);
+                Handles.zTest = zTestBefore;
+                return;
+            }
             var cells = new List<Vector3Int>();
             bool remove;
             if (dragging)

@@ -18,6 +18,7 @@ namespace SlimeColorMaker
             ("기물", new[] { CubeGridEditing.Brush.Checkpoint, CubeGridEditing.Brush.ColorSource, CubeGridEditing.Brush.Goal, CubeGridEditing.Brush.BoomGate, CubeGridEditing.Brush.Barrier }),
             ("이동", new[] { CubeGridEditing.Brush.ConveyorBelt }),
             ("장식", new[] { CubeGridEditing.Brush.Pillar }),
+            ("칠하기", new[] { CubeGridEditing.Brush.Coating }),
             ("시험", new[] { CubeGridEditing.Brush.TestModel }),
         };
 
@@ -90,6 +91,7 @@ namespace SlimeColorMaker
             EditorGUILayout.HelpBox(
                 "클릭: 놓기   Ctrl+클릭: 지우기\n" +
                 "Shift+드래그: 범위에 블록 놓기   Shift+Ctrl+드래그: 범위 지우기\n" +
+                "코팅: 블록 윗면을 드래그로 칠하기   Ctrl+드래그: 코팅 지우기\n" +
                 "방향은 씬 카메라가 보는 쪽 기준",
                 MessageType.None);
 
@@ -129,7 +131,7 @@ namespace SlimeColorMaker
             bool hasValue = CubeGridEditing.ValueField(brush) != null;
             bool turns = brush is CubeGridEditing.Brush.Stair or CubeGridEditing.Brush.BoomGate || CubeGridEditing.IsConveyor(brush)
                 || (brush == CubeGridEditing.Brush.Barrier && CubeGridEditing.SelectedBarrierSide == CubeGridEditing.BarrierSide.Side);
-            bool other = brush is CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.TestModel;
+            bool other = brush is CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
             if (!hasValue && !turns && !other) return;
 
             float labelWidth = EditorGUIUtility.labelWidth;
@@ -147,6 +149,13 @@ namespace SlimeColorMaker
                     if (top != CubeGridEditing.PillarHasTop) CubeGridEditing.PillarHasTop = top;
                     bool bottom = EditorGUILayout.Toggle("받침 두기", CubeGridEditing.PillarHasBase);
                     if (bottom != CubeGridEditing.PillarHasBase) CubeGridEditing.PillarHasBase = bottom;
+                }
+                if (brush == CubeGridEditing.Brush.Coating)
+                {
+                    int kind = LabeledToolbar("종류", (int)CubeGridEditing.SelectedCoatingKind - 1, CubeGridEditing.CoatingKindNames);
+                    if (kind != (int)CubeGridEditing.SelectedCoatingKind - 1) CubeGridEditing.SelectedCoatingKind = (CoatingKind)(kind + 1);
+                    int size = EditorGUILayout.IntSlider("붓 지름", CubeGridEditing.CoatingBrushSize, 1, CubeGridRules.CoatingPixels);
+                    if (size != CubeGridEditing.CoatingBrushSize) CubeGridEditing.CoatingBrushSize = size;
                 }
                 if (brush == CubeGridEditing.Brush.Barrier)
                 {

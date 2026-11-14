@@ -196,5 +196,67 @@ namespace SlimeColorMaker
             Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 4, 0)]);
             Assert.IsFalse(shapes.ContainsKey(new Vector3Int(0, 2, 0)));
         }
+
+        [Test]
+        public void Coating_OnlyOnBlocksAndRemovedWithBlock()
+        {
+            var data = new CubeGridData();
+            var cell = new Vector3Int(2, 0, -1);
+            Assert.IsFalse(CubeGridRules.SetCoating(data, cell, 3, 4, CoatingKind.Oil)); // 블록 없음
+            CubeGridRules.AddBlock(data, cell);
+            Assert.IsTrue(CubeGridRules.SetCoating(data, cell, 3, 4, CoatingKind.Oil));
+            Assert.IsFalse(CubeGridRules.SetCoating(data, cell, 3, 4, CoatingKind.Oil)); // 그대로
+            Assert.IsTrue(CubeGridRules.SetCoating(data, cell, 5, 4, CoatingKind.Ice));
+            Assert.AreEqual(CoatingKind.Oil, CubeGridRules.GetCoating(data, cell, 3, 4));
+            Assert.AreEqual(CoatingKind.Ice, CubeGridRules.GetCoating(data, cell, 5, 4));
+            Assert.AreEqual(CoatingKind.None, CubeGridRules.GetCoating(data, cell, 0, 0));
+            Assert.AreEqual(1, data.coatings.Count);
+            CubeGridRules.Remove(data, cell);
+            Assert.AreEqual(0, data.coatings.Count);
+        }
+
+        [Test]
+        public void Coating_ClearingLastPixelDropsEntry()
+        {
+            var data = new CubeGridData();
+            var cell = new Vector3Int(0, 0, 0);
+            CubeGridRules.AddBlock(data, cell);
+            CubeGridRules.SetCoating(data, cell, 0, 0, CoatingKind.Ice);
+            CubeGridRules.SetCoating(data, cell, 15, 15, CoatingKind.Ice);
+            Assert.IsTrue(CubeGridRules.SetCoating(data, cell, 0, 0, CoatingKind.None));
+            Assert.AreEqual(1, data.coatings.Count);
+            Assert.IsTrue(CubeGridRules.SetCoating(data, cell, 15, 15, CoatingKind.None));
+            Assert.AreEqual(0, data.coatings.Count);
+            Assert.IsFalse(CubeGridRules.SetCoating(data, cell, 15, 15, CoatingKind.None));
+        }
+
+        [Test]
+        public void CoatingPixelAt_MapsPointOnTopFace()
+        {
+            CubeGridRules.CoatingPixelAt(new Vector3(-0.5f, 1f, -0.5f), out var cell, out int x, out int z);
+            Assert.AreEqual(new Vector3Int(0, 0, 0), cell);
+            Assert.AreEqual((0, 0), (x, z));
+            CubeGridRules.CoatingPixelAt(new Vector3(-0.51f, 1f, 0.49f), out cell, out x, out z);
+            Assert.AreEqual(new Vector3Int(-1, 0, 0), cell);
+            Assert.AreEqual((15, 15), (x, z));
+            CubeGridRules.CoatingPixelAt(new Vector3(3.03f, 0f, -2.2f), out cell, out x, out z);
+            Assert.AreEqual(new Vector3Int(3, -1, -2), cell);
+            Assert.AreEqual((8, 4), (x, z));
+        }
+
+        [Test]
+        public void CoatingBrush_IsRoundAndCrossesCells()
+        {
+            var point = new Vector3(0.03f, 1f, 0.03f); // 칸 (0, 0, 0) 픽셀 (8, 8) 안
+            Assert.AreEqual(1, CubeGridRules.CoatingBrush(point, 1f, 1).Count);
+            Assert.AreEqual(4, CubeGridRules.CoatingBrush(point, 1f, 2).Count);
+            Assert.AreEqual(9, CubeGridRules.CoatingBrush(point, 1f, 3).Count);
+            Assert.AreEqual(12, CubeGridRules.CoatingBrush(point, 1f, 4).Count); // 4 × 4에서 모서리 넷을 뺀 원
+            var big = CubeGridRules.CoatingBrush(point, 1f, 16);
+            Assert.IsTrue(big.Exists(p => p.cell == new Vector3Int(0, 0, 0) && p.x == 0 && p.z == 8));
+            var edge = CubeGridRules.CoatingBrush(new Vector3(0.5f, 1f, 0f), 1f, 2); // 칸 경계에 걸침
+            Assert.IsTrue(edge.Exists(p => p.cell.x == 0) && edge.Exists(p => p.cell.x == 1));
+            Assert.IsTrue(edge.TrueForAll(p => p.cell.y == 0));
+        }
     }
 }

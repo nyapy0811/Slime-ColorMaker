@@ -27,3 +27,4 @@ MonoBehaviour:
   pillarBasePrefab: {fileID: 7397574732181597681, guid: dd580c84b4f99ff4ab9b4359b84d4aff, type: 3}
   pillarShaftPrefab: {fileID: 6332820204324220663, guid: 079b5b1c5a721bc47a807a374422f0ce, type: 3}
   pillarTopPrefab: {fileID: 7210759450636818624, guid: c1117f7a39178f54689e67bc09050258, type: 3}
+  coatingSettings: {fileID: 11400000, guid: cdf389c80cba99a4ca0c5f5e50102367, type: 2}

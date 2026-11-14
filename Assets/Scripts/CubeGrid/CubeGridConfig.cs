@@ -50,5 +50,9 @@ namespace SlimeColorMaker
 
         [Tooltip("위: 몸통 + 머리(머리 설정 그룹의 맨 위 칸)")]
         public GameObject pillarTopPrefab;
+
+        [Header("블록 윗면 코팅")]
+        [Tooltip("미끄러운 코팅 설정(기름·얼음의 관성 시간과 재질). 빌더가 '만든 부분/코팅'의 겉모습에 넘긴다.")]
+        public SlipperyCoatingSettings coatingSettings;
     }
 }

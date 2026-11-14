@@ -61,9 +61,81 @@ namespace SlimeColorMaker
             return true;
         }
 
-        /// <summary>칸의 블록이나 계단, 기둥을 지운다. 없었으면 false.</summary>
-        public static bool Remove(CubeGridData data, Vector3Int cell) =>
-            data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0;
+        /// <summary>칸의 블록이나 계단, 기둥을 지운다(블록의 코팅도 함께). 없었으면 false.</summary>
+        public static bool Remove(CubeGridData data, Vector3Int cell)
+        {
+            data.coatings.RemoveAll(coating => coating.cell == cell);
+            return data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0;
+        }
+
+        /// <summary>블록 윗면 한 변의 코팅 픽셀 수(1픽셀 = 1/16칸).</summary>
+        public const int CoatingPixels = 16;
+
+        /// <summary>블록 윗면 픽셀의 코팅 종류. 칠하지 않았으면 None.</summary>
+        public static CoatingKind GetCoating(CubeGridData data, Vector3Int cell, int x, int z)
+        {
+            int index = data.coatings.FindIndex(coating => coating.cell == cell);
+            return index < 0 ? CoatingKind.None : (CoatingKind)data.coatings[index].pixels[z * CoatingPixels + x];
+        }
+
+        /// <summary>
+        /// 블록 윗면 픽셀 하나를 칠한다(None이면 지움). 블록이 없는 칸이면 칠하지 않는다. 블록의 모든 픽셀이 None이 되면 목록에서 뺀다. 바뀌었으면 true.
+        /// </summary>
+        public static bool SetCoating(CubeGridData data, Vector3Int cell, int x, int z, CoatingKind kind)
+        {
+            if (!HasBlock(data, cell)) return false;
+            int index = data.coatings.FindIndex(coating => coating.cell == cell);
+            if (index < 0)
+            {
+                if (kind == CoatingKind.None) return false;
+                data.coatings.Add(new CubeCoating { cell = cell, pixels = new byte[CoatingPixels * CoatingPixels] });
+                index = data.coatings.Count - 1;
+            }
+            var pixels = data.coatings[index].pixels;
+            int at = z * CoatingPixels + x;
+            if (pixels[at] == (byte)kind) return false;
+            pixels[at] = (byte)kind;
+            if (kind == CoatingKind.None && Array.TrueForAll(pixels, pixel => pixel == 0)) data.coatings.RemoveAt(index);
+            return true;
+        }
+
+        /// <summary>
+        /// 점(블록 윗면 위)이 든 코팅 픽셀: 점 바로 아래의 칸(높이 0.01 아래)과 그 칸 윗면의 픽셀 x·z. 블록이 있는지는 보지 않는다.
+        /// </summary>
+        public static void CoatingPixelAt(Vector3 point, out Vector3Int cell, out int x, out int z)
+        {
+            int gx = Mathf.FloorToInt((point.x + 0.5f) * CoatingPixels);
+            int gz = Mathf.FloorToInt((point.z + 0.5f) * CoatingPixels);
+            cell = new Vector3Int(FloorDiv(gx, CoatingPixels), Mathf.FloorToInt(point.y - 0.01f), FloorDiv(gz, CoatingPixels));
+            x = gx - cell.x * CoatingPixels;
+            z = gz - cell.z * CoatingPixels;
+        }
+
+        /// <summary>
+        /// 원형 코팅 붓(지름 <paramref name="diameter"/>픽셀, 1~16)이 덮는 픽셀들. 높이 <paramref name="topY"/>의 윗면에서, 지름이 홀수면 점이 든 픽셀 가운데에,
+        /// 짝수면 가장 가까운 픽셀 모서리에 중심을 두고, 가운데가 반지름 안인 픽셀을 고른다(지름 1 = 1픽셀, 2 = 2 × 2, 3 = 3 × 3).
+        /// </summary>
+        public static List<(Vector3Int cell, int x, int z)> CoatingBrush(Vector3 point, float topY, int diameter)
+        {
+            diameter = Mathf.Clamp(diameter, 1, CoatingPixels);
+            float px = (point.x + 0.5f) * CoatingPixels, pz = (point.z + 0.5f) * CoatingPixels;
+            float cx = diameter % 2 == 1 ? Mathf.Floor(px) + 0.5f : Mathf.Round(px);
+            float cz = diameter % 2 == 1 ? Mathf.Floor(pz) + 0.5f : Mathf.Round(pz);
+            float radius = diameter / 2f;
+            int y = Mathf.RoundToInt(topY) - 1;
+            var pixels = new List<(Vector3Int, int, int)>();
+            for (int gz = Mathf.FloorToInt(cz - radius); gz <= Mathf.CeilToInt(cz + radius); gz++)
+            for (int gx = Mathf.FloorToInt(cx - radius); gx <= Mathf.CeilToInt(cx + radius); gx++)
+            {
+                float dx = gx + 0.5f - cx, dz = gz + 0.5f - cz;
+                if (dx * dx + dz * dz > radius * radius + 1e-4f) continue;
+                var cell = new Vector3Int(FloorDiv(gx, CoatingPixels), y, FloorDiv(gz, CoatingPixels));
+                pixels.Add((cell, gx - cell.x * CoatingPixels, gz - cell.z * CoatingPixels));
+            }
+            return pixels;
+        }
+
+        static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
 
         /// <summary>
         /// 기둥마다 칸 모양(2026-11-14). 바로 위·아래 칸에 설정(머리·받침)이 같은 기둥이 있으면 한 그룹이다(동서남북은 보지 않음, 설정이 다르면 붙어 있어도 다른 그룹).
