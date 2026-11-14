@@ -16,9 +16,10 @@ namespace SlimeColorMaker
     /// 반투명 칸(규칙 2절, 2026-11-07)도 같은 방식으로 떼어낸다: 반투명 값 색 41~48은 GlassValueColor(칠함), 반투명 회색 49~56은 Glass.
     /// 칠할 색과 반투명 정도는 맨 위 오브젝트에 붙이는 <see cref="VoxPaint"/>가 렌더러마다 준다(놓인 모델마다 바꿀 수 있음). 반투명 부분은 바깥 껍질만 만들고,
     /// 렌더러 하나에 재질 둘을 걸어 뒷면(먼 쪽 벽의 안쪽)을 먼저, 앞면을 나중에 그린다(유리 상자처럼 반대편 벽이 비침).
+    /// 반투명 재질은 깊이를 카메라 쪽으로 조금 당기는 Lit 사본(Assets/Shaders/LitGlass.shader)을 써서, 다른 면에 붙어도 깊이 다툼으로 깨지지 않는다(2026-11-14).
     /// 나머지 칸은 파일의 팔레트를 256 × 1 텍스처로 만들어 면마다 자기 색 칸을 가리키게 한다(URP Lit은 버텍스 색을 읽지 않음).
     /// </summary>
-    [ScriptedImporter(6, "vox")]
+    [ScriptedImporter(7, "vox")]
     public class VoxImporter : ScriptedImporter
     {
         public enum PivotMode { BottomBackEdge, BottomCenter, TopCenter }
@@ -42,6 +43,9 @@ namespace SlimeColorMaker
 
         const string LitShaderPath = "Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader";
 
+        // 반투명 재질의 셰이더: Lit 사본에 깊이 당기기(Offset)를 더해, 다른 면과 같은 평면에 붙어도 깊이 다툼 없이 앞에 그린다(2026-11-14).
+        const string GlassShaderPath = "Assets/Shaders/LitGlass.shader";
+
         [Tooltip("기준점. 모든 오브젝트의 모델 크기 상자를 합친 상자에서 고른다(규칙 5절): 바닥면 뒤쪽 가장자리의 가운데(기물 기준, 기본), " +
                  "바닥면 가운데(기물·블록·계단 기본, 칸 바닥 가운데에 놓음), 바닥면 뒤쪽 가장자리의 가운데(블록 옆면에 붙는 기물), " +
                  "윗면 가운데(위에 붙는 것). 자식은 자기 상자에서 같은 쪽을 기준점으로 쓴다.")]
@@ -63,7 +67,9 @@ namespace SlimeColorMaker
             ctx.AddObjectToAsset("palette", palette);
             // 셰이더를 의존으로 알려 셰이더가 먼저 가져와지게 한다(전체를 다시 가져올 때 Shader.Find가 null을 주던 원인).
             ctx.DependsOnArtifact(LitShaderPath);
+            ctx.DependsOnArtifact(GlassShaderPath);
             var lit = AssetDatabase.LoadAssetAtPath<Shader>(LitShaderPath);
+            var glass = AssetDatabase.LoadAssetAtPath<Shader>(GlassShaderPath);
             var valuePalette = ValuePalette(file.palette);
             ctx.AddObjectToAsset("valuePalette", valuePalette);
             var glassPalette = GlassPalette(file.palette);
@@ -72,13 +78,13 @@ namespace SlimeColorMaker
             var paintMaterial = NewMaterial("Paint", lit, valuePalette);
             var glassMaterials = new[]
             {
-                MakeTransparent(NewMaterial("GlassBack", lit, glassPalette), backFaces: true),
-                MakeTransparent(NewMaterial("Glass", lit, glassPalette), backFaces: false),
+                MakeTransparent(NewMaterial("GlassBack", glass, glassPalette), backFaces: true),
+                MakeTransparent(NewMaterial("Glass", glass, glassPalette), backFaces: false),
             };
             var glassPaintMaterials = new[]
             {
-                MakeTransparent(NewMaterial("GlassPaintBack", lit, glassPalette), backFaces: true),
-                MakeTransparent(NewMaterial("GlassPaint", lit, glassPalette), backFaces: false),
+                MakeTransparent(NewMaterial("GlassPaintBack", glass, glassPalette), backFaces: true),
+                MakeTransparent(NewMaterial("GlassPaint", glass, glassPalette), backFaces: false),
             };
             ctx.AddObjectToAsset("material:Voxel", voxelMaterial);
             ctx.AddObjectToAsset("material:Paint", paintMaterial);
@@ -172,7 +178,7 @@ namespace SlimeColorMaker
         }
 
         /// <summary>
-        /// URP Lit을 반투명(알파 섞기, 깊이 쓰기 없음)으로 바꾼다. 셰이더 GUI(BaseShaderGUI)가 하는 설정을 직접 한다:
+        /// Lit(반투명은 Lit 사본 `Slime~ColorMaker~/Lit Glass`)을 반투명(알파 섞기, 깊이 쓰기 없음)으로 바꾼다. 셰이더 GUI(BaseShaderGUI)가 하는 설정을 직접 한다:
         /// URP의 알파 섞기는 셰이더에서 알파를 미리 곱하고(_ALPHAPREMULTIPLY_ON) One / OneMinusSrcAlpha로 섞는다.
         /// <paramref name="backFaces"/>면 뒷면만 그리고 한 칸 먼저 그린다(큐 2999 = 반투명 − 1), 아니면 앞면만(큐 3000).
         /// </summary>
