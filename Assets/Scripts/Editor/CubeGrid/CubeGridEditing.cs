@@ -16,16 +16,19 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, ConveyorBelt, TestModel }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, BoomGate, Barrier, ConveyorBelt, ConveyorCurveRight, ConveyorCurveLeft, TestModel }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "컨베이어", "시험 모델" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "차단기", "방벽", "컨베이어", "꺾임 오른쪽", "꺾임 왼쪽", "시험 모델" };
 
         const string TestModelsFolder = "TestModels";
+
+        /// <summary>컨베이어 붓(직선·꺾임)인가. 블록 자리에 깔리고 씬 카메라가 보는 쪽으로 나가게 놓인다.</summary>
+        public static bool IsConveyor(Brush brush) => brush is Brush.ConveyorBelt or Brush.ConveyorCurveRight or Brush.ConveyorCurveLeft;
 
         /// <summary>시험 모델 붓으로 놓을 모델(.vox나 프리팹, 기준점은 바닥면 가운데).</summary>
         public static GameObject TestModelAsset
@@ -226,13 +229,10 @@ namespace SlimeColorMaker
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, grid.gameObject.scene);
             Undo.RegisterCreatedObjectUndo(go, "기물 놓기");
             if (parent != null) Undo.SetTransformParent(go.transform, parent, "기물 놓기");
-            // 컨베이어 모델은 −z로 흐르므로 반 바퀴 더 돌려 turn 방향으로 흐르게 한다.
-            var rotation = brush switch
-            {
-                Brush.BoomGate => CubeGridRules.StairRotation(turn),
-                Brush.ConveyorBelt => CubeGridRules.StairRotation(turn + 2),
-                _ => Quaternion.identity,
-            };
+            // 컨베이어 모델(직선·꺾임)은 −z로 나가므로 반 바퀴 더 돌려 turn 방향으로 나가게 한다.
+            var rotation = brush == Brush.BoomGate ? CubeGridRules.StairRotation(turn)
+                : IsConveyor(brush) ? CubeGridRules.StairRotation(turn + 2)
+                : Quaternion.identity;
             go.transform.SetPositionAndRotation(CubeGridRules.CellBottom(cell), rotation);
             if (brush == Brush.Barrier && go.TryGetComponent(out CellFaceMount mount))
             {
@@ -266,7 +266,7 @@ namespace SlimeColorMaker
         // 기물은 종류별 묶음 오브젝트 아래에 둔다(시험 맵의 구성과 같음).
         static Transform FolderFor(UnityEngine.SceneManagement.Scene scene, Brush brush)
         {
-            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate or Brush.Barrier => "Gates", Brush.ConveyorBelt => "Movers", Brush.TestModel => TestModelsFolder, _ => null };
+            string name = brush switch { Brush.Checkpoint => "Checkpoints", Brush.ColorSource => "ColorSources", Brush.Goal => "Activators", Brush.BoomGate or Brush.Barrier => "Gates", Brush.ConveyorBelt or Brush.ConveyorCurveRight or Brush.ConveyorCurveLeft => "Movers", Brush.TestModel => TestModelsFolder, _ => null };
             if (name == null) return null;
             var existing = scene.GetRootGameObjects().FirstOrDefault(root => root.name == name);
             if (existing != null) return existing.transform;
@@ -288,6 +288,8 @@ namespace SlimeColorMaker
             Brush.BoomGate => config.boomGatePrefab,
             Brush.Barrier => config.barrierPrefab,
             Brush.ConveyorBelt => config.conveyorBeltPrefab,
+            Brush.ConveyorCurveRight => config.conveyorCurveRightPrefab,
+            Brush.ConveyorCurveLeft => config.conveyorCurveLeftPrefab,
             _ => config.blockPrefab,
         };
 

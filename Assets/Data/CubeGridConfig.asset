@@ -21,3 +21,5 @@ MonoBehaviour:
   boomGatePrefab: {fileID: 3416490124843020887, guid: bddacfdd76f2823428bb4eae14456a75, type: 3}
   barrierPrefab: {fileID: 538709850565625351, guid: edae89a2554acb940a1a2885921ba99d, type: 3}
   conveyorBeltPrefab: {fileID: 3017853490229241096, guid: 0cf325026f599384c8296866a4b6bcfa, type: 3}
+  conveyorCurveRightPrefab: {fileID: 40478438903186587, guid: 69eb461ab93fd424d88d7d3801f05a04, type: 3}
+  conveyorCurveLeftPrefab: {fileID: 4254319222179188414, guid: 91eaf4d24c9539e49aa1dab1d9e3136e, type: 3}

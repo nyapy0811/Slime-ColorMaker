@@ -31,5 +31,11 @@ namespace SlimeColorMaker
 
         [Tooltip("컨베이어 벨트(이동 계열, 블록 자리에 깔림, 모델 기준 −z로 흐름)")]
         public GameObject conveyorBeltPrefab;
+
+        [Tooltip("컨베이어 오른쪽 꺾임(모델 기준 −x 쪽에서 들어와 −z로 나감)")]
+        public GameObject conveyorCurveRightPrefab;
+
+        [Tooltip("컨베이어 왼쪽 꺾임(모델 기준 +x 쪽에서 들어와 −z로 나감)")]
+        public GameObject conveyorCurveLeftPrefab;
     }
 }

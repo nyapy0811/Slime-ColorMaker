@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,12 +9,17 @@ namespace SlimeColorMaker
     /// 캐릭터와 함께 도는 정사각형) 안에 가운데가 든 픽셀을 플레이어가 직접 움직이는 동안(<see cref="ThirdPersonController.IsWalking"/>,
     /// 벨트에 실려 가기만 하거나 가만히 있으면 안 칠함) 프레임마다 지금 색(몸 색과 같은 방식)으로 칠한다.
     /// 픽셀마다 바로 밑에 실제로 있는 면을 광선으로 찾아 그 높이에 칠하고(블록·계단 디딤판·벨트·방벽 판 등, 계단 충돌은 복셀 모델과 같음),
-    /// 면이 없거나 너무 아래면(공중) 칠하지 않는다.
-    /// 픽셀은 마지막으로 칠한 순간부터 점점 투명해져 유지 시간 뒤 없어진다. 공중이거나 지금 색이 (0,0,0)이면 칠하지 않는다.
-    /// 벨트 위 픽셀은 벨트 무늬가 한 칸 흐를 때(<see cref="ConveyorBelt.TryGetStep"/>) 각자 미는 방향으로 한 칸 옮긴다
-    /// (<see cref="ConveyorBelt.PointDirection"/>, 꺾이는 칸 규칙 포함). 옮긴 자리가 겹치면 더 최근에 칠한 픽셀이 남고,
-    /// 벨트 밖으로 나가면 아래가 바닥이면 멈추고 비었으면 없앤다. 픽셀마다 따로라 서로 잇지 않는다.
-    /// 그리기는 픽셀마다 바닥 위 작은 정사각형을 월드 좌표의 따로 둔 오브젝트 메시 하나에 매 프레임 다시 만든다(목록·메시는 재사용).
+    /// 면이 없거나 너무 아래면(공중) 칠하지 않는다. 공중이거나 지금 색이 (0,0,0)이면 칠하지 않는다.
+    /// 픽셀은 마지막으로 칠한 순간부터 점점 투명해져 유지 시간 뒤 없어진다.
+    /// 픽셀은 각자 자기 위치를 갖고(2026-11-14) 한 자리에 여러 픽셀이 있을 수 있다. 칠하면 같은 자리에 있던 픽셀을 새 픽셀 하나로 바꾼다.
+    /// 자리는 보통 격자 칸이고, 꺾임 벨트 칸의 벨트 구역(난간 빼고)에서는 벨트 자리(<see cref="ConveyorRules"/>, 진행 × 반지름 16 × 16 중 반지름 1~14번)다.
+    /// 꺾임 칸에서는 발바닥 안에 가운데가 든 벨트 자리와 발바닥 안 격자 칸의 가운데가 든 벨트 자리를 칠한다.
+    /// 벨트 위 픽셀은 벨트 무늬가 한 칸 흐를 때(<see cref="ConveyorBelt.TryGetStep"/>) 각자 벨트를 따라 1/16만큼 옮긴다(<see cref="ConveyorBelt.TryAdvance"/>,
+    /// 꺾임은 돌림판). 겹쳐도 지우지 않아, 꺾임을 지나 나오면 모양이 그대로다. 벨트 밖으로 나가면 아래가 바닥이면 멈추고 비었으면 없앤다.
+    /// 난간(직선 양 끝 한 줄, 꺾임 안쪽 모서리·바깥 호) 위 픽셀은 움직이지 않고, 움직이던 픽셀도 난간에 닿으면 멈춘다(2026-11-14).
+    /// 그리기는 격자 칸마다 가장 진한 픽셀 하나만 그린다. 꺾임 칸의 격자 칸은 그 칸 가운데가 든 벨트 자리의 픽셀도 함께 따져 바깥쪽에 빈 칸이 보이지 않게 하고,
+    /// 꺾임 벨트 자리 픽셀은 난간 격자 칸에 그리지 않는다.
+    /// 바닥 위 작은 정사각형을 월드 좌표의 따로 둔 오브젝트 메시 하나에 매 프레임 다시 만든다(목록·메시는 재사용).
     /// </summary>
     [RequireComponent(typeof(CharacterController), typeof(PlayerColor), typeof(ThirdPersonController))]
     public class SlimeTrail : MonoBehaviour
@@ -21,17 +27,29 @@ namespace SlimeColorMaker
         /// <summary>픽셀 한 칸(유닛).</summary>
         const float PixelSize = ConveyorBelt.StepPerFrame;
 
+        /// <summary>한 칸의 픽셀 수.</summary>
+        const int PixelsPerCell = ConveyorRules.Slots;
+
         /// <summary>바닥에서 띄우는 높이(유닛). 바닥과 겹쳐 깜박이지 않게 한다.</summary>
         const float Lift = 0.005f;
 
         /// <summary>면을 찾는 광선을 발 높이보다 이만큼 위에서 쏜다(유닛). 계단 오르막 쪽 픽셀(발바닥 반 너비만큼 높음)보다 위다.</summary>
         const float RayStart = 0.3f;
 
+        static readonly Vector2Int GridSlot = new(-1, -1); // 자리 키에서 '격자 칸'을 뜻하는 벨트 자리 값
+
         struct Pixel
         {
+            public Vector3 position; // 가운데(y = 칠한 바닥 높이)
             public Color color; // 선형 색
             public float time; // 마지막으로 칠한 시각
-            public float height; // 칠한 바닥 높이(월드 y)
+        }
+
+        // 그릴 격자 칸 하나: 가장 진한 픽셀의 색(알파 = 진하기)과 바닥 높이.
+        struct Shown
+        {
+            public Color color;
+            public float height;
         }
 
         [SerializeField] SlimeTrailSettings settings;
@@ -39,15 +57,18 @@ namespace SlimeColorMaker
         [Tooltip("흔적 재질(셰이더 Slime~ColorMaker~/Trail)")]
         [SerializeField] Material material;
 
-        // 키 = (x 픽셀, 바닥 칸 높이, z 픽셀)
-        Dictionary<Vector3Int, Pixel> pixels = new();
-        Dictionary<Vector3Int, Pixel> moved = new();
-        readonly List<Vector3Int> keys = new();
+        readonly List<Pixel> pixels = new();
         readonly HashSet<Vector2Int> footprint = new(); // 이번 프레임 발바닥 픽셀 (x, z)
+        // 자리 키 = (칸, 벨트 자리). 격자 칸이면 (x 픽셀, 칸 높이, z 픽셀)과 GridSlot, 꺾임 칸 벨트 자리면 (벨트 칸, 자리).
+        readonly Dictionary<(Vector3Int, Vector2Int), Pixel> painted = new();
+        readonly Dictionary<(Vector3Int, Vector2Int), Shown> slotShown = new();
+        readonly Dictionary<Vector3Int, Shown> shown = new();
+        readonly HashSet<Vector3Int> curveCells = new();
         readonly List<Vector3> vertices = new();
         readonly List<Color> colors = new();
         readonly List<int> triangles = new();
         RaycastHit[] rayHits = new RaycastHit[8];
+        Predicate<Pixel> isRepainted;
         CharacterController cc;
         PlayerColor playerColor;
         ThirdPersonController mover;
@@ -55,12 +76,15 @@ namespace SlimeColorMaker
         GameObject view;
         int lastStep;
         bool hasStep;
+        Vector3 feet, footRight, footForward; // 이번 프레임 발바닥
+        float footHalf;
 
         void Awake()
         {
             cc = GetComponent<CharacterController>();
             playerColor = GetComponent<PlayerColor>();
             mover = GetComponent<ThirdPersonController>();
+            isRepainted = pixel => painted.ContainsKey(SlotOf(pixel.position));
             mesh = new Mesh { name = "SlimeTrail", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
             mesh.MarkDynamic();
             view = new GameObject("SlimeTrail");
@@ -111,10 +135,15 @@ namespace SlimeColorMaker
 
         void Expire(float now)
         {
-            keys.Clear();
-            foreach (var pair in pixels)
-                if (now - pair.Value.time >= settings.lifetime) keys.Add(pair.Key);
-            foreach (var key in keys) pixels.Remove(key);
+            for (int i = pixels.Count - 1; i >= 0; i--)
+                if (now - pixels[i].time >= settings.lifetime) RemoveAt(i);
+        }
+
+        // 순서는 상관없으므로 마지막 픽셀을 그 자리로 옮겨 지운다.
+        void RemoveAt(int index)
+        {
+            pixels[index] = pixels[^1];
+            pixels.RemoveAt(pixels.Count - 1);
         }
 
         // 지난 프레임 뒤로 무늬가 흐른 칸 수만큼 벨트 위 픽셀을 한 칸씩 옮긴다.
@@ -133,84 +162,149 @@ namespace SlimeColorMaker
 
         void MoveOnce()
         {
-            moved.Clear();
-            foreach (var pair in pixels)
+            for (int i = pixels.Count - 1; i >= 0; i--)
             {
-                var key = pair.Key;
-                var pixel = pair.Value;
-                var direction = ConveyorBelt.PointDirection(Center(key, pixel));
-                if (direction != Vector2Int.zero)
+                var pixel = pixels[i];
+                if (!ConveyorBelt.TryAdvance(pixel.position, PixelSize, out var moved)) continue;
+                // 벨트 밖으로 나갔는데 아래가 비었으면(낭떠러지) 없앤다.
+                if (!ConveyorBelt.IsBeltBelow(moved) && !HasFloor(moved))
                 {
-                    key += new Vector3Int(direction.x, 0, direction.y);
-                    // 벨트 밖으로 나갔는데 아래가 비었으면(낭떠러지) 없앤다.
-                    if (ConveyorBelt.PointDirection(Center(key, pixel)) == Vector2Int.zero && !HasFloor(Center(key, pixel))) continue;
+                    RemoveAt(i);
+                    continue;
                 }
-                if (!moved.TryGetValue(key, out var existing) || existing.time < pixel.time) moved[key] = pixel;
+                pixel.position = moved;
+                pixels[i] = pixel;
             }
-            (pixels, moved) = (moved, pixels);
         }
-
-        static Vector3 Center(Vector3Int key, Pixel pixel) => new((key.x + 0.5f) * PixelSize, pixel.height, (key.z + 0.5f) * PixelSize);
 
         static bool HasFloor(Vector3 point) => Physics.CheckSphere(point + Vector3.down * 0.05f, 0.01f, ~0, QueryTriggerInteraction.Ignore);
 
-        // 플레이어가 직접 움직이는 동안 바닥에 서 있으면 발바닥 안 픽셀을 그 밑 면에 칠한다. 키의 높이는 면이 든 칸.
+        static Vector3Int GridKey(Vector3 position) =>
+            new(Mathf.FloorToInt(position.x / PixelSize), ConveyorBelt.CellBelow(position).y, Mathf.FloorToInt(position.z / PixelSize));
+
+        // 바닥 위 점의 자리: 꺾임 벨트 칸의 벨트 구역이면 벨트 자리, 아니면(난간 포함) 격자 칸.
+        static (Vector3Int, Vector2Int) SlotOf(Vector3 position)
+        {
+            var cell = ConveyorBelt.CellBelow(position);
+            return ConveyorBelt.TryCurveSlot(cell, position, out var slot) ? (cell, slot) : (GridKey(position), GridSlot);
+        }
+
+        // 플레이어가 직접 움직이는 동안 바닥에 서 있으면 발바닥 안 자리를 그 밑 면에 칠하고, 그 자리에 있던 픽셀을 새 픽셀로 바꾼다.
         void Paint(float now)
         {
             var value = playerColor.Current.Value;
             if (!cc.isGrounded || !mover.IsWalking || value == default) return;
             footprint.Clear();
-            float feetY = Footprint(footprint);
+            painted.Clear();
+            curveCells.Clear();
+            Footprint(footprint);
             var color = ColorRules.ToColor(value).linear;
             foreach (var key in footprint)
             {
-                var center = new Vector3((key.x + 0.5f) * PixelSize, feetY, (key.y + 0.5f) * PixelSize);
-                if (!TrySurface(center, feetY, out float height)) continue;
-                int level = CubeGridRules.CellAt(new Vector3(center.x, height - 0.01f, center.z)).y;
-                pixels[new Vector3Int(key.x, level, key.y)] = new Pixel { color = color, time = now, height = height };
+                var center = new Vector3((key.x + 0.5f) * PixelSize, feet.y, (key.y + 0.5f) * PixelSize);
+                if (!TrySurface(center, feet.y, out float height)) continue;
+                center.y = height;
+                var slot = SlotOf(center);
+                if (slot.Item2 != GridSlot)
+                {
+                    // 꺾임 칸: 격자 칸 가운데가 든 벨트 자리를 칠한다.
+                    curveCells.Add(slot.Item1);
+                    center = ConveyorBelt.CurveSlotCenter(slot.Item1, slot.Item2, height);
+                }
+                painted[slot] = new Pixel { position = center, color = color, time = now };
             }
+            // 꺾임 칸: 발바닥 안에 가운데가 든 벨트 자리도 칠한다(안쪽의 작은 자리까지).
+            foreach (var cell in curveCells)
+            {
+                for (int progress = 0; progress < PixelsPerCell; progress++)
+                {
+                    for (int radius = 0; radius < PixelsPerCell; radius++)
+                    {
+                        var slot = new Vector2Int(progress, radius);
+                        var center = ConveyorBelt.CurveSlotCenter(cell, slot, feet.y);
+                        if (!InFootprint(center) || !TrySurface(center, feet.y, out float height)) continue;
+                        center.y = height;
+                        if (SlotOf(center) != (cell, slot)) continue; // 벨트 위가 아닌 면(방벽 판 등)
+                        painted[(cell, slot)] = new Pixel { position = center, color = color, time = now };
+                    }
+                }
+            }
+            pixels.RemoveAll(isRepainted);
+            pixels.AddRange(painted.Values);
         }
 
-        // 발바닥 안에 가운데가 든 픽셀 (x, z)를 모으고 발 높이를 돌려준다.
-        float Footprint(HashSet<Vector2Int> into)
+        // 발바닥 안에 가운데가 든 픽셀 (x, z)를 모으고 이번 프레임 발바닥을 기억한다.
+        void Footprint(HashSet<Vector2Int> into)
         {
-            var feet = transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius));
-            float half = cc.radius;
-            var right = transform.right;
-            var forward = Vector3.Cross(right, Vector3.up);
-            float reach = half * (Mathf.Abs(right.x) + Mathf.Abs(right.z)); // 돌아간 정사각형을 덮는 축 정렬 반 너비
+            feet = transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius));
+            footHalf = cc.radius;
+            footRight = transform.right;
+            footForward = Vector3.Cross(footRight, Vector3.up);
+            float reach = footHalf * (Mathf.Abs(footRight.x) + Mathf.Abs(footRight.z)); // 돌아간 정사각형을 덮는 축 정렬 반 너비
             int minX = Mathf.FloorToInt((feet.x - reach) / PixelSize), maxX = Mathf.FloorToInt((feet.x + reach) / PixelSize);
             int minZ = Mathf.FloorToInt((feet.z - reach) / PixelSize), maxZ = Mathf.FloorToInt((feet.z + reach) / PixelSize);
             for (int x = minX; x <= maxX; x++)
-            {
                 for (int z = minZ; z <= maxZ; z++)
-                {
-                    var offset = new Vector3((x + 0.5f) * PixelSize - feet.x, 0f, (z + 0.5f) * PixelSize - feet.z);
-                    if (Mathf.Abs(Vector3.Dot(offset, right)) > half || Mathf.Abs(Vector3.Dot(offset, forward)) > half) continue;
-                    into.Add(new Vector2Int(x, z));
-                }
-            }
-            return feet.y;
+                    if (InFootprint(new Vector3((x + 0.5f) * PixelSize, 0f, (z + 0.5f) * PixelSize))) into.Add(new Vector2Int(x, z));
         }
 
+        bool InFootprint(Vector3 point)
+        {
+            var offset = new Vector3(point.x - feet.x, 0f, point.z - feet.z);
+            return Mathf.Abs(Vector3.Dot(offset, footRight)) <= footHalf && Mathf.Abs(Vector3.Dot(offset, footForward)) <= footHalf;
+        }
+
+        // 격자 칸마다 가장 진한 픽셀 하나를 그린다.
         void Build(float now)
         {
+            shown.Clear();
+            slotShown.Clear();
+            curveCells.Clear();
+            foreach (var pixel in pixels)
+            {
+                var color = pixel.color;
+                color.a = settings.opacity * Mathf.Clamp01(1f - (now - pixel.time) / settings.lifetime);
+                var entry = new Shown { color = color, height = pixel.position.y };
+                var grid = GridKey(pixel.position);
+                var slot = SlotOf(pixel.position);
+                if (slot.Item2 == GridSlot)
+                {
+                    Keep(shown, grid, entry);
+                    continue;
+                }
+                // 꺾임 벨트 자리 픽셀은 난간 격자 칸에는 그리지 않는다.
+                if (ConveyorBelt.TryCurveSlot(slot.Item1, new Vector3((grid.x + 0.5f) * PixelSize, 0f, (grid.z + 0.5f) * PixelSize), out _)) Keep(shown, grid, entry);
+                Keep(slotShown, slot, entry);
+                curveCells.Add(slot.Item1);
+            }
+            // 꺾임 칸의 격자 칸은 그 칸 가운데가 든 벨트 자리의 픽셀도 따진다(바깥쪽 자리는 격자 칸보다 커서 빈 칸이 생기지 않게).
+            foreach (var cell in curveCells)
+            {
+                int baseX = cell.x * PixelsPerCell - PixelsPerCell / 2, baseZ = cell.z * PixelsPerCell - PixelsPerCell / 2;
+                for (int x = baseX; x < baseX + PixelsPerCell; x++)
+                {
+                    for (int z = baseZ; z < baseZ + PixelsPerCell; z++)
+                    {
+                        var center = new Vector3((x + 0.5f) * PixelSize, 0f, (z + 0.5f) * PixelSize);
+                        if (ConveyorBelt.TryCurveSlot(cell, center, out var slot) && slotShown.TryGetValue((cell, slot), out var entry))
+                            Keep(shown, new Vector3Int(x, cell.y, z), entry);
+                    }
+                }
+            }
+
             vertices.Clear();
             colors.Clear();
             triangles.Clear();
-            foreach (var pair in pixels)
+            foreach (var pair in shown)
             {
                 var key = pair.Key;
-                var pixel = pair.Value;
-                float x = key.x * PixelSize, z = key.z * PixelSize, y = pixel.height + Lift;
-                var color = pixel.color;
-                color.a = settings.opacity * Mathf.Clamp01(1f - (now - pixel.time) / settings.lifetime);
+                float x = key.x * PixelSize, z = key.z * PixelSize, y = pair.Value.height + Lift;
                 int v = vertices.Count;
                 vertices.Add(new Vector3(x, y, z));
                 vertices.Add(new Vector3(x, y, z + PixelSize));
                 vertices.Add(new Vector3(x + PixelSize, y, z + PixelSize));
                 vertices.Add(new Vector3(x + PixelSize, y, z));
-                for (int i = 0; i < 4; i++) colors.Add(color);
+                for (int i = 0; i < 4; i++) colors.Add(pair.Value.color);
                 triangles.Add(v);
                 triangles.Add(v + 1);
                 triangles.Add(v + 2);
@@ -223,6 +317,11 @@ namespace SlimeColorMaker
             mesh.SetColors(colors);
             mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds();
+        }
+
+        static void Keep<TKey>(Dictionary<TKey, Shown> into, TKey key, Shown entry)
+        {
+            if (!into.TryGetValue(key, out var existing) || existing.color.a < entry.color.a) into[key] = entry;
         }
     }
 }

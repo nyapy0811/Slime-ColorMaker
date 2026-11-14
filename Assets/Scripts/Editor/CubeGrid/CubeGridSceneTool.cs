@@ -104,7 +104,7 @@ namespace SlimeColorMaker
             var ray = HandleUtility.GUIPointToWorldRay(mouse);
             if (!new Plane(Vector3.up, Vector3.zero).Raycast(ray, out float distance) || distance > MaxDistance) return null;
             var point = ray.GetPoint(distance);
-            return new Vector3Int(Mathf.RoundToInt(point.x), brush is CubeGridEditing.Brush.Block or CubeGridEditing.Brush.ConveyorBelt ? -1 : 0, Mathf.RoundToInt(point.z));
+            return new Vector3Int(Mathf.RoundToInt(point.x), brush == CubeGridEditing.Brush.Block || CubeGridEditing.IsConveyor(brush) ? -1 : 0, Mathf.RoundToInt(point.z));
         }
 
         static Vector3 CameraForward()
@@ -182,6 +182,24 @@ namespace SlimeColorMaker
                 Handles.DrawLine(top + rotation * new Vector3(0f, 0f, -0.4f), tip);
                 Handles.DrawLine(tip, top + rotation * new Vector3(-0.2f, 0f, 0.2f));
                 Handles.DrawLine(tip, top + rotation * new Vector3(0.2f, 0f, 0.2f));
+            }
+            // 컨베이어 꺾임 붓이면 윗면에 들어와 꺾여 나가는 화살표를 그린다(안쪽 모서리 중심, 반지름 0.5의 호).
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush is CubeGridEditing.Brush.ConveyorCurveRight or CubeGridEditing.Brush.ConveyorCurveLeft && cells.Count == 1)
+            {
+                var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
+                var top = CubeGridRules.CellCenter(cells[0]) + Vector3.up * 0.5f;
+                float side = CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorCurveRight ? 1f : -1f; // 들어오는 면(x)
+                var corner = new Vector3(0.5f * side, 0f, 0.5f);
+                var previous = top + rotation * (corner + new Vector3(0f, 0f, -0.5f));
+                for (int i = 1; i <= 8; i++)
+                {
+                    float angle = i / 8f * Mathf.PI / 2f;
+                    var next = top + rotation * (corner + new Vector3(-side * 0.5f * Mathf.Sin(angle), 0f, -0.5f * Mathf.Cos(angle)));
+                    Handles.DrawLine(previous, next);
+                    previous = next;
+                }
+                Handles.DrawLine(previous, top + rotation * new Vector3(-0.15f, 0f, 0.3f));
+                Handles.DrawLine(previous, top + rotation * new Vector3(0.15f, 0f, 0.3f));
             }
             Handles.zTest = zTest;
         }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SlimeColorMaker
@@ -8,7 +7,9 @@ namespace SlimeColorMaker
     /// 지면에서는 가속해 움직이고, 공중에서는 수평 속도를 유지한다. 게임플레이 입력이 잠기면 이동을 받지 않고(중력은 계속), 일시정지 중에는 멈춘다.
     /// 점프는 없다(2026-11-07): 위 칸으로는 계단으로만 간다. 피벗은 발밑이다. 시작 지점·체크포인트로 옮기기와 낙사는 맵 매니저가 맡는다.
     /// 컨베이어 벨트 위에 서 있으면 벨트가 흐르는 속도를 이동에 그대로 더한다(2026-11-12, 가속 없음, 내려오면 바로 멈춤).
-    /// 발바닥(몸 반지름을 반 변으로 하는, 캐릭터와 함께 도는 정사각형)이 조금이라도 벨트에 걸치면 민다(2026-11-13). 방향은 <see cref="ConveyorBelt.PushVelocity"/>가 정한다.
+    /// 중심점(발밑)이 벨트 구역(난간 빼고) 안에 있으면 민다(2026-11-14, <see cref="ConveyorBelt.TryPush"/>). 중심점이 벨트 구역을 벗어나는 순간
+    /// 벨트가 밀던 속도로 그 방향을 따라 0.5칸을 점점 느려지며 간다(관성, <see cref="ConveyorInertia"/>, 조작과 따로 더함). 관성은 다 가거나 같은 직선 방향으로
+    /// 미는 벨트에 올라서면 끝난다. 마주 보는 벨트의 경계에 닿으면 벨트 방향으로는 조작이 막히고(직각으로만) 거기서 벗어나도 관성이 없다.
     /// 턱 넘기(2026-11-13): 가는 쪽에 턱 넘기 높이 이하의 턱이 있으면 CharacterController가 올라가고, 바닥에 서 있다가 그 높이 이하로 내려가는 곳에서는
     /// 떨어지지 않고 바로 내려선다(아래로 구를 쏴 바닥이 있으면 붙임). 충돌은 한 번에 오르내리고, 몸 모델과 카메라는 바뀐 높이를 짧게 따라간다(<see cref="VisualOffset"/>).
     /// 수치는 <see cref="PlayerMoveSettings"/>.
@@ -30,9 +31,8 @@ namespace SlimeColorMaker
         float visualOffset;
         float visualOffsetVelocity;
         Vector3 bodyPosition; // 몸 모델의 원래 위치(부모 기준)
-        Collider[] floorHits = new Collider[8];
         RaycastHit[] groundHits = new RaycastHit[8];
-        readonly List<ConveyorBelt> touchedBelts = new();
+        ConveyorInertia inertia;
 
         /// <summary>플레이어가 직접 움직이는 중인가(입력으로 생긴 수평 속도, 벨트가 미는 속도는 빼고). 바닥 흔적이 쓴다.</summary>
         public bool IsWalking => horizontalVelocity.sqrMagnitude > 0.0001f;
@@ -63,6 +63,7 @@ namespace SlimeColorMaker
             cc.enabled = true;
             horizontalVelocity = Vector3.zero;
             verticalVelocity = 0f;
+            inertia = default;
             visualOffset = visualOffsetVelocity = 0f;
             ApplyVisualOffset();
             if (playerCamera != null) playerCamera.LookAlong(rotation);
@@ -83,20 +84,33 @@ namespace SlimeColorMaker
 
             cc.stepOffset = settings.stepHeight;
             bool wasGrounded = cc.isGrounded;
+            // 벨트: 바닥에 서 있고 중심점이 벨트 구역 안이면 민다. 마주 보는 벨트의 경계면 그 축으로는 조작을 막는다.
+            Vector3 push = Vector3.zero, lockedAxis = Vector3.zero;
+            bool facing = false;
+            bool onBelt = wasGrounded && ConveyorBelt.TryPush(Feet(), Time.deltaTime, out push, out facing, out lockedAxis);
+            if (lockedAxis != Vector3.zero) move -= lockedAxis * Vector3.Dot(move, lockedAxis);
             if (wasGrounded)
             {
                 float accel = settings.moveSpeed / Mathf.Max(settings.accelerationTime, 0.0001f);
                 horizontalVelocity = Vector3.MoveTowards(horizontalVelocity, move * settings.moveSpeed, accel * Time.deltaTime);
                 if (verticalVelocity < 0f) verticalVelocity = -2f; // 경사·계단에서 땅에 붙어 있게 살짝 누른다.
             }
+            if (lockedAxis != Vector3.zero) horizontalVelocity -= lockedAxis * Vector3.Dot(horizontalVelocity, lockedAxis);
             if (move.sqrMagnitude > 0.0001f)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(move), settings.turnSpeed * Time.deltaTime);
 
+            // 관성: 같은 직선 방향으로 미는 벨트에 올라서면 그 벨트가 대신한다.
+            var flatPush = new Vector2(push.x, push.z);
+            if (inertia.Active && flatPush != Vector2.zero && Mathf.Abs(Vector2.Dot(flatPush.normalized, inertia.direction)) > 0.99f) inertia = default;
+            var inertiaStep = inertia.Step(Time.deltaTime);
+
             verticalVelocity -= settings.gravity * Time.deltaTime;
-            Vector3 velocity = horizontalVelocity + ConveyorVelocity();
+            Vector3 velocity = horizontalVelocity + push + new Vector3(inertiaStep.x, 0f, inertiaStep.y) / Time.deltaTime;
             velocity.y = verticalVelocity;
             float yBefore = transform.position.y;
             cc.Move(velocity * Time.deltaTime);
+            // 중심점이 벨트 구역을 벗어나면 그 순간 밀던 속도로 관성(마주 보는 벨트에서는 없음).
+            if (onBelt && !facing && !ConveyorBelt.IsOnBelt(Feet())) inertia = ConveyorInertia.Start(flatPush);
             // 바닥에 서 있다가 턱 높이 이하로 내려가는 곳이면 떨어지지 않고 바로 내려선다.
             if (wasGrounded && !cc.isGrounded && verticalVelocity <= 0f && HasGroundBelow(settings.stepHeight))
             {
@@ -130,21 +144,7 @@ namespace SlimeColorMaker
             return false;
         }
 
-        // 발밑 바로 아래(피부 두께 + 0.005 ~ 0.105)에 발바닥 크기의 얇은 상자를 대고 걸친 벨트를 모아 미는 속도를 받는다. 공중이면 0.
-        // 상자 윗면이 발 높이보다 아래라 옆에 벽처럼 선 벨트(바닥이 발 높이)는 잡지 않는다.
-        Vector3 ConveyorVelocity()
-        {
-            if (!cc.isGrounded) return Vector3.zero;
-            float half = cc.radius;
-            var feet = transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius));
-            int count;
-            // 결과가 배열을 꽉 채우면 빠진 것이 있을 수 있으므로 두 배로 늘려 다시 찾는다.
-            while ((count = Physics.OverlapBoxNonAlloc(feet + Vector3.down * (cc.skinWidth + 0.055f), new Vector3(half, 0.05f, half), floorHits, transform.rotation, ~0, QueryTriggerInteraction.Ignore)) == floorHits.Length)
-                floorHits = new Collider[floorHits.Length * 2];
-            touchedBelts.Clear();
-            for (int i = 0; i < count; i++)
-                if (floorHits[i].GetComponentInParent<ConveyorBelt>() is { } belt && !touchedBelts.Contains(belt)) touchedBelts.Add(belt);
-            return ConveyorBelt.PushVelocity(feet, touchedBelts);
-        }
+        // 발밑 가운데: 캡슐 바닥에서 피부 두께만큼 아래(바닥에 서 있으면 바닥 높이).
+        Vector3 Feet() => transform.TransformPoint(cc.center + Vector3.down * Mathf.Max(cc.height / 2f, cc.radius)) + Vector3.down * cc.skinWidth;
     }
 }

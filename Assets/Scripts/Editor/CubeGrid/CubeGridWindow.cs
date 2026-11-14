@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵 편집 창(메뉴 Slime~ColorMaker~/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 붓(블록, 계단, 체크포인트, 색 원천, 목적지, 차단기, 방벽, 컨베이어, 시험 모델)을 고르고,
+    /// 큐브 맵 편집 창(메뉴 Slime~ColorMaker~/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 붓(블록, 계단, 체크포인트, 색 원천, 목적지, 차단기, 방벽, 컨베이어, 컨베이어 꺾임 오른쪽·왼쪽, 시험 모델)을 고르고,
     /// 씬 뷰 도구를 켜고, 블록을 다시 만든다. 색 원천 값과 요구 색은 붓 아래에서 놓기 전에 정한다(놓은 뒤에는 기물을 골라 인스펙터에서 고침).
     /// </summary>
     public class CubeGridWindow : EditorWindow
@@ -54,7 +54,7 @@ namespace SlimeColorMaker
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("붓", EditorStyles.boldLabel);
-            int brush = GUILayout.Toolbar((int)CubeGridEditing.SelectedBrush, CubeGridEditing.BrushNames);
+            int brush = GUILayout.SelectionGrid((int)CubeGridEditing.SelectedBrush, CubeGridEditing.BrushNames, 6);
             if (brush != (int)CubeGridEditing.SelectedBrush) CubeGridEditing.SelectedBrush = (CubeGridEditing.Brush)brush;
             if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.TestModel)
             {
@@ -68,7 +68,7 @@ namespace SlimeColorMaker
                 int side = GUILayout.Toolbar((int)CubeGridEditing.SelectedBarrierSide, CubeGridEditing.BarrierSideNames);
                 if (side != (int)CubeGridEditing.SelectedBarrierSide) CubeGridEditing.SelectedBarrierSide = (CubeGridEditing.BarrierSide)side;
             }
-            bool turns = CubeGridEditing.SelectedBrush is CubeGridEditing.Brush.Stair or CubeGridEditing.Brush.BoomGate or CubeGridEditing.Brush.ConveyorBelt
+            bool turns = CubeGridEditing.SelectedBrush is CubeGridEditing.Brush.Stair or CubeGridEditing.Brush.BoomGate || CubeGridEditing.IsConveyor(CubeGridEditing.SelectedBrush)
                 || (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Barrier && CubeGridEditing.SelectedBarrierSide == CubeGridEditing.BarrierSide.Side);
             if (turns)
             {
@@ -80,6 +80,7 @@ namespace SlimeColorMaker
                         CubeGridEditing.Brush.Stair => ("계단", "오름"),
                         CubeGridEditing.Brush.BoomGate => ("차단기", "지나감"),
                         CubeGridEditing.Brush.ConveyorBelt => ("컨베이어", "흐름"),
+                        CubeGridEditing.Brush.ConveyorCurveRight or CubeGridEditing.Brush.ConveyorCurveLeft => ("컨베이어 꺾임", "나감"),
                         _ => ("방벽", "지나감"),
                     };
                     EditorGUILayout.LabelField(offset == 0 ? $"{what} 방향: 카메라가 보는 쪽으로 {way}" : $"{what} 방향: 카메라가 보는 쪽에서 {offset * 90}° 돌림");
@@ -94,6 +95,7 @@ namespace SlimeColorMaker
                 "차단기는 씬 카메라가 보는 쪽으로 지나가게 놓인다(칸의 카메라 쪽 가장자리에 서고, 초록 선이 막대 자리).\n" +
                 "방벽은 '옆'이면 차단기처럼 칸의 카메라 쪽 옆면에, '위'·'아래'면 칸 윗면·바닥면에 놓인다(초록 사각형이 판 자리).\n" +
                 "컨베이어는 블록처럼 블록 자리에 깔리고(바닥면이면 그 아래 칸), 씬 카메라가 보는 쪽으로 흐른다(초록 화살표).\n" +
+                "컨베이어 꺾임은 들어와서 오른쪽·왼쪽으로 90° 꺾여 씬 카메라가 보는 쪽으로 나간다(초록 꺾인 화살표). 꺾임은 이 칸에서만 일어난다.\n" +
                 "색 원천 값과 요구 색은 붓 아래에서 놓기 전에 정한다. 놓은 기물은 골라서 인스펙터에서 고친다(다시 놓으려면 '씬 뷰 도구 켜기').",
                 MessageType.None);
 

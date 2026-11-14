@@ -5,12 +5,11 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 컨베이어 벨트(2026-11-12, 이동 계열, 프리팹 `ConveyorBelt`). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
-    /// 무늬 모델 넷(`ConveyorBelt1~4`)을 1 → 2 → 3 → 4 → 1 차례로 하나씩 켠다. 차례는 게임 시간으로 정해 씬의 모든 벨트가 같은 순간에 같은 번호를 보이고,
-    /// 일시정지하면 멈춘다. 모델 기준 흐름은 −Z이고 놓을 때 Y축으로 90°씩 돌린다.
-    /// 캐릭터 발바닥이 조금이라도 걸치면 <see cref="ThirdPersonController"/>가 <see cref="PushVelocity"/>만큼 민다(벨트 속도, 2026-11-13).
-    /// 방향은 걸친 벨트 중 중심점에 가까운 벨트와 꺾이는 칸의 대각선(늘인 직선)으로 정한다(<see cref="ConveyorRules"/>).
-    /// 켜져 있는 벨트는 칸으로 찾을 수 있게 등록해 둔다.
+    /// 컨베이어 벨트(2026-11-12, 이동 계열, 프리팹 `ConveyorBelt`·꺾임 `ConveyorBeltCurveR`·`ConveyorBeltCurveL` 2026-11-14). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
+    /// 무늬 모델 넷(직선 `ConveyorBelt1~4`, 꺾임 `ConveyorBeltCurve1~4`·`ConveyorBeltCurveL1~4`)을 1 → 2 → 3 → 4 → 1 차례로 하나씩 켠다.
+    /// 차례는 게임 시간으로 정해 씬의 모든 벨트가 같은 순간에 같은 번호를 보이고, 일시정지하면 멈춘다. 모델 기준 흐름(나가는 쪽)은 −Z이고 놓을 때 Y축으로 90°씩 돌린다.
+    /// 캐릭터 중심점이 벨트 구역(난간 빼고) 안에 있으면 <see cref="ThirdPersonController"/>가 <see cref="TryPush"/>만큼 민다(벨트 속도, 2026-11-14).
+    /// 직선은 똑바로, 꺾임은 안쪽 모서리를 중심으로 돌림판처럼 돌린다(<see cref="ConveyorRules"/>). 켜져 있는 벨트는 칸으로 찾을 수 있게 등록해 둔다.
     /// </summary>
     public class ConveyorBelt : FixtureBase
     {
@@ -18,20 +17,22 @@ namespace SlimeColorMaker
         public const float StepPerFrame = 1f / 16f;
 
         static readonly Dictionary<Vector3Int, ConveyorBelt> ByCell = new();
-        static readonly List<Vector2Int> TouchedCells = new();
-        static readonly Func<Vector2Int, Vector2Int> FlowAtLevel = cell =>
-            ByCell.TryGetValue(new Vector3Int(cell.x, level, cell.y), out var belt) ? belt.Flow : Vector2Int.zero;
-        static int level; // FlowAtLevel이 찾는 칸 높이
+        static readonly Func<Vector2Int, ConveyorCell> BeltAtLevel = cell =>
+            ByCell.TryGetValue(new Vector3Int(cell.x, level, cell.y), out var belt) ? belt.Belt : default;
+        static int level; // BeltAtLevel이 찾는 칸 높이
 
         [SerializeField] ConveyorBeltSettings settings;
 
         [Tooltip("무늬 모델(ConveyorBelt1~4 차례). 하나씩 켠다.")]
         [SerializeField] GameObject[] frames;
 
+        [Tooltip("모양. 꺾임은 모델 기준 −X 쪽(오른쪽 꺾임) 또는 +X 쪽(왼쪽 꺾임)에서 들어와 −Z로 나간다.")]
+        [SerializeField] ConveyorShape shape;
+
         Vector3Int cell;
         int shown = -1;
 
-        /// <summary>흐르는 방향(바닥 평면 x, z의 4방향 단위).</summary>
+        /// <summary>나가는 방향(바닥 평면 x, z의 4방향 단위).</summary>
         Vector2Int Flow
         {
             get
@@ -41,17 +42,31 @@ namespace SlimeColorMaker
             }
         }
 
+        ConveyorCell Belt => new(Flow, shape);
+
         /// <summary>
-        /// 발바닥이 걸친 벨트 <paramref name="touched"/>(한 높이)와 캐릭터 중심점 <paramref name="center"/>로 정한 미는 속도(월드, 유닛/초). 걸친 벨트가 없으면 0.
+        /// 캐릭터 중심점(발밑, y = 바닥 높이) <paramref name="center"/>를 벨트가 이번 프레임(<paramref name="deltaTime"/>초)에 미는 속도(월드, 유닛/초).
+        /// 중심점이 벨트 구역 밖이거나 시간이 흐르지 않으면 false(0). 꺾임은 돌림판으로 돈 만큼의 이동을 속도로 바꾼다.
+        /// <paramref name="facing"/>·<paramref name="lockedAxis"/>는 마주 보는 벨트(<see cref="ConveyorRules.TryPush"/>, 축은 월드 단위 벡터, 없으면 0).
         /// </summary>
-        public static Vector3 PushVelocity(Vector3 center, IReadOnlyList<ConveyorBelt> touched)
+        public static bool TryPush(Vector3 center, float deltaTime, out Vector3 velocity, out bool facing, out Vector3 lockedAxis)
         {
-            if (touched.Count == 0) return Vector3.zero;
-            TouchedCells.Clear();
-            foreach (var belt in touched) TouchedCells.Add(new Vector2Int(belt.cell.x, belt.cell.z));
-            level = touched[0].cell.y;
-            var direction = ConveyorRules.PushDirection(new Vector2(center.x, center.z), TouchedCells, FlowAtLevel);
-            return new Vector3(direction.x, 0f, direction.y) * touched[0].settings.speed;
+            velocity = lockedAxis = Vector3.zero;
+            facing = false;
+            var below = CellBelow(center);
+            if (deltaTime <= 0f || !ByCell.TryGetValue(below, out var belt)) return false;
+            level = below.y;
+            if (!ConveyorRules.TryPush(new Vector2(center.x, center.z), BeltAtLevel, belt.settings.speed * deltaTime, out var step, out facing, out var axis)) return false;
+            velocity = new Vector3(step.x, 0f, step.y) / deltaTime;
+            lockedAxis = new Vector3(axis.x, 0f, axis.y);
+            return true;
+        }
+
+        /// <summary>캐릭터 중심점(발밑)이 벨트 구역 안인가.</summary>
+        public static bool IsOnBelt(Vector3 center)
+        {
+            var below = CellBelow(center);
+            return ByCell.TryGetValue(below, out var belt) && ConveyorRules.InZone(new Vector2Int(below.x, below.z), belt.Belt, new Vector2(center.x, center.z));
         }
 
         /// <summary>
@@ -69,18 +84,37 @@ namespace SlimeColorMaker
             return false;
         }
 
+        /// <summary>바닥 위 점(y = 바닥 높이) 바로 아래 칸.</summary>
+        public static Vector3Int CellBelow(Vector3 point) => CubeGridRules.CellAt(point + Vector3.down * 0.01f);
+
+        /// <summary>바닥 위 점 바로 아래 칸이 벨트인가.</summary>
+        public static bool IsBeltBelow(Vector3 point) => ByCell.ContainsKey(CellBelow(point));
+
         /// <summary>
-        /// 한 점(바닥 흔적의 픽셀 가운데)이 벨트를 따라 움직일 방향(바닥 평면 x, z의 4방향 단위). 점 바로 아래 칸이 벨트면
-        /// 캐릭터와 같은 규칙(걸친 칸 = 그 칸 하나, 중심점 = 그 점)으로 정하고, 아니면 0.
+        /// 바닥 위 점(바닥 흔적 픽셀)을 벨트를 따라 <paramref name="distance"/>(유닛)만큼 옮긴 자리(<see cref="ConveyorRules.TryAdvance"/>, 높이는 그대로).
+        /// 점이 벨트 구역 밖(벨트가 아니거나 난간)이면 false.
         /// </summary>
-        public static Vector2Int PointDirection(Vector3 point)
+        public static bool TryAdvance(Vector3 point, float distance, out Vector3 moved)
         {
-            var below = CubeGridRules.CellAt(point + Vector3.down * 0.05f);
-            if (!ByCell.ContainsKey(below)) return Vector2Int.zero;
-            TouchedCells.Clear();
-            TouchedCells.Add(new Vector2Int(below.x, below.z));
-            level = below.y;
-            return ConveyorRules.PushDirection(new Vector2(point.x, point.z), TouchedCells, FlowAtLevel);
+            level = CellBelow(point).y;
+            bool on = ConveyorRules.TryAdvance(new Vector2(point.x, point.z), distance, BeltAtLevel, out var flat);
+            moved = new Vector3(flat.x, point.y, flat.y);
+            return on;
+        }
+
+        /// <summary>꺾임 벨트 칸 <paramref name="cell"/>에서 점 (x, z)가 든 벨트 자리. 꺾임 벨트가 아니거나 난간이면 false.</summary>
+        public static bool TryCurveSlot(Vector3Int cell, Vector3 point, out Vector2Int slot)
+        {
+            slot = default;
+            return ByCell.TryGetValue(cell, out var belt) && belt.shape != ConveyorShape.Straight
+                && ConveyorRules.TryCurveSlot(new Vector2Int(cell.x, cell.z), belt.Belt, new Vector2(point.x, point.z), out slot);
+        }
+
+        /// <summary>꺾임 벨트 칸 <paramref name="cell"/>의 벨트 자리 가운데(y = <paramref name="height"/>). 꺾임 벨트 칸에서만 부른다.</summary>
+        public static Vector3 CurveSlotCenter(Vector3Int cell, Vector2Int slot, float height)
+        {
+            var point = ConveyorRules.CurveSlotCenter(new Vector2Int(cell.x, cell.z), ByCell[cell].Belt, slot);
+            return new Vector3(point.x, height, point.y);
         }
 
         int Step => (int)(Time.time * settings.speed / StepPerFrame);
