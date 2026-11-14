@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 3인칭 플레이어 이동 수치(2026-11-13, 애셋은 Assets/Data, 그전에는 <see cref="ThirdPersonController"/> 컴포넌트 칸). 애셋이라 Play 모드에서 고친 값도 남는다.
+    /// 3인칭 플레이어 이동 수치(2026-11-13, 애셋은 Assets/Data/Player, 그전에는 <see cref="ThirdPersonController"/> 컴포넌트 칸). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="ThirdPersonController"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/플레이어 이동 설정", fileName = "PlayerMoveSettings")]

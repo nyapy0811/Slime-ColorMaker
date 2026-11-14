@@ -15,88 +15,32 @@ MonoBehaviour:
   pages:
   - items:
     - globalId:
-        globalObjectIdString: GlobalObjectId_V1-1-6fd98c5b293696543b20c768853addc3-102900000-0
-      _typeString: UnityEditor.SceneAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 102900000, guid: 6fd98c5b293696543b20c768853addc3, type: 3}
+        globalObjectIdString: GlobalObjectId_V1-1-dd39300820980534cb4d40c5cda3bc53-102900000-0
+      _typeString: UnityEditor.DefaultAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _obj: {fileID: 102900000, guid: dd39300820980534cb4d40c5cda3bc53, type: 3}
       isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1063098914
+      isFolder: 1
+      isAsset: 0
+      _id: 1050878781
     - globalId:
-        globalObjectIdString: GlobalObjectId_V1-1-293420d2dd712a1429500bac782a8078-102900000-0
-      _typeString: UnityEditor.SceneAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 102900000, guid: 293420d2dd712a1429500bac782a8078, type: 3}
+        globalObjectIdString: GlobalObjectId_V1-1-7b9427641f05d2143a98347e02290cbc-102900000-0
+      _typeString: UnityEditor.DefaultAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _obj: {fileID: 102900000, guid: 7b9427641f05d2143a98347e02290cbc, type: 3}
       isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1043232329
+      isFolder: 1
+      isAsset: 0
+      _id: 1054041014
     - globalId:
-        globalObjectIdString: GlobalObjectId_V1-1-de52ea2ca17d4f24bb6ceaab4acfac43-102900000-0
-      _typeString: UnityEditor.SceneAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 102900000, guid: de52ea2ca17d4f24bb6ceaab4acfac43, type: 3}
+        globalObjectIdString: GlobalObjectId_V1-1-9c53962885c2c4f449125a979d6ad240-102900000-0
+      _typeString: UnityEditor.DefaultAsset, UnityEditor.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      _obj: {fileID: 102900000, guid: 9c53962885c2c4f449125a979d6ad240, type: 3}
       isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1061187054
+      isFolder: 1
+      isAsset: 0
+      _id: 1054772650
     name: Page 1
     _id: 1050270189
-  - items:
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-5c2fdfc91b3cd9c45a6ce31fde74b076-11400000-0
-      _typeString: SlimeColorMaker.PlayerSquashSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1062605454
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-cb506736049f0644c9d2bd9fbe77c5e0-11400000-0
-      _typeString: SlimeColorMaker.CubeGridConfig, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: cb506736049f0644c9d2bd9fbe77c5e0, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1060776871
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-8d5419a019904f845a7a4960b685ac87-11400000-0
-      _typeString: SlimeColorMaker.GameRulesConfig, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: 8d5419a019904f845a7a4960b685ac87, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1043936217
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-46aef7f86d2061249bdb016949f50667-11400000-0
-      _typeString: SlimeColorMaker.MapEnvironmentSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: 46aef7f86d2061249bdb016949f50667, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1014127490
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-5c2fdfc91b3cd9c45a6ce31fde74b076-11400000-0
-      _typeString: SlimeColorMaker.PlayerSquashSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: 5c2fdfc91b3cd9c45a6ce31fde74b076, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1058049369
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-87815d81412baf04189f5cfdf28497b9-11400000-0
-      _typeString: SlimeColorMaker.SoundEventConfig, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: 87815d81412baf04189f5cfdf28497b9, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1060457655
-    - globalId:
-        globalObjectIdString: GlobalObjectId_V1-3-d4274532d7426d54abeec36b12309b0f-11400000-0
-      _typeString: SlimeColorMaker.ThirdPersonCameraSettings, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      _obj: {fileID: 11400000, guid: d4274532d7426d54abeec36b12309b0f, type: 2}
-      isSceneGameObject: 0
-      isFolder: 0
-      isAsset: 1
-      _id: 1044675410
+  - items: []
     name: Page 2
     _id: 1064777864
   - items: []

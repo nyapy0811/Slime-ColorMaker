@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SlimeColorMaker
 {
-    /// <summary>게임 규칙 수치(채널 한도는 고정이라 코어 규칙 <see cref="ColorRules.Limit"/>에 있음). 모든 맵이 같이 쓴다(애셋은 Assets/Data). 맵 매니저가 들고 플레이어와 기물에 나눠 준다.</summary>
+    /// <summary>게임 규칙 수치(채널 한도는 고정이라 코어 규칙 <see cref="ColorRules.Limit"/>에 있음). 모든 맵이 같이 쓴다(애셋은 Assets/Data/Game). 맵 매니저가 들고 플레이어와 기물에 나눠 준다.</summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/게임 규칙", fileName = "GameRulesConfig")]
     public class GameRulesConfig : ScriptableObject
     {

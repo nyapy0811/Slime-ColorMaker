@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 컨베이어 벨트(2026-11-12, 이동 계열, 프리팹 `ConveyorBelt`·꺾임 `ConveyorBeltCurveR`·`ConveyorBeltCurveL` 2026-11-14). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
-    /// 무늬 모델 넷(직선 `ConveyorBelt1~4`, 꺾임 `ConveyorBeltCurve1~4`·`ConveyorBeltCurveL1~4`)을 1 → 2 → 3 → 4 → 1 차례로 하나씩 켠다.
+    /// 컨베이어 벨트(2026-11-12, 이동 계열, 프리팹 `ConveyorBelt` 하나, 2026-11-14 꺾임 프리팹 둘을 합침). 블록 자리(칸 하나)에 깔리고 윗면이 블록 윗면과 같은 높이다.
+    /// 모양(<see cref="Shape"/>: 직진·우회전·좌회전)마다 무늬 모델 넷(직선 `ConveyorBelt1~4`, 우회전 `ConveyorBeltCurve1~4`, 좌회전 `ConveyorBeltCurveL1~4`)을 두고,
+    /// 지금 모양의 넷만 1 → 2 → 3 → 4 → 1 차례로 하나씩 켠다(다른 모양의 무늬는 모두 끔).
     /// 차례는 게임 시간으로 정해 씬의 모든 벨트가 같은 순간에 같은 번호를 보이고, 일시정지하면 멈춘다. 모델 기준 흐름(나가는 쪽)은 −Z이고 놓을 때 Y축으로 90°씩 돌린다.
     /// 캐릭터 중심점이 벨트 구역(난간 빼고) 안에 있으면 <see cref="ThirdPersonController"/>가 <see cref="TryPush"/>만큼 민다(벨트 속도, 2026-11-14).
     /// 직선은 똑바로, 꺾임은 안쪽 모서리를 중심으로 돌림판처럼 돌린다(<see cref="ConveyorRules"/>). 켜져 있는 벨트는 칸으로 찾을 수 있게 등록해 둔다.
@@ -23,10 +26,17 @@ namespace SlimeColorMaker
 
         [SerializeField] ConveyorBeltSettings settings;
 
-        [Tooltip("무늬 모델(ConveyorBelt1~4 차례). 하나씩 켠다.")]
-        [SerializeField] GameObject[] frames;
+        [Tooltip("직진 무늬 모델(ConveyorBelt1~4 차례). 하나씩 켠다.")]
+        [FormerlySerializedAs("frames")]
+        [SerializeField] GameObject[] straightFrames;
 
-        [Tooltip("모양. 꺾임은 모델 기준 −X 쪽(오른쪽 꺾임) 또는 +X 쪽(왼쪽 꺾임)에서 들어와 −Z로 나간다.")]
+        [Tooltip("우회전 무늬 모델(ConveyorBeltCurve1~4 차례). 모델 기준 −X 쪽에서 들어와 −Z로 나간다.")]
+        [SerializeField] GameObject[] rightFrames;
+
+        [Tooltip("좌회전 무늬 모델(ConveyorBeltCurveL1~4 차례). 모델 기준 +X 쪽에서 들어와 −Z로 나간다.")]
+        [SerializeField] GameObject[] leftFrames;
+
+        [Tooltip("모양: 직진(Straight), 우회전(Right), 좌회전(Left). 큐브 맵 편집의 컨베이어 붓이 놓을 때 정한다.")]
         [SerializeField] ConveyorShape shape;
 
         Vector3Int cell;
@@ -43,6 +53,36 @@ namespace SlimeColorMaker
         }
 
         ConveyorCell Belt => new(Flow, shape);
+
+        /// <summary>모양. 바꾸면 그 모양의 첫 무늬만 켠다(에디터에서 놓을 때는 프리팹 오버라이드로 남겨야 하므로 편집 도구가 기록한다).</summary>
+        public ConveyorShape Shape
+        {
+            get => shape;
+            set
+            {
+                shape = value;
+                ShowShape();
+            }
+        }
+
+        GameObject[] Frames => shape switch
+        {
+            ConveyorShape.Right => rightFrames,
+            ConveyorShape.Left => leftFrames,
+            _ => straightFrames,
+        };
+
+        /// <summary>모든 무늬 모델(세 모양).</summary>
+        public IEnumerable<GameObject> AllFrames => straightFrames.Concat(rightFrames).Concat(leftFrames);
+
+        /// <summary>지금 모양의 첫 무늬만 켜고 나머지(다른 모양 포함)는 끈다.</summary>
+        public void ShowShape()
+        {
+            var frames = Frames;
+            foreach (var frame in AllFrames)
+                if (frame != null) frame.SetActive(frames.Length > 0 && frame == frames[0]);
+            shown = -1;
+        }
 
         /// <summary>
         /// 캐릭터 중심점(발밑, y = 바닥 높이) <paramref name="center"/>를 벨트가 이번 프레임(<paramref name="deltaTime"/>초)에 미는 속도(월드, 유닛/초).
@@ -122,6 +162,7 @@ namespace SlimeColorMaker
         protected override void OnEnable()
         {
             base.OnEnable();
+            if (Application.isPlaying) ShowShape(); // 다른 모양의 무늬가 켜져 있으면 끈다(Update는 지금 모양만 넘긴다).
             cell = CubeGridRules.CellAt(transform.position);
             ByCell[cell] = this;
         }
@@ -132,8 +173,31 @@ namespace SlimeColorMaker
             if (ByCell.TryGetValue(cell, out var registered) && registered == this) ByCell.Remove(cell);
         }
 
+#if UNITY_EDITOR
+        // 인스펙터에서 모양을 바꾸면(Play 밖) 그 모양의 무늬로 바꿔 보이고 오버라이드로 남긴다. 씬을 열 때는 이미 맞으므로 아무것도 안 한다.
+        void OnValidate()
+        {
+            if (Application.isPlaying) return;
+            UnityEditor.EditorApplication.delayCall += () =>
+            {
+                if (this == null || !FramesMismatch()) return;
+                foreach (var frame in AllFrames) if (frame != null) UnityEditor.Undo.RecordObject(frame, "컨베이어 모양");
+                ShowShape();
+                foreach (var frame in AllFrames) if (frame != null) UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(frame);
+            };
+        }
+
+        bool FramesMismatch()
+        {
+            var frames = Frames;
+            if (frames == null || frames.Length == 0 || straightFrames == null || rightFrames == null || leftFrames == null) return false;
+            return AllFrames.Any(frame => frame != null && frame.activeSelf && System.Array.IndexOf(frames, frame) < 0) || !frames.Any(frame => frame != null && frame.activeSelf);
+        }
+#endif
+
         void Update()
         {
+            var frames = Frames;
             int index = Step % frames.Length;
             if (index == shown) return;
             for (int i = 0; i < frames.Length; i++) frames[i].SetActive(i == index);

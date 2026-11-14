@@ -49,7 +49,7 @@ namespace SlimeColorMaker
         {
             Current = this;
             entry = mapList.FindByScene(gameObject.scene.name);
-            if (entry == null) Debug.LogError($"[MapManager] 맵 목록에 씬 '{gameObject.scene.name}'이 없다. Assets/Data/MapList에 더한다.", this);
+            if (entry == null) Debug.LogError($"[MapManager] 맵 목록에 씬 '{gameObject.scene.name}'이 없다. Assets/Data/Map/MapList에 더한다.", this);
         }
 
         void OnDestroy()

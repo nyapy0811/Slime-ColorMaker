@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 카메라와 므엥 사이를 가리는 물체를 흐리게 하는 수치(2026-11-08, 애셋은 Assets/Data). 애셋이라 Play 모드에서 고친 값도 남는다.
+    /// 카메라와 므엥 사이를 가리는 물체를 흐리게 하는 수치(2026-11-08, 애셋은 Assets/Data/Camera). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="CameraOcclusionFader"/>.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/카메라 가림 흐림 설정", fileName = "CameraFadeSettings")]

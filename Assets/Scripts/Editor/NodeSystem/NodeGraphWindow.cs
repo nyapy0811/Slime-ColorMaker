@@ -43,7 +43,7 @@ namespace SlimeColorMaker
             var config = NodeGraphEditing.FindConfig();
             if (config == null)
             {
-                EditorGUILayout.HelpBox("기준 치수 애셋(NodeBuildConfig)이 없다. Assets/Data에 만든다.", MessageType.Error);
+                EditorGUILayout.HelpBox("기준 치수 애셋(NodeBuildConfig)이 없다. Assets/Data/Map에 만든다.", MessageType.Error);
                 return;
             }
 

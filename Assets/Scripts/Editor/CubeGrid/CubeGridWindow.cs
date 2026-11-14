@@ -56,7 +56,7 @@ namespace SlimeColorMaker
             }
             if (CubeGridEditing.FindConfig() == null)
             {
-                EditorGUILayout.HelpBox("큐브 맵 설정 애셋(CubeGridConfig)이 없다. Assets/Data에 만든다.", MessageType.Error);
+                EditorGUILayout.HelpBox("큐브 맵 설정 애셋(CubeGridConfig)이 없다. Assets/Data/Map에 만든다.", MessageType.Error);
                 return;
             }
 

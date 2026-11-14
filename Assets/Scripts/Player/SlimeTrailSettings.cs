@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 캐릭터 바닥 흔적 수치(2026-11-13, 애셋은 Assets/Data). 애셋이라 Play 모드에서 고친 값도 남는다.
+    /// 캐릭터 바닥 흔적 수치(2026-11-13, 애셋은 Assets/Data/Player). 애셋이라 Play 모드에서 고친 값도 남는다.
     /// 쓰는 곳: <see cref="SlimeTrail"/>. 픽셀 크기(1/16유닛)와 찍는 넓이(캐릭터 발바닥)는 정해져 있다.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/바닥 흔적 설정", fileName = "SlimeTrailSettings")]

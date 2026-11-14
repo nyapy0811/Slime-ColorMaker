@@ -3,6 +3,7 @@
     "rootNamespace": "SlimeColorMaker",
     "references": [
         "SlimeColorMaker.Assembly",
+        "SlimeColorMaker.Vox",
         "SlimeColorMaker.Vox.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

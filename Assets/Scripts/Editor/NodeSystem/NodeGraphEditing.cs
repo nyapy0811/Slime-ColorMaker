@@ -121,7 +121,7 @@ namespace SlimeColorMaker
             var config = FindConfig();
             if (config == null)
             {
-                Debug.LogError("[노드 편집] 기준 치수 애셋(NodeBuildConfig)이 없다. Assets/Data에 만든다.");
+                Debug.LogError("[노드 편집] 기준 치수 애셋(NodeBuildConfig)이 없다. Assets/Data/Map에 만든다.");
                 return;
             }
             Undo.IncrementCurrentGroup();

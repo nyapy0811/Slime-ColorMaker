@@ -327,6 +327,15 @@ namespace SlimeColorMaker
                 PrefabUtility.RecordPrefabInstancePropertyModifications(mount);
                 PrefabUtility.RecordPrefabInstancePropertyModifications(mount.Pivot);
             }
+            // 컨베이어는 한 프리팹이 세 모양을 갖는다: 고른 모양으로 정하고 그 모양의 무늬만 켠다(오버라이드로 남김).
+            if (IsConveyor(brush) && go.TryGetComponent(out ConveyorBelt belt))
+            {
+                var shape = new SerializedObject(belt);
+                shape.FindProperty("shape").enumValueIndex = (int)SelectedConveyorShape;
+                shape.ApplyModifiedPropertiesWithoutUndo();
+                belt.ShowShape();
+                foreach (var frame in belt.AllFrames) PrefabUtility.RecordPrefabInstancePropertyModifications(frame);
+            }
             if (ValueProperty(go, brush) is { } value) WriteColor(value, BrushValue(brush));
             // 놓은 기물은 고르지 않는다: 큐브 격자가 골라진 채여야 씬 뷰 도구가 꺼지지 않고 이어서 놓을 수 있다.
             return go.GetComponent<FixtureBase>();
@@ -374,12 +383,7 @@ namespace SlimeColorMaker
             Brush.Goal => config.goalPrefab,
             Brush.BoomGate => config.boomGatePrefab,
             Brush.Barrier => config.barrierPrefab,
-            Brush.ConveyorBelt => SelectedConveyorShape switch
-            {
-                ConveyorShape.Right => config.conveyorCurveRightPrefab,
-                ConveyorShape.Left => config.conveyorCurveLeftPrefab,
-                _ => config.conveyorBeltPrefab,
-            },
+            Brush.ConveyorBelt => config.conveyorBeltPrefab,
             Brush.Pillar => config.pillarPrefab,
             _ => config.blockPrefab,
         };
@@ -387,7 +391,7 @@ namespace SlimeColorMaker
         static CubeGridConfig RequireConfig()
         {
             var config = FindConfig();
-            if (config == null) Debug.LogError("[큐브 맵 편집] 큐브 맵 설정 애셋(CubeGridConfig)이 없다. Assets/Data에 만든다.");
+            if (config == null) Debug.LogError("[큐브 맵 편집] 큐브 맵 설정 애셋(CubeGridConfig)이 없다. Assets/Data/Map에 만든다.");
             return config;
         }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵의 프리팹(애셋은 Assets/Data). 블록은 아직 한 종류이고, 블록과 계단의 겉모습은 임시 복셀 모델이다.
+    /// 큐브 맵의 프리팹(애셋은 Assets/Data/Map). 블록은 아직 한 종류이고, 블록과 계단의 겉모습은 임시 복셀 모델이다.
     /// 기물 프리팹은 큐브 맵 편집 도구의 팔레트가 쓴다(지금은 체크포인트·색 원천·목적지·차단기, 2026-11-08 체크포인트·차단기 더함, 시작 지점은 MapRoot 안으로 옮겨 뺌).
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/큐브 맵 설정", fileName = "CubeGridConfig")]
@@ -29,14 +29,8 @@ namespace SlimeColorMaker
         [Tooltip("방벽(문 역할, 칸의 한 면을 덮는 반투명 판, 면은 CellFaceMount로 고름)")]
         public GameObject barrierPrefab;
 
-        [Tooltip("컨베이어 벨트(이동 계열, 블록 자리에 깔림, 모델 기준 −z로 흐름)")]
+        [Tooltip("컨베이어 벨트(이동 계열, 블록 자리에 깔림, 모델 기준 −z로 흐름). 한 프리팹이 직진·우회전·좌회전 무늬를 모두 갖고, 놓을 때 모양을 정한다.")]
         public GameObject conveyorBeltPrefab;
-
-        [Tooltip("컨베이어 오른쪽 꺾임(모델 기준 −x 쪽에서 들어와 −z로 나감)")]
-        public GameObject conveyorCurveRightPrefab;
-
-        [Tooltip("컨베이어 왼쪽 꺾임(모델 기준 +x 쪽에서 들어와 −z로 나감)")]
-        public GameObject conveyorCurveLeftPrefab;
 
         [Header("장식 기둥 (피벗은 칸 가운데, 콜라이더는 모델 형태, static)")]
         [Tooltip("위아래: 받침 + 몸통 + 머리(머리·받침 설정의 한 칸 그룹)")]

@@ -86,7 +86,7 @@ namespace SlimeColorMaker
         {
             if (mapList == null)
             {
-                Debug.LogError("[맵 검사] 맵 매니저에 맵 목록(Assets/Data/MapList)이 연결되지 않았다.");
+                Debug.LogError("[맵 검사] 맵 매니저에 맵 목록(Assets/Data/Map/MapList)이 연결되지 않았다.");
                 return 1;
             }
             int problems = 0;
@@ -220,7 +220,7 @@ namespace SlimeColorMaker
                 .Where(l => l.type == LightType.Directional && (l.gameObject.hideFlags & HideFlags.DontSave) == 0);
             foreach (var light in directional)
             {
-                Debug.LogError($"[맵 검사] 방향광 '{light.name}'이 있다. 태양은 맵 환경 설정(Assets/Data/MapEnvironmentSettings)이 만드므로 지운다(새 씬에 기본으로 생기는 빛 포함).", light);
+                Debug.LogError($"[맵 검사] 방향광 '{light.name}'이 있다. 태양은 맵 환경 설정(Assets/Data/Map/MapEnvironmentSettings)이 만드므로 지운다(새 씬에 기본으로 생기는 빛 포함).", light);
                 problems++;
             }
             return problems;

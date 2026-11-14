@@ -3,7 +3,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 므엥의 말랑말랑한 출렁임 수치(2026-11-08, 애셋은 Assets/Data). 애셋이라 Play 모드에서 고친 값도 Play를 멈춘 뒤 남는다
+    /// 므엥의 말랑말랑한 출렁임 수치(2026-11-08, 애셋은 Assets/Data/Player). 애셋이라 Play 모드에서 고친 값도 Play를 멈춘 뒤 남는다
     /// (보면서 고치는 용도). 쓰는 곳: <see cref="PlayerSquashView"/>.
     /// 출렁임은 둘이다: 위아래로 늘고 눌림(부피 유지), 윗부분이 발밑 기준으로 기울어 흔들림(푸딩 느낌).
     /// 반동 값은 출렁임 속도에 한 번 더하는 양이다(위아래는 늘어나는 비율/초, 기울기는 도/초).

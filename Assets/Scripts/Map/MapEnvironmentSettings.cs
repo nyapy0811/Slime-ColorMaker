@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 환경 수치(2026-11-08, 애셋은 Assets/Data): 하늘·환경 조명·반사·안개·태양. 모든 맵이 MapRoot의 <see cref="MapEnvironment"/>로
+    /// 맵 환경 수치(2026-11-08, 애셋은 Assets/Data/Map): 하늘·환경 조명·반사·안개·태양. 모든 맵이 MapRoot의 <see cref="MapEnvironment"/>로
     /// 같은 애셋을 쓴다(한 곳만 고치면 모든 맵이 바뀜). 애셋이라 Play 모드에서 고친 값도 남고, 고치면 열린 맵에 바로 보인다.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/맵 환경 설정", fileName = "MapEnvironmentSettings")]

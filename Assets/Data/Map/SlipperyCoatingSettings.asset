@@ -15,6 +15,8 @@ MonoBehaviour:
   oil:
     inertiaTime: 2
     material: {fileID: 2100000, guid: 2e01f8338d24f6a43b5f6472195df717, type: 2}
+    finish: {fileID: 11400000, guid: 7874471e14197f840962c01a5d6969cd, type: 2}
   ice:
     inertiaTime: 1.5
     material: {fileID: 2100000, guid: 53004d925dc0aa141845aef5e57d6717, type: 2}
+    finish: {fileID: 11400000, guid: 7874471e14197f840962c01a5d6969cd, type: 2}

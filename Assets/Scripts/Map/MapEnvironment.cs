@@ -13,7 +13,7 @@ namespace SlimeColorMaker
     [DisallowMultipleComponent]
     public class MapEnvironment : MonoBehaviour
     {
-        [Tooltip("맵 환경 설정(Assets/Data/MapEnvironmentSettings). 이 맵만 다르게 하려면 다른 애셋을 넣는다.")]
+        [Tooltip("맵 환경 설정(Assets/Data/Map/MapEnvironmentSettings). 이 맵만 다르게 하려면 다른 애셋을 넣는다.")]
         [SerializeField] MapEnvironmentSettings settings;
 
         Light sun;

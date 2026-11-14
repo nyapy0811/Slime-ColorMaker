@@ -12,6 +12,7 @@ namespace SlimeColorMaker
     /// 칠한 픽셀마다 블록 맨 위 1/16 층 자리에 면을 그린다: 윗면(블록 윗면과 같은 평면), 가장자리 픽셀은 바깥 옆면 띠(높이 1/16, 옆 칸이 블록이면 안 그림).
     /// 같은 줄의 이어진 같은 종류 픽셀은 한 면으로 합친다. 무늬 UV는 월드 좌표라 칸마다 그림 한 장이 반복된다.
     /// 면은 저장하지 않는 숨긴 오브젝트(종류마다 하나)로 만들어 씬 파일에 메시가 남지 않는다. 재질은 깊이를 당기는 Lit Glass라 블록 면과 겹쳐도 깨지지 않는다.
+    /// 종류에 재질감(<see cref="SurfaceFinish"/>)이 있으면 재질의 저장하지 않는 사본에 입혀 쓰고, 재질감 값이 바뀌면 다시 만든다.
     /// 캐릭터는 <see cref="TryGetInertiaTime"/>으로 중심점 아래 픽셀의 관성 시간을 묻는다.
     /// </summary>
     [ExecuteAlways]
@@ -25,6 +26,7 @@ namespace SlimeColorMaker
 
         readonly Dictionary<Vector3Int, byte[]> byCell = new();
         readonly List<GameObject> shown = new();
+        readonly List<Material> finished = new(); // 재질감을 입힌 재질 사본(저장하지 않음)
 
         public SlipperyCoatingSettings Settings
         {
@@ -48,6 +50,8 @@ namespace SlimeColorMaker
         void OnEnable()
         {
             active = this;
+            SurfaceFinish.Changed += OnFinishChanged;
+            SlipperyCoatingSettings.Changed += RebuildSoon;
 #if UNITY_EDITOR
             Undo.undoRedoPerformed += Rebuild;
 #endif
@@ -56,11 +60,31 @@ namespace SlimeColorMaker
 
         void OnDisable()
         {
+            SurfaceFinish.Changed -= OnFinishChanged;
+            SlipperyCoatingSettings.Changed -= RebuildSoon;
 #if UNITY_EDITOR
             Undo.undoRedoPerformed -= Rebuild;
 #endif
             Clear();
             if (active == this) active = null;
+        }
+
+        void OnFinishChanged(SurfaceFinish finish)
+        {
+            if (settings != null && (settings.oil.finish == finish || settings.ice.finish == finish)) RebuildSoon();
+        }
+
+        // 설정·재질감의 인스펙터 변경(OnValidate) 중에는 오브젝트를 만들 수 없어 한 번 미룬다.
+        void RebuildSoon()
+        {
+#if UNITY_EDITOR
+            EditorApplication.delayCall += () =>
+            {
+                if (this != null && isActiveAndEnabled) Rebuild();
+            };
+#else
+            Rebuild();
+#endif
         }
 
         /// <summary>격자 데이터에서 찾기 표와 면을 다시 만든다.</summary>
@@ -76,7 +100,14 @@ namespace SlimeColorMaker
             if (settings == null) return;
             foreach (var kind in new[] { CoatingKind.Oil, CoatingKind.Ice })
             {
-                var material = settings.For(kind).material;
+                var entry = settings.For(kind);
+                var material = entry.material;
+                if (material != null && entry.finish != null)
+                {
+                    material = new Material(material) { name = $"{material.name} ({entry.finish.name})", hideFlags = HideFlags.HideAndDontSave };
+                    entry.finish.ApplyTo(material);
+                    finished.Add(material);
+                }
                 var mesh = BuildMesh(data, kind);
                 if (mesh == null) continue;
                 var go = new GameObject($"Coating {kind}") { hideFlags = HideFlags.HideAndDontSave };
@@ -99,6 +130,8 @@ namespace SlimeColorMaker
                 DestroyNow(go);
             }
             shown.Clear();
+            foreach (var material in finished) DestroyNow(material);
+            finished.Clear();
         }
 
         static void DestroyNow(Object target)

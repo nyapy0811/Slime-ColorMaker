@@ -12,10 +12,10 @@ namespace SlimeColorMaker
         [Tooltip("따라갈 캐릭터")]
         public Transform target;
 
-        [Tooltip("3인칭 카메라 설정(Assets/Data/ThirdPersonCameraSettings)")]
+        [Tooltip("3인칭 카메라 설정(Assets/Data/Camera/ThirdPersonCameraSettings)")]
         [SerializeField] ThirdPersonCameraSettings settings;
 
-        [Tooltip("카메라 당기기 설정(Assets/Data/CameraCollisionSettings). 비우면 당기지 않는다.")]
+        [Tooltip("카메라 당기기 설정(Assets/Data/Camera/CameraCollisionSettings). 비우면 당기지 않는다.")]
         [SerializeField] CameraCollisionSettings collision;
 
         Camera view;
