@@ -832,7 +832,8 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 1
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: URP_SCREEN_SPACE_REFLECTION
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

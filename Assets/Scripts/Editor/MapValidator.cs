@@ -77,6 +77,8 @@ namespace SlimeColorMaker
 
             if (managers.Count == 1) problems += CheckMapList(scene, managers[0].MapList);
             if (managers.Count == 1) problems += CheckEnvironment(scene, managers[0]);
+            if (managers.Count == 1 && scene == SceneManager.GetActiveScene() && MapLightBaker.IsStale(scene))
+                Debug.LogWarning($"[맵 검사] {scene.name}: 조명이 구워지지 않았거나 맵이 바뀐 뒤 다시 굽지 않았다. 씬을 저장하면 구워진다(또는 Slime~ColorMaker~/조명 굽기).");
 
             return problems;
         }
@@ -205,7 +207,7 @@ namespace SlimeColorMaker
 
         /// <summary>
         /// 맵 환경(하늘·조명·태양)은 MapRoot의 맵 환경(<see cref="MapEnvironment"/>)이 설정 애셋에서 적용한다.
-        /// 맵 환경이 없거나 설정이 비었음, 씬에 저장된 방향광(태양은 맵 환경이 숨겨서 만듦)을 알린다.
+        /// 맵 환경이 없거나 설정이 비었음, 태양 말고 다른 방향광(태양은 맵 환경이 숨겨서 만들어 씬에 저장함)을 알린다.
         /// </summary>
         static int CheckEnvironment(Scene scene, MapManager manager)
         {
@@ -216,8 +218,13 @@ namespace SlimeColorMaker
                 Debug.LogError("[맵 검사] MapRoot에 맵 환경(MapEnvironment)이 없거나 맵 환경 설정이 비었다.", manager);
                 problems++;
             }
+            else if (new SerializedObject(environment).FindProperty("settings").objectReferenceValue is MapEnvironmentSettings settings && settings.reflection == null)
+            {
+                Debug.LogError("[맵 검사] 맵 환경 설정에 반사 설정(Assets/Data/Map/ReflectionSettings)이 연결되지 않았다.", settings);
+                problems++;
+            }
             var directional = Roots(scene).SelectMany(root => root.GetComponentsInChildren<Light>(true))
-                .Where(l => l.type == LightType.Directional && (l.gameObject.hideFlags & HideFlags.DontSave) == 0);
+                .Where(l => l.type == LightType.Directional && l.gameObject.name != MapEnvironment.SunName);
             foreach (var light in directional)
             {
                 Debug.LogError($"[맵 검사] 방향광 '{light.name}'이 있다. 태양은 맵 환경 설정(Assets/Data/Map/MapEnvironmentSettings)이 만드므로 지운다(새 씬에 기본으로 생기는 빛 포함).", light);
@@ -244,7 +251,7 @@ namespace SlimeColorMaker
             return problems;
         }
 
-        static bool IsMapScene(Scene scene) => Roots(scene).Any(root => root.GetComponentInChildren<MapManager>(true) != null);
+        internal static bool IsMapScene(Scene scene) => Roots(scene).Any(root => root.GetComponentInChildren<MapManager>(true) != null);
 
         static GameObject[] Roots(Scene scene) => scene.GetRootGameObjects();
     }

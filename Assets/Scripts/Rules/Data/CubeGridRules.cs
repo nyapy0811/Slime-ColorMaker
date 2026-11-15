@@ -160,6 +160,70 @@ namespace SlimeColorMaker
 
         static bool SameGroup(CubePillar a, CubePillar b) => a.hasTop == b.hasTop && a.hasBase == b.hasBase;
 
+        /// <summary>
+        /// 덮인 빈 칸 덩어리(방·굴·처마 밑): 같은 열(x, z)의 위와 아래 둘 다에 찬 칸(블록·계단·기둥)이 있는 빈 칸을, 면으로 이어진 덩어리로 묶는다.
+        /// 아래가 없는 칸(맵 밑)은 빼고, <paramref name="minCells"/>칸보다 작은 덩어리도 뺀다. 실내 반사 탐침이 덩어리마다 하나씩 놓인다.
+        /// </summary>
+        public static List<CoveredRegion> CoveredRegions(CubeGridData data, int minCells)
+        {
+            var filled = new HashSet<Vector3Int>(data.blocks);
+            foreach (var stair in data.stairs) filled.Add(stair.cell);
+            foreach (var pillar in data.pillars) filled.Add(pillar.cell);
+
+            // 열마다 가장 낮은·높은 찬 칸
+            var columns = new Dictionary<Vector2Int, (int low, int high)>();
+            foreach (var cell in filled)
+            {
+                var key = new Vector2Int(cell.x, cell.z);
+                columns[key] = columns.TryGetValue(key, out var range) ? (Math.Min(range.low, cell.y), Math.Max(range.high, cell.y)) : (cell.y, cell.y);
+            }
+            var covered = new HashSet<Vector3Int>();
+            foreach (var (column, range) in columns)
+                for (int y = range.low + 1; y < range.high; y++)
+                {
+                    var cell = new Vector3Int(column.x, y, column.y);
+                    if (!filled.Contains(cell)) covered.Add(cell);
+                }
+
+            var regions = new List<CoveredRegion>();
+            var queue = new Queue<Vector3Int>();
+            var cells = new List<Vector3Int>();
+            while (covered.Count > 0)
+            {
+                var start = default(Vector3Int);
+                foreach (var cell in covered) { start = cell; break; }
+                covered.Remove(start);
+                queue.Enqueue(start);
+                cells.Clear();
+                while (queue.Count > 0)
+                {
+                    var cell = queue.Dequeue();
+                    cells.Add(cell);
+                    foreach (var step in FaceSteps)
+                        if (covered.Remove(cell + step)) queue.Enqueue(cell + step);
+                }
+                if (cells.Count < Math.Max(1, minCells)) continue;
+
+                var min = cells[0];
+                var max = cells[0];
+                foreach (var cell in cells) { min = Vector3Int.Min(min, cell); max = Vector3Int.Max(max, cell); }
+                var middle = (Vector3)(min + max) * 0.5f;
+                var center = cells[0];
+                foreach (var cell in cells)
+                    if ((cell - middle).sqrMagnitude < (center - middle).sqrMagnitude || ((cell - middle).sqrMagnitude == (center - middle).sqrMagnitude && Less(cell, center)))
+                        center = cell;
+                regions.Add(new CoveredRegion(min, max, center, cells.Count));
+            }
+            regions.Sort((a, b) => Less(a.center, b.center) ? -1 : a.center == b.center ? 0 : 1);
+            return regions;
+        }
+
+        static readonly Vector3Int[] FaceSteps =
+            { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down, new(0, 0, 1), new(0, 0, -1) };
+
+        // 칸 순서(결과를 늘 같은 순서로): y, z, x 순.
+        static bool Less(Vector3Int a, Vector3Int b) => a.y != b.y ? a.y < b.y : a.z != b.z ? a.z < b.z : a.x < b.x;
+
         /// <summary>방향 횟수를 0~3으로 맞춘다.</summary>
         public static int Turn(int turn) => (turn % 4 + 4) % 4;
 

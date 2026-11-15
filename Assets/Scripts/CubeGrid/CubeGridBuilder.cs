@@ -7,8 +7,8 @@ using UnityEditor;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 그 칸 모양의 기둥 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
-    /// 기둥 모양은 지을 때마다 그룹으로 계산하므로(<see cref="CubeGridRules.PillarShapes"/>) 모양이 바뀐 칸은 다른 묶음으로 옮겨진다.
+    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 기둥 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
+    /// 기둥 모양은 지을 때마다 그룹으로 계산해(<see cref="CubeGridRules.PillarShapes"/>) 칸마다 <see cref="PillarView.Shape"/>로 맞춘다(모양이 바뀌어도 다시 만들지 않음).
     /// 묶음은 '만든 부분' 바로 아래 한 단계다(지형 면 숨기기 <see cref="CubeFaceCuller"/>가 묶음 아래 오브젝트를 칸 하나로 본다).
     /// 블록 윗면 코팅은 '코팅' 오브젝트의 <see cref="SlipperyCoatingView"/>가 데이터에서 다시 그린다.
     /// 에디터(Play 밖)에서는 프리팹 연결을 지키고 Undo에 기록하고, 런타임(나중의 UGC 맵)에는 보통의 Instantiate·Destroy다.
@@ -31,11 +31,7 @@ namespace SlimeColorMaker
             foreach (var stair in grid.Data.stairs) stairs.TryAdd(stair.cell, CubeGridRules.StairRotation(stair.turn));
             BuildKind(Child(parts, "계단"), stairs, config.stairPrefab, "Stair");
 
-            var shapes = CubeGridRules.PillarShapes(grid.Data);
-            BuildPillars(Child(parts, "기둥 위아래"), shapes, PillarShape.Full, config.pillarPrefab, "Pillar");
-            BuildPillars(Child(parts, "기둥 아래"), shapes, PillarShape.Base, config.pillarBasePrefab, "PillarBase");
-            BuildPillars(Child(parts, "기둥 중간"), shapes, PillarShape.Shaft, config.pillarShaftPrefab, "PillarShaft");
-            BuildPillars(Child(parts, "기둥 위"), shapes, PillarShape.Top, config.pillarTopPrefab, "PillarTop");
+            BuildPillars(Child(parts, "기둥"), CubeGridRules.PillarShapes(grid.Data), config.pillarPrefab);
 
             var coating = Child(parts, "코팅");
             if (!coating.TryGetComponent(out SlipperyCoatingView view)) view = coating.gameObject.AddComponent<SlipperyCoatingView>();
@@ -43,12 +39,32 @@ namespace SlimeColorMaker
             view.Rebuild();
         }
 
-        static void BuildPillars(Transform parent, Dictionary<Vector3Int, PillarShape> shapes, PillarShape shape, GameObject prefab, string namePrefix)
+        // 기둥: 칸마다 프리팹 하나를 두고 모양 값만 맞춘다.
+        static void BuildPillars(Transform parent, Dictionary<Vector3Int, PillarShape> shapes, GameObject prefab)
         {
             var wanted = new Dictionary<Vector3Int, Quaternion>();
-            foreach (var (cell, cellShape) in shapes)
-                if (cellShape == shape) wanted.Add(cell, Quaternion.identity);
-            BuildKind(parent, wanted, prefab, namePrefix);
+            foreach (var cell in shapes.Keys) wanted.Add(cell, Quaternion.identity);
+            BuildKind(parent, wanted, prefab, "Pillar");
+            foreach (Transform part in parent)
+                if (part.TryGetComponent(out PillarView view) && shapes.TryGetValue(CubeGridRules.CellAt(part.position), out var shape))
+                    SetPillarShape(view, shape);
+        }
+
+        static void SetPillarShape(PillarView view, PillarShape shape)
+        {
+            if (view.Shape == shape && !view.ShapeMismatch()) return;
+#if UNITY_EDITOR
+            if (Recording)
+            {
+                Undo.RecordObject(view, UndoName);
+                foreach (var model in view.Models) if (model != null) Undo.RecordObject(model, UndoName);
+                view.Shape = shape;
+                PrefabUtility.RecordPrefabInstancePropertyModifications(view);
+                foreach (var model in view.Models) if (model != null) PrefabUtility.RecordPrefabInstancePropertyModifications(model);
+                return;
+            }
+#endif
+            view.Shape = shape;
         }
 
         // 한 종류: 칸 중심에 놓고, 자리와 방향이 데이터와 같은 것만 남긴다.

@@ -5,6 +5,52 @@ namespace SlimeColorMaker
 {
     public class CubeGridRulesTests
     {
+        // 바닥(y = -1) 5×5 위에 벽·천장(y = 0~2)으로 닫힌 방: 안쪽 3×2×3 = 18칸.
+        static CubeGridData ClosedRoom()
+        {
+            var data = new CubeGridData();
+            for (int x = -2; x <= 2; x++)
+            for (int z = -2; z <= 2; z++)
+            for (int y = -1; y <= 2; y++)
+            {
+                bool shell = y == -1 || y == 2 || Mathf.Abs(x) == 2 || Mathf.Abs(z) == 2;
+                if (shell) CubeGridRules.AddBlock(data, new Vector3Int(x, y, z));
+            }
+            return data;
+        }
+
+        [Test]
+        public void CoveredRegions_FindRoomInside()
+        {
+            var regions = CubeGridRules.CoveredRegions(ClosedRoom(), 4);
+            Assert.AreEqual(1, regions.Count);
+            Assert.AreEqual(new Vector3Int(-1, 0, -1), regions[0].min);
+            Assert.AreEqual(new Vector3Int(1, 1, 1), regions[0].max);
+            Assert.AreEqual(18, regions[0].cellCount);
+            Assert.AreEqual(new Vector3Int(0, 0, 0), regions[0].center);
+        }
+
+        [Test]
+        public void CoveredRegions_RoomWithDoorStillCovered()
+        {
+            var data = ClosedRoom();
+            CubeGridRules.Remove(data, new Vector3Int(0, 0, -2));
+            CubeGridRules.Remove(data, new Vector3Int(0, 1, -2));
+            var regions = CubeGridRules.CoveredRegions(data, 4);
+            Assert.AreEqual(1, regions.Count);
+            Assert.AreEqual(20, regions[0].cellCount); // 문 자리 두 칸도 천장 아래
+        }
+
+        [Test]
+        public void CoveredRegions_SkipOpenGroundBelowMapAndSmallOnes()
+        {
+            var data = new CubeGridData();
+            for (int x = 0; x < 3; x++) CubeGridRules.AddBlock(data, new Vector3Int(x, -1, 0));
+            CubeGridRules.AddBlock(data, new Vector3Int(0, 3, 0)); // 떠 있는 블록 하나: 그 아래 세 칸
+            Assert.AreEqual(0, CubeGridRules.CoveredRegions(data, 4).Count);
+            Assert.AreEqual(1, CubeGridRules.CoveredRegions(data, 3).Count);
+        }
+
         [Test]
         public void CellPositions_FollowV1Rule()
         {

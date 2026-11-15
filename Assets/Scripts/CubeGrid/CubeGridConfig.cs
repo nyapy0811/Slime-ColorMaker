@@ -33,17 +33,8 @@ namespace SlimeColorMaker
         public GameObject conveyorBeltPrefab;
 
         [Header("장식 기둥 (피벗은 칸 가운데, 콜라이더는 모델 형태, static)")]
-        [Tooltip("위아래: 받침 + 몸통 + 머리(머리·받침 설정의 한 칸 그룹)")]
+        [Tooltip("기둥(PillarView). 한 프리팹이 모양 넷(몸통만·받침·머리·받침 + 머리)의 모델을 모두 갖고, 빌더가 칸마다 모양을 정한다.")]
         public GameObject pillarPrefab;
-
-        [Tooltip("아래: 받침 + 몸통(받침 설정 그룹의 맨 아래 칸)")]
-        public GameObject pillarBasePrefab;
-
-        [Tooltip("중간: 몸통만(그룹의 가운데 칸, 또는 머리·받침이 없는 설정)")]
-        public GameObject pillarShaftPrefab;
-
-        [Tooltip("위: 몸통 + 머리(머리 설정 그룹의 맨 위 칸)")]
-        public GameObject pillarTopPrefab;
 
         [Header("블록 윗면 코팅")]
         [Tooltip("미끄러운 코팅 설정(기름·얼음의 관성 시간과 재질). 빌더가 '만든 부분/코팅'의 겉모습에 넘긴다.")]

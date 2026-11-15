@@ -9,16 +9,18 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 블록 윗면 코팅의 겉모습과 찾기. 큐브 격자 빌더가 '만든 부분/코팅'에 두고, 켜질 때와 데이터가 바뀔 때 다시 만든다.
-    /// 칠한 픽셀마다 블록 맨 위 1/16 층 자리에 면을 그린다: 윗면(블록 윗면과 같은 평면), 가장자리 픽셀은 바깥 옆면 띠(높이 1/16, 옆 칸이 블록이면 안 그림).
+    /// 칠한 픽셀마다 블록 윗면과 같은 평면에 윗면만 그린다(옆면 없음).
     /// 같은 줄의 이어진 같은 종류 픽셀은 한 면으로 합친다. 무늬 UV는 월드 좌표라 칸마다 그림 한 장이 반복된다.
     /// 면은 저장하지 않는 숨긴 오브젝트(종류마다 하나)로 만들어 씬 파일에 메시가 남지 않는다. 재질은 깊이를 당기는 Lit Glass라 블록 면과 겹쳐도 깨지지 않는다.
     /// 종류에 재질감(<see cref="SurfaceFinish"/>)이 있으면 재질의 저장하지 않는 사본에 입혀 쓰고, 재질감 값이 바뀌면 다시 만든다.
     /// 캐릭터는 <see cref="TryGetInertiaTime"/>으로 중심점 아래 픽셀의 관성 시간을 묻는다.
+    /// Play 중에는 평면 반사(<see cref="PlanarReflection"/>)를 같은 오브젝트에 붙이고, 다시 만들 때마다 코팅 높이(윗면 y)와 범위를 알려 준다.
     /// </summary>
     [ExecuteAlways]
     public class SlipperyCoatingView : MonoBehaviour
     {
         const float Pixel = 1f / CubeGridRules.CoatingPixels;
+        const string PlanarReflectionKeyword = "_PLANAR_REFLECTION"; // Lit Glass의 평면 반사(PlanarReflection.hlsl)
 
         [SerializeField] SlipperyCoatingSettings settings;
 
@@ -26,7 +28,7 @@ namespace SlimeColorMaker
 
         readonly Dictionary<Vector3Int, byte[]> byCell = new();
         readonly List<GameObject> shown = new();
-        readonly List<Material> finished = new(); // 재질감을 입힌 재질 사본(저장하지 않음)
+        readonly List<Material> finished = new(); // 재질감·평면 반사 키워드를 입힌 재질 사본(저장하지 않음)
 
         public SlipperyCoatingSettings Settings
         {
@@ -98,17 +100,20 @@ namespace SlimeColorMaker
                 if (coating.pixels != null && coating.pixels.Length == CubeGridRules.CoatingPixels * CubeGridRules.CoatingPixels)
                     byCell[coating.cell] = coating.pixels;
             if (settings == null) return;
+            UpdateReflection();
             foreach (var kind in new[] { CoatingKind.Oil, CoatingKind.Ice })
             {
                 var entry = settings.For(kind);
+                // 재질은 늘 저장하지 않는 사본에 재질감과 평면 반사 키워드를 입혀 쓴다(재질 인스펙터가 모르는 키워드를 지워도 영향 없음).
                 var material = entry.material;
-                if (material != null && entry.finish != null)
+                if (material != null)
                 {
-                    material = new Material(material) { name = $"{material.name} ({entry.finish.name})", hideFlags = HideFlags.HideAndDontSave };
-                    entry.finish.ApplyTo(material);
+                    material = new Material(material) { name = entry.finish != null ? $"{material.name} ({entry.finish.name})" : material.name, hideFlags = HideFlags.HideAndDontSave };
+                    if (entry.finish != null) entry.finish.ApplyTo(material);
+                    material.EnableKeyword(PlanarReflectionKeyword);
                     finished.Add(material);
                 }
-                var mesh = BuildMesh(data, kind);
+                var mesh = BuildMesh(kind);
                 if (mesh == null) continue;
                 var go = new GameObject($"Coating {kind}") { hideFlags = HideFlags.HideAndDontSave };
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
@@ -117,6 +122,25 @@ namespace SlimeColorMaker
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 shown.Add(go);
             }
+        }
+
+        // 코팅 높이마다 범위(윗면 높이 둘레 얇은 상자)를 평면 반사에 알린다. Play 중에만.
+        void UpdateReflection()
+        {
+            if (!Application.isPlaying) return;
+            if (!TryGetComponent(out PlanarReflection reflection)) reflection = gameObject.AddComponent<PlanarReflection>();
+            var planes = new Dictionary<float, Bounds>();
+            foreach (var cell in byCell.Keys)
+            {
+                float top = cell.y + 1f;
+                var bounds = new Bounds(new Vector3(cell.x, top, cell.z), new Vector3(1f, 0.1f, 1f));
+                if (planes.TryGetValue(top, out var all)) all.Encapsulate(bounds);
+                else all = bounds;
+                planes[top] = all;
+            }
+            var list = new List<(float, Bounds)>();
+            foreach (var (top, bounds) in planes) list.Add((top, bounds));
+            reflection.SetPlanes(list);
         }
 
         void Clear()
@@ -141,7 +165,7 @@ namespace SlimeColorMaker
             else DestroyImmediate(target);
         }
 
-        Mesh BuildMesh(CubeGridData data, CoatingKind kind)
+        Mesh BuildMesh(CoatingKind kind)
         {
             var vertices = new List<Vector3>();
             var normals = new List<Vector3>();
@@ -165,12 +189,6 @@ namespace SlimeColorMaker
                             new Vector2(x0 + 0.5f, z0 + 0.5f), new Vector2(x0 + 0.5f, z1 + 0.5f), new Vector2(x1 + 0.5f, z1 + 0.5f), new Vector2(x1 + 0.5f, z0 + 0.5f));
                         x = end;
                     }
-                // 가장자리 픽셀의 바깥 옆면 띠(옆 칸이 블록이면 가려지므로 안 그림).
-                float bottom = top - Pixel;
-                if (!CubeGridRules.HasBlock(data, cell + Vector3Int.left)) EdgeRun(pixels, i => i * n, left, Vector3.left, false, top, bottom, back);
-                if (!CubeGridRules.HasBlock(data, cell + Vector3Int.right)) EdgeRun(pixels, i => i * n + n - 1, left + 1f, Vector3.right, false, top, bottom, back);
-                if (!CubeGridRules.HasBlock(data, cell + new Vector3Int(0, 0, -1))) EdgeRun(pixels, i => i, back, Vector3.back, true, top, bottom, left);
-                if (!CubeGridRules.HasBlock(data, cell + new Vector3Int(0, 0, 1))) EdgeRun(pixels, i => (n - 1) * n + i, back + 1f, Vector3.forward, true, top, bottom, left);
             }
             if (vertices.Count == 0) return null;
 
@@ -182,27 +200,6 @@ namespace SlimeColorMaker
             mesh.SetTriangles(triangles, 0);
             mesh.RecalculateBounds();
             return mesh;
-
-            // 한 가장자리(픽셀 줄)의 이어진 같은 종류 픽셀을 바깥 옆면 띠로. alongX면 띠가 x 방향으로 뻗는다(앞·뒤 면).
-            void EdgeRun(byte[] row, System.Func<int, int> indexOf, float plane, Vector3 normal, bool alongX, float high, float low, float start)
-            {
-                for (int i = 0; i < n; i++)
-                {
-                    if (row[indexOf(i)] != code) continue;
-                    int end = i;
-                    while (end + 1 < n && row[indexOf(end + 1)] == code) end++;
-                    float a = start + i * Pixel, b = start + (end + 1) * Pixel;
-                    Vector3 Point(float along, float y) => alongX ? new Vector3(along, y, plane) : new Vector3(plane, y, along);
-                    // 바깥에서 볼 때 시계 방향이 되게 감는 순서를 고른다.
-                    bool flip = alongX ? normal.z > 0f : normal.x < 0f;
-                    var v0 = Point(a, low); var v1 = Point(a, high); var v2 = Point(b, high); var v3 = Point(b, low);
-                    // 무늬는 그림의 맨 위 한 줄(v 1 − 1/16 ~ 1)을 쓴다.
-                    var u0 = new Vector2(a + 0.5f, 1f - Pixel); var u1 = new Vector2(a + 0.5f, 1f); var u2 = new Vector2(b + 0.5f, 1f); var u3 = new Vector2(b + 0.5f, 1f - Pixel);
-                    if (flip) AddQuad(v3, v2, v1, v0, normal, u3, u2, u1, u0);
-                    else AddQuad(v0, v1, v2, v3, normal, u0, u1, u2, u3);
-                    i = end;
-                }
-            }
 
             void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 normal, Vector2 ua, Vector2 ub, Vector2 uc, Vector2 ud)
             {

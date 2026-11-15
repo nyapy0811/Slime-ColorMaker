@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 환경 수치(애셋은 Assets/Data/Map): 하늘·환경 조명·반사·안개·태양. 모든 맵이 MapRoot의 <see cref="MapEnvironment"/>로
+    /// 맵 환경 수치(애셋은 Assets/Data/Map): 하늘·환경 조명·반사(반사 설정 애셋을 가리킴)·안개·태양·구운 조명. 모든 맵이 MapRoot의 <see cref="MapEnvironment"/>로
     /// 같은 애셋을 쓴다(한 곳만 고치면 모든 맵이 바뀜). 애셋이라 Play 모드에서 고친 값도 남고, 고치면 열린 맵에 바로 보인다.
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/맵 환경 설정", fileName = "MapEnvironmentSettings")]
@@ -35,14 +35,8 @@ namespace SlimeColorMaker
         [Range(0f, 8f)] public float ambientIntensity = 1f;
 
         [Header("반사")]
-        [Tooltip("반사 방식: Skybox(하늘 상자를 비춤), Custom(아래 큐브맵을 비춤, 비우면 반사 없음)")]
-        public DefaultReflectionMode reflectionMode = DefaultReflectionMode.Custom;
-
-        [Tooltip("Custom 방식에서 비출 큐브맵")]
-        public Cubemap customReflection;
-
-        [Tooltip("반사 세기")]
-        [Range(0f, 1f)] public float reflectionIntensity = 1f;
+        [Tooltip("반사 설정(Assets/Data/Map/ReflectionSettings): ① 평면 반사 → ② 실내 반사 탐침 → ③ 하늘 반사 순서로 쓰는 반사의 값이 모두 여기 있다.")]
+        public ReflectionSettings reflection;
 
         [Header("안개")]
         [Tooltip("안개를 켠다")]
@@ -78,6 +72,13 @@ namespace SlimeColorMaker
 
         [Tooltip("그림자 짙기")]
         [Range(0f, 1f)] public float sunShadowStrength = 1f;
+
+        [Header("구운 조명 (바꾸면 맵을 저장할 때 다시 구움)")]
+        [Tooltip("태양 빛 번짐 세기: 태양 빛이 블록에 튕겨 주변을 밝히는 정도(구운 조명에 들어감). 0이면 번지지 않는다.")]
+        [Range(0f, 4f)] public float sunBounce = 1f;
+
+        [Tooltip("빛 번짐 탐침 간격(유닛). 작을수록 빛 번짐이 촘촘하지만 굽기가 느리고 데이터가 커진다. 1이면 블록 한 칸.")]
+        [Range(0.25f, 3f)] public float probeSpacing = 1f;
 
         void OnValidate() => Changed?.Invoke();
     }

@@ -60,6 +60,23 @@ namespace SlimeColorMaker
     /// <summary>기둥 한 칸의 모양: 몸통만, 받침 + 몸통, 몸통 + 머리, 받침 + 몸통 + 머리.</summary>
     public enum PillarShape { Shaft, Base, Top, Full }
 
+    /// <summary>덮인 빈 칸 덩어리(<see cref="CubeGridRules.CoveredRegions"/>): 칸 범위, 가운데에 가장 가까운 칸, 칸 수.</summary>
+    public readonly struct CoveredRegion
+    {
+        public readonly Vector3Int min;
+        public readonly Vector3Int max;
+        public readonly Vector3Int center;
+        public readonly int cellCount;
+
+        public CoveredRegion(Vector3Int min, Vector3Int max, Vector3Int center, int cellCount)
+        {
+            this.min = min;
+            this.max = max;
+            this.center = center;
+            this.cellCount = cellCount;
+        }
+    }
+
     /// <summary>블록 윗면 코팅의 종류(미끄러운 바닥). 없음, 기름, 얼음.</summary>
     public enum CoatingKind : byte { None, Oil, Ice }
 

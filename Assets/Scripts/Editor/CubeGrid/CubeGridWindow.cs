@@ -81,7 +81,11 @@ namespace SlimeColorMaker
                         };
                     }
                 }
-                if (GUILayout.Button("다시 만들기")) CubeGridEditing.Rebuild(grid);
+                if (GUILayout.Button(new GUIContent("다시 만들기", "블록·계단·기둥을 데이터에서 모두 다시 만들고 조명을 굽는다(백그라운드)")))
+                {
+                    CubeGridEditing.Rebuild(grid);
+                    MapLightBaker.BakeMap(grid.gameObject.scene);
+                }
             }
 
             EditorGUILayout.Space();
