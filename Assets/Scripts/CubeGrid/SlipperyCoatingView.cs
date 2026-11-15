@@ -14,13 +14,11 @@ namespace SlimeColorMaker
     /// 면은 저장하지 않는 숨긴 오브젝트(종류마다 하나)로 만들어 씬 파일에 메시가 남지 않는다. 재질은 깊이를 당기는 Lit Glass라 블록 면과 겹쳐도 깨지지 않는다.
     /// 종류에 재질감(<see cref="SurfaceFinish"/>)이 있으면 재질의 저장하지 않는 사본에 입혀 쓰고, 재질감 값이 바뀌면 다시 만든다.
     /// 캐릭터는 <see cref="TryGetInertiaTime"/>으로 중심점 아래 픽셀의 관성 시간을 묻는다.
-    /// Play 중에는 평면 반사(<see cref="PlanarReflection"/>)를 같은 오브젝트에 붙이고, 다시 만들 때마다 코팅 높이(윗면 y)와 범위를 알려 준다.
     /// </summary>
     [ExecuteAlways]
     public class SlipperyCoatingView : MonoBehaviour
     {
         const float Pixel = 1f / CubeGridRules.CoatingPixels;
-        const string PlanarReflectionKeyword = "_PLANAR_REFLECTION"; // Lit Glass의 평면 반사(PlanarReflection.hlsl)
 
         [SerializeField] SlipperyCoatingSettings settings;
 
@@ -100,17 +98,15 @@ namespace SlimeColorMaker
                 if (coating.pixels != null && coating.pixels.Length == CubeGridRules.CoatingPixels * CubeGridRules.CoatingPixels)
                     byCell[coating.cell] = coating.pixels;
             if (settings == null) return;
-            UpdateReflection();
             foreach (var kind in new[] { CoatingKind.Oil, CoatingKind.Ice })
             {
                 var entry = settings.For(kind);
-                // 재질은 늘 저장하지 않는 사본에 재질감과 평면 반사 키워드를 입혀 쓴다(재질 인스펙터가 모르는 키워드를 지워도 영향 없음).
+                // 재질은 늘 저장하지 않는 사본에 재질감을 입혀 쓴다.
                 var material = entry.material;
                 if (material != null)
                 {
                     material = new Material(material) { name = entry.finish != null ? $"{material.name} ({entry.finish.name})" : material.name, hideFlags = HideFlags.HideAndDontSave };
                     if (entry.finish != null) entry.finish.ApplyTo(material);
-                    material.EnableKeyword(PlanarReflectionKeyword);
                     finished.Add(material);
                 }
                 var mesh = BuildMesh(kind);
@@ -122,25 +118,6 @@ namespace SlimeColorMaker
                 renderer.shadowCastingMode = ShadowCastingMode.Off;
                 shown.Add(go);
             }
-        }
-
-        // 코팅 높이마다 범위(윗면 높이 둘레 얇은 상자)를 평면 반사에 알린다. Play 중에만.
-        void UpdateReflection()
-        {
-            if (!Application.isPlaying) return;
-            if (!TryGetComponent(out PlanarReflection reflection)) reflection = gameObject.AddComponent<PlanarReflection>();
-            var planes = new Dictionary<float, Bounds>();
-            foreach (var cell in byCell.Keys)
-            {
-                float top = cell.y + 1f;
-                var bounds = new Bounds(new Vector3(cell.x, top, cell.z), new Vector3(1f, 0.1f, 1f));
-                if (planes.TryGetValue(top, out var all)) all.Encapsulate(bounds);
-                else all = bounds;
-                planes[top] = all;
-            }
-            var list = new List<(float, Bounds)>();
-            foreach (var (top, bounds) in planes) list.Add((top, bounds));
-            reflection.SetPlanes(list);
         }
 
         void Clear()

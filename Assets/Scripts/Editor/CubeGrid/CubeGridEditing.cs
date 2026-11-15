@@ -87,10 +87,10 @@ namespace SlimeColorMaker
         /// <summary>지금 놓을 계단·차단기의 방향: 씬 카메라가 보는 쪽 + 돌린 횟수.</summary>
         public static int StairTurn(Vector3 cameraForward) => CubeGridRules.Turn(CubeGridRules.TurnFacing(cameraForward) + StairTurnOffset);
 
-        /// <summary>코팅 붓의 종류 이름(<see cref="CoatingKind"/>의 기름·얼음 순서).</summary>
-        public static readonly string[] CoatingKindNames = { "기름", "얼음" };
+        /// <summary>코팅 붓의 종류 이름(<see cref="CoatingKind"/>의 없음·기름·얼음 순서, 번호 = 종류 값). 없음은 지우개다.</summary>
+        public static readonly string[] CoatingKindNames = { "없음", "기름", "얼음" };
 
-        /// <summary>코팅 붓으로 칠할 종류(기름·얼음, 기본 기름).</summary>
+        /// <summary>코팅 붓으로 칠할 종류(없음 = 지우기·기름·얼음, 기본 기름).</summary>
         public static CoatingKind SelectedCoatingKind
         {
             get => (CoatingKind)SessionState.GetInt("SlimeColorMaker.CubeGrid.CoatingKind", (int)CoatingKind.Oil);

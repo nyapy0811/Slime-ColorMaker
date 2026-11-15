@@ -18,7 +18,9 @@ MonoBehaviour:
   ambientEquatorColor: {r: 0.58074325, g: 0.58074325, b: 0.58074325, a: 1}
   ambientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   ambientIntensity: 1
-  reflection: {fileID: 11400000, guid: a5c9da53b80b46843b7e68b6c35bdcb1, type: 2}
+  reflectionMode: 0
+  reflectionCubemap: {fileID: 0}
+  reflectionIntensity: 1
   fog: 0
   fogColor: {r: 1, g: 1, b: 1, a: 1}
   fogMode: 1

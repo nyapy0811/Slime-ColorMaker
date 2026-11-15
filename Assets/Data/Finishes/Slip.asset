@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8276c87ebbc090d4f928b5d9fa501b36, type: 3}
   m_Name: Slip
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.SurfaceFinish
-  smoothness: 1
-  metallic: 1
+  smoothness: 0.95
+  metallic: 0.8
   specularHighlights: 1
   environmentReflections: 1

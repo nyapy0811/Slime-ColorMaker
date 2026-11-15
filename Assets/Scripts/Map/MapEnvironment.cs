@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 맵 환경. MapRoot에 붙어 맵 환경 설정(<see cref="MapEnvironmentSettings"/>)을 그 맵에 적용한다: 하늘·환경 조명·하늘 반사(<see cref="ReflectionSettings"/>, 지금 맵의 반사 설정으로도 알림)·안개
+    /// 맵 환경. MapRoot에 붙어 맵 환경 설정(<see cref="MapEnvironmentSettings"/>)을 그 맵에 적용한다: 하늘·환경 조명·하늘 반사·안개
     /// (씬의 조명 설정)와 태양. 에디터 편집 화면에서도 돈다(씬을 열 때, 애셋을 고칠 때). 맵 씬은 하나만 열고 그 씬이 활성 씬이라
     /// 씬의 조명 설정(RenderSettings)이 곧 이 맵의 것이다.
     /// 태양은 맵 씬에 한 번 만들어 저장해 두는 숨긴 방향광(<see cref="SunName"/>, 고칠 수 없음)이고 값은 열 때마다 애셋에서 넣는다:
@@ -27,14 +27,12 @@ namespace SlimeColorMaker
         void OnEnable()
         {
             MapEnvironmentSettings.Changed += Apply;
-            ReflectionSettings.Changed += Apply;
             Apply();
         }
 
         void OnDisable()
         {
             MapEnvironmentSettings.Changed -= Apply;
-            ReflectionSettings.Changed -= Apply;
         }
 
         void Apply()
@@ -50,14 +48,9 @@ namespace SlimeColorMaker
             RenderSettings.ambientEquatorColor = settings.ambientEquatorColor;
             RenderSettings.ambientGroundColor = settings.ambientGroundColor;
             RenderSettings.ambientIntensity = settings.ambientIntensity;
-            var reflection = settings.reflection;
-            ReflectionSettings.Current = reflection;
-            if (reflection != null)
-            {
-                RenderSettings.defaultReflectionMode = reflection.skyMode;
-                RenderSettings.customReflectionTexture = reflection.skyCubemap;
-                RenderSettings.reflectionIntensity = reflection.skyIntensity;
-            }
+            RenderSettings.defaultReflectionMode = settings.reflectionMode;
+            RenderSettings.customReflectionTexture = settings.reflectionCubemap;
+            RenderSettings.reflectionIntensity = settings.reflectionIntensity;
             RenderSettings.fog = settings.fog;
             RenderSettings.fogColor = settings.fogColor;
             RenderSettings.fogMode = settings.fogMode;

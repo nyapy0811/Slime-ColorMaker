@@ -1,7 +1,6 @@
 // Slime~ColorMaker~: URP 17.6 Lit(Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader)을 복사해 반투명 면의 깊이를 카메라 쪽으로 조금 당긴 셰이더.
-// 복셀 가져오기(VoxImporter)의 반투명 재질(Glass·GlassPaint와 뒷면)이 쓴다. 반투명 면이 다른 면(불투명 블록 등)과 같은 평면에 붙어도
+// 모델 가져오기(BBModelImporter)의 반투명 재질(Glass·GrayGlass와 뒷면)과 코팅 재질이 쓴다. 반투명 면이 다른 면(불투명 블록 등)과 같은 평면에 붙어도
 // 깊이 다툼 없이 앞에 그려진다(ForwardLit 단계에 Offset -1, -1, 바닥 흔적 Trail.shader와 같은 방식).
-// 코팅 재질은 _PLANAR_REFLECTION을 켜서 윗면에 평면 반사를 쓴다(ForwardLit 조각 함수 PlanarReflectionLitPassFragment, PlanarReflection.hlsl).
 // 나머지는 Lit과 같다. URP를 올리면 다시 복사한다.
 Shader "Slime~ColorMaker~/Lit Glass"
 {
@@ -122,11 +121,10 @@ Shader "Slime~ColorMaker~/Lit Glass"
             // -------------------------------------
             // Shader Stages
             #pragma vertex LitPassVertex
-            #pragma fragment PlanarReflectionLitPassFragment // Slime~ColorMaker~: 평면 반사(PlanarReflection.hlsl)
+            #pragma fragment LitPassFragment
 
             // -------------------------------------
             // Material Keywords
-            #pragma shader_feature_local_fragment _PLANAR_REFLECTION // Slime~ColorMaker~: 코팅 재질만
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _PARALLAXMAP
             #pragma shader_feature_local _RECEIVE_SHADOWS_OFF
@@ -193,7 +191,7 @@ Shader "Slime~ColorMaker~/Lit Glass"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
-            #include "PlanarReflection.hlsl" // LitForwardPass.hlsl을 포함한다
+            #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
             ENDHLSL
         }
 

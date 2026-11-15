@@ -218,11 +218,6 @@ namespace SlimeColorMaker
                 Debug.LogError("[맵 검사] MapRoot에 맵 환경(MapEnvironment)이 없거나 맵 환경 설정이 비었다.", manager);
                 problems++;
             }
-            else if (new SerializedObject(environment).FindProperty("settings").objectReferenceValue is MapEnvironmentSettings settings && settings.reflection == null)
-            {
-                Debug.LogError("[맵 검사] 맵 환경 설정에 반사 설정(Assets/Data/Map/ReflectionSettings)이 연결되지 않았다.", settings);
-                problems++;
-            }
             var directional = Roots(scene).SelectMany(root => root.GetComponentsInChildren<Light>(true))
                 .Where(l => l.type == LightType.Directional && l.gameObject.name != MapEnvironment.SunName);
             foreach (var light in directional)

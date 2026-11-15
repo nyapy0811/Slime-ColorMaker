@@ -84,14 +84,14 @@ namespace SlimeColorMaker
 
         void OnMouseDown(CubeGrid grid, Event e, int control)
         {
-            // 코팅 붓: 드래그 한 번이 칠하기(Ctrl이면 지우기) 한 번이다.
+            // 코팅 붓: 드래그 한 번이 칠하기(Ctrl이거나 종류가 없음이면 지우기) 한 번이다.
             if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Coating)
             {
                 Undo.IncrementCurrentGroup();
                 paintGroup = Undo.GetCurrentGroup();
-                Undo.SetCurrentGroupName(e.control ? "코팅 지우기" : "코팅 칠하기");
+                paintErase = e.control || CubeGridEditing.SelectedCoatingKind == CoatingKind.None;
+                Undo.SetCurrentGroupName(paintErase ? "코팅 지우기" : "코팅 칠하기");
                 painting = true;
-                paintErase = e.control;
                 hasLastPaint = false;
                 GUIUtility.hotControl = control;
                 PaintAt(grid, e.mousePosition);
@@ -214,7 +214,7 @@ namespace SlimeColorMaker
                 if (!PickTop(grid, e.mousePosition, out var point)) return;
                 var zTestBefore = Handles.zTest;
                 Handles.zTest = CompareFunction.LessEqual;
-                Handles.color = (painting ? paintErase : e.control) ? RemoveColor : PlaceColor;
+                Handles.color = (painting ? paintErase : e.control || CubeGridEditing.SelectedCoatingKind == CoatingKind.None) ? RemoveColor : PlaceColor;
                 DrawCoatingBrush(point);
                 Handles.zTest = zTestBefore;
                 return;

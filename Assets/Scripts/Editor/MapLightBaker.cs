@@ -21,7 +21,6 @@ namespace SlimeColorMaker
     ///   백그라운드에서 굽는다. 굽는 중에 바꿔 저장하면 처음부터 다시 굽는다.
     /// - 빌드 전: 맵 목록의 맵 가운데 지난 맵을 열어 굽고 저장한다.
     /// - 메뉴: 조명 굽기(지금 맵), 모든 맵 조명 굽기(지난 맵만).
-    /// 굽기 전에 ② 실내 반사 탐침(<see cref="IndoorReflectionProbes"/>)을 맞추고 함께 굽는다.
     /// 굽기 결과(굽기 묶음, 탐침 데이터, LightingData)와 지문 파일은 씬 옆 씬 이름 폴더에 있다. 굽기 설정은 모든 맵이 <see cref="LightingSettingsPath"/> 하나를 쓴다.
     /// </summary>
     [InitializeOnLoad]
@@ -189,8 +188,6 @@ namespace SlimeColorMaker
                 EditorUtility.SetDirty(set);
             }
             AssetDatabase.SaveAssetIfDirty(set);
-
-            IndoorReflectionProbes.Update(scene, settings != null ? settings.reflection : null);
         }
 
         // 조명 지문: 굽기 결과를 바꾸는 것만 모은다. 순서에 상관없게 줄을 정렬한다.
@@ -213,8 +210,6 @@ namespace SlimeColorMaker
             }
             lines.Add($"environment {AssetKey(EnvironmentSettings(scene))} {AssetKey(RenderSettings.skybox)}");
             lines.Add($"lighting {AssetKey(Lightmapping.GetLightingSettingsForScene(scene))}");
-            var environment = EnvironmentSettings(scene);
-            lines.AddRange(IndoorReflectionProbes.FingerprintLines(scene, environment != null ? environment.reflection : null));
             lines.Sort(StringComparer.Ordinal);
             return Hash128.Compute(string.Join("\n", lines)).ToString();
         }

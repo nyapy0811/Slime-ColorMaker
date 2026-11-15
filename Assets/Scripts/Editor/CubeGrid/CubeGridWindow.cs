@@ -156,8 +156,8 @@ namespace SlimeColorMaker
                 }
                 if (brush == CubeGridEditing.Brush.Coating)
                 {
-                    int kind = LabeledToolbar("종류", (int)CubeGridEditing.SelectedCoatingKind - 1, CubeGridEditing.CoatingKindNames);
-                    if (kind != (int)CubeGridEditing.SelectedCoatingKind - 1) CubeGridEditing.SelectedCoatingKind = (CoatingKind)(kind + 1);
+                    int kind = LabeledToolbar("종류", (int)CubeGridEditing.SelectedCoatingKind, CubeGridEditing.CoatingKindNames);
+                    if (kind != (int)CubeGridEditing.SelectedCoatingKind) CubeGridEditing.SelectedCoatingKind = (CoatingKind)kind;
                     int size = EditorGUILayout.IntSlider("붓 지름", CubeGridEditing.CoatingBrushSize, 1, CubeGridRules.CoatingPixels);
                     if (size != CubeGridEditing.CoatingBrushSize) CubeGridEditing.CoatingBrushSize = size;
                 }

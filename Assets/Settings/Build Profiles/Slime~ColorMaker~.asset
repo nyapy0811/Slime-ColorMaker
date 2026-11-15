@@ -867,7 +867,7 @@ MonoBehaviour:
     - line: '|   webEnableSubmoduleStrippingCompatibility: 0'
     - line: '|   webProgressiveAssetLoading: 0'
     - line: '|   scriptingDefineSymbols:'
-    - line: '|     Standalone: URP_SCREEN_SPACE_REFLECTION'
+    - line: '|     Standalone: '
     - line: '|   additionalCompilerArguments: {}'
     - line: '|   platformArchitecture: {}'
     - line: '|   scriptingBackend:'
