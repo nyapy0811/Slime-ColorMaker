@@ -119,7 +119,7 @@ namespace SlimeColorMaker
         }
 
         // 재질감 칸을 보일 오브젝트: 프리팹 편집 화면의 맨 위(경로 없음, 바로 고침), 프리팹 애셋의 맨 위, 씬의 가장 바깥 프리팹 인스턴스 맨 위.
-        // 가져온 모델(.vox) 자체는 고칠 수 없어 뺀다.
+        // 가져온 모델(.bbmodel) 자체는 고칠 수 없어 뺀다.
         static bool TryGetPrefab(GameObject go, out string prefabPath)
         {
             prefabPath = null;

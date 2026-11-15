@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "free",
+    "box_uv": false
+  },
+  "name": "ConveyorBeltCurve3",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 32
+  },
+  "elements": [
+    {
+      "name": "gray",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -8.0,
+        12.0,
+        -8.0
+      ],
+      "to": [
+        8.0,
+        16.0,
+        8.0
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "cube",
+      "uuid": "7fdd936b-0038-40e1-a55d-56577879c620",
+      "faces": {
+        "east": {
+          "uv": [
+            32,
+            0,
+            48,
+            4
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            48,
+            0,
+            64,
+            4
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            16,
+            0,
+            32,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            16,
+            16,
+            20
+          ],
+          "texture": 0
+        },
+        "north": {
+          "uv": [
+            16,
+            16,
+            32,
+            20
+          ],
+          "texture": 0
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Object 1",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": 0,
+      "uuid": "5f14f54e-de94-4288-ae44-1cec7aff8b19",
+      "export": true,
+      "mirror_uv": false,
+      "isOpen": true,
+      "locked": false,
+      "visibility": true,
+      "autouv": 0
+    },
+    {
+      "name": "gray",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": 0,
+      "uuid": "b2df0267-0540-4a73-81cf-6406819f6193",
+      "export": true,
+      "mirror_uv": false,
+      "isOpen": true,
+      "locked": false,
+      "visibility": true,
+      "autouv": 0
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "5f14f54e-de94-4288-ae44-1cec7aff8b19",
+      "isOpen": true,
+      "children": [
+        {
+          "uuid": "b2df0267-0540-4a73-81cf-6406819f6193",
+          "isOpen": true,
+          "children": [
+            "7fdd936b-0038-40e1-a55d-56577879c620"
+          ]
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "path": "",
+      "name": "ConveyorBeltCurve3.png",
+      "folder": "",
+      "namespace": "",
+      "id": "0",
+      "group": "",
+      "width": 64,
+      "height": 32,
+      "uv_width": 64,
+      "uv_height": 32,
+      "particle": false,
+      "use_as_default": false,
+      "layers_enabled": false,
+      "sync_to_project": "",
+      "render_mode": "default",
+      "render_sides": "auto",
+      "pbr_channel": "color",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "internal": true,
+      "saved": false,
+      "uuid": "81109da7-38c8-4090-bd7f-7585a2e112fd",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAACDElEQVRoBe2WvY7CMBCEzYkCSso8AiUtJQ9OSUvJI1BSQsfdZ2miZc/EJkEQRbaUxD+765nx2vEshHD/ewaV9Xrdy/90OvXy807b7dZ3FbUPh0OYy3mxWESn/X5f5Cyj3W4XLpdLuN1uoWmaWNdY1xf7d5Xr9do71BxPkT+fz4HVVPt4PBYFXi6X0Q5/RKB4gh6k5ojGA19+rlfCRQGeOSg7SJWuQgasVqtoYrNBPgCUSOrzgqi/z1eiv+rLFuwUQAFJ866tAXmJADFWl2ygAE6rbVfKZNdM8/T9dmHLxfzxBgKrFVO75KDD1vshhMRgXI+f91vtVgCBBEiKBP1dIkCMGF4E2hQbP3aM5NUKAB6BtXULnPHNZpOFbkXwsYg3JGWzk79o8CAAvlp96p48fblifWwsK24uxifH/wnA5IC1RAQeQjz6O3igslMMvl6Ed11+/Nx9260AgAesJU9dpCyR1GR2XOJ5X3Pyp0J8pa8VgNk9efogJnISRMQY90VjXoQxkgd7FED/cAs6RdyS7fojWDvquYuUt/9kO16EuMhAntWzq22BSBzbl6uP6bR/hjUKYMmTDSVFqY4tdV13x7zaKV5cQ+8l//aU85v29eCrcApbad/DIVjqNCW7uAW076dErJRLFMDu51LHqdi1h+BUCFUeVYGqQFWgKlAVqApUBaoCVYGqQFWgRIFfuI2zUcWjDLsAAAAASUVORK5CYII="
+    }
+  ]
+}

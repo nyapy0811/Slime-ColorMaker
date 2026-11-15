@@ -52,7 +52,7 @@ namespace SlimeColorMaker
             }
         }
 
-        /// <summary>시험 모델 붓으로 놓을 모델(.vox나 프리팹, 기준점은 바닥면 가운데).</summary>
+        /// <summary>시험 모델 붓으로 놓을 모델(.bbmodel이나 프리팹, 기준점은 바닥면 가운데).</summary>
         public static GameObject TestModelAsset
         {
             get => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(SessionState.GetString("SlimeColorMaker.CubeGrid.TestModel", "")));

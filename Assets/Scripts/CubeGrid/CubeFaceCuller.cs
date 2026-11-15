@@ -5,8 +5,9 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 지형(블록·계단)의 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다(Play 시작할 때 <see cref="CubeGrid"/>가 부름).
-    /// 칸 경계에 놓인 면을 방향마다 16 × 16 칸 그림(칸마다 팔레트 UV, 복셀 1칸 = 1/16)으로 바꾸고, 이웃의 맞은편 면이 덮는 칸을 지운 뒤
-    /// 남은 칸을 같은 UV끼리 큰 사각형으로 다시 합친다. 칸 경계에 있지 않은 면(계단 안쪽 단)과 이웃이 없는 방향의 면은 그대로다.
+    /// 칸 경계에 놓인 면을 방향마다 16 × 16 칸 그림(칸마다 그 자리 원래 면의 UV 대응식, 복셀 1칸 = 1/16)으로 바꾸고, 이웃의 맞은편 면이 덮는 칸을 지운 뒤
+    /// 남은 칸을 같은 대응식끼리 큰 사각형으로 다시 합친다(새 꼭짓점의 UV는 대응식으로 계산: 팔레트 모델은 상수, 텍스처 모델은 면을 따라 변함).
+    /// 칸 경계에 있지 않은 면(계단 안쪽 단)과 이웃이 없는 방향의 면은 그대로다.
     /// 좌표는 칸 가운데를 원점으로 한 월드 축이라 돌려 놓인 계단도 그대로 맞대어 본다. 불투명 렌더러만 덮는 쪽·지우는 쪽이 된다.
     /// 같은 (모델, 놓인 방향, 이웃 모양) 조합은 메시를 한 번만 만들어 나눠 쓴다. 블록 오브젝트·콜라이더·데이터·씬은 그대로다.
     /// </summary>
@@ -29,7 +30,7 @@ namespace SlimeColorMaker
             public Vector2[] uvs;
             public int[] triangles;
             public int[] triangleFace;                      // 삼각형이 놓인 칸 경계 방향(없으면 -1)
-            public readonly int[][] faces = new int[6][];   // 방향마다 칸별 UV 번호(없으면 -1)
+            public readonly int[][] faces = new int[6][];   // 방향마다 칸별 UV 대응식 번호(없으면 -1)
         }
 
         sealed class Part
@@ -42,7 +43,25 @@ namespace SlimeColorMaker
         readonly Dictionary<Mesh, int> meshIds = new();
         readonly Dictionary<string, Shape> shapes = new();
         readonly Dictionary<string, Mesh> variants = new();
-        readonly List<Vector2> uvTable = new();
+        readonly List<UvMap> uvTable = new();
+
+        // 면 평면 좌표(a, b) → UV. 한 사각형(삼각형 둘)은 같은 대응식이다.
+        readonly struct UvMap
+        {
+            public readonly Vector2 origin, da, db;
+
+            public UvMap(Vector2 origin, Vector2 da, Vector2 db)
+            {
+                this.origin = origin;
+                this.da = da;
+                this.db = db;
+            }
+
+            public Vector2 At(float a, float b) => origin + da * a + db * b;
+
+            public bool Same(UvMap other) =>
+                (origin - other.origin).sqrMagnitude < 1e-10f && (da - other.da).sqrMagnitude < 1e-10f && (db - other.db).sqrMagnitude < 1e-10f;
+        }
         readonly List<Mesh> created = new();
 
         /// <summary>격자 아래 만든 부분의 블록·계단 메시를 덮인 칸을 뺀 메시로 바꾼다.</summary>
@@ -137,26 +156,38 @@ namespace SlimeColorMaker
             return -1;
         }
 
-        // 면 칸 가운데가 삼각형 안이면 그 칸에 삼각형의 UV를 둔다.
+        // 면 칸 가운데가 삼각형 안이면 그 칸에 삼각형의 UV 대응식을 둔다.
         void Rasterize(Shape shape, int t, int d)
         {
             var (ua, ub) = Axes(d);
             var p0 = Plane(shape.vertices[shape.triangles[t * 3]], ua, ub);
             var p1 = Plane(shape.vertices[shape.triangles[t * 3 + 1]], ua, ub);
             var p2 = Plane(shape.vertices[shape.triangles[t * 3 + 2]], ua, ub);
-            int uv = UvIndex(shape.uvs.Length > 0 ? shape.uvs[shape.triangles[t * 3]] : Vector2.zero);
+            Vector2 UvOf(int k) => shape.uvs.Length > 0 ? shape.uvs[shape.triangles[t * 3 + k]] : Vector2.zero;
+            int uv = UvIndex(Map(p0, p1, p2, UvOf(0), UvOf(1), UvOf(2)));
             var face = shape.faces[d];
             for (int j = 0; j < Resolution; j++)
                 for (int i = 0; i < Resolution; i++)
                     if (Inside(new Vector2(CellMid(i), CellMid(j)), p0, p1, p2)) face[i + j * Resolution] = uv;
         }
 
-        int UvIndex(Vector2 uv)
+        int UvIndex(UvMap map)
         {
             for (int i = 0; i < uvTable.Count; i++)
-                if ((uvTable[i] - uv).sqrMagnitude < 1e-10f) return i;
-            uvTable.Add(uv);
+                if (uvTable[i].Same(map)) return i;
+            uvTable.Add(map);
             return uvTable.Count - 1;
+        }
+
+        // 삼각형의 세 점(평면 좌표)과 UV로 평면 좌표 → UV 대응식을 푼다. 넓이가 없으면 첫 점의 UV(상수).
+        static UvMap Map(Vector2 p0, Vector2 p1, Vector2 p2, Vector2 uv0, Vector2 uv1, Vector2 uv2)
+        {
+            Vector2 e1 = p1 - p0, e2 = p2 - p0, f1 = uv1 - uv0, f2 = uv2 - uv0;
+            float det = e1.x * e2.y - e1.y * e2.x;
+            if (Mathf.Abs(det) < 1e-12f) return new UvMap(uv0, Vector2.zero, Vector2.zero);
+            var da = (f1 * e2.y - f2 * e1.y) / det;
+            var db = (f2 * e1.x - f1 * e2.x) / det;
+            return new UvMap(uv0 - da * p0.x - db * p0.y, da, db);
         }
 
         // 이 칸 이 모양의 메시: 이웃이 덮는 방향이 없으면 null(원래 메시 그대로).
@@ -244,7 +275,7 @@ namespace SlimeColorMaker
             return mesh;
         }
 
-        // 남은 칸을 같은 UV끼리 큰 사각형으로 합친다(면 합치기).
+        // 남은 칸을 같은 UV 대응식끼리 큰 사각형으로 합친다(면 합치기).
         void Merge(int[] face, int d, List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles)
         {
             var (ua, ub) = Axes(d);
@@ -271,10 +302,10 @@ namespace SlimeColorMaker
                     if (Vector3.Dot(Vector3.Cross(v1 - v0, v2 - v0), direction) < 0f) (v1, v3) = (v3, v1);
                     int start = vertices.Count;
                     vertices.Add(v0); vertices.Add(v1); vertices.Add(v2); vertices.Add(v3);
-                    for (int k = 0; k < 4; k++)
+                    foreach (var v in new[] { v0, v1, v2, v3 })
                     {
                         normals.Add(direction);
-                        uvs.Add(uvTable[uv]);
+                        uvs.Add(uvTable[uv].At(v[ua], v[ub]));
                     }
                     triangles.Add(start); triangles.Add(start + 1); triangles.Add(start + 2);
                     triangles.Add(start); triangles.Add(start + 2); triangles.Add(start + 3);

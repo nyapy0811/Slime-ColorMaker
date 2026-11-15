@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "free",
+    "box_uv": false
+  },
+  "name": "PointActived",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 32
+  },
+  "elements": [
+    {
+      "name": "gray",
+      "box_uv": false,
+      "rescale": false,
+      "locked": false,
+      "render_order": "default",
+      "allow_mirror_modeling": true,
+      "from": [
+        -8.0,
+        0.0,
+        -8.0
+      ],
+      "to": [
+        8.0,
+        1.0,
+        8.0
+      ],
+      "autouv": 0,
+      "color": 0,
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "type": "cube",
+      "uuid": "f5680d63-4e30-4077-b46d-134a51e4d271",
+      "faces": {
+        "east": {
+          "uv": [
+            32,
+            0,
+            48,
+            1
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            48,
+            0,
+            64,
+            1
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            16,
+            0,
+            32,
+            16
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            0,
+            16,
+            16,
+            17
+          ],
+          "texture": 0
+        },
+        "north": {
+          "uv": [
+            16,
+            16,
+            32,
+            17
+          ],
+          "texture": 0
+        }
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "Object 1",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": 0,
+      "uuid": "75f1049e-92fa-4e53-a1e9-b808c328efe8",
+      "export": true,
+      "mirror_uv": false,
+      "isOpen": true,
+      "locked": false,
+      "visibility": true,
+      "autouv": 0
+    },
+    {
+      "name": "gray",
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "color": 0,
+      "uuid": "c66b97c8-8bdf-4b02-a47e-e11867756fac",
+      "export": true,
+      "mirror_uv": false,
+      "isOpen": true,
+      "locked": false,
+      "visibility": true,
+      "autouv": 0
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "75f1049e-92fa-4e53-a1e9-b808c328efe8",
+      "isOpen": true,
+      "children": [
+        {
+          "uuid": "c66b97c8-8bdf-4b02-a47e-e11867756fac",
+          "isOpen": true,
+          "children": [
+            "f5680d63-4e30-4077-b46d-134a51e4d271"
+          ]
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "path": "",
+      "name": "PointActived.png",
+      "folder": "",
+      "namespace": "",
+      "id": "0",
+      "group": "",
+      "width": 64,
+      "height": 32,
+      "uv_width": 64,
+      "uv_height": 32,
+      "particle": false,
+      "use_as_default": false,
+      "layers_enabled": false,
+      "sync_to_project": "",
+      "render_mode": "default",
+      "render_sides": "auto",
+      "pbr_channel": "color",
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "internal": true,
+      "saved": false,
+      "uuid": "1b07adfc-3025-4b30-99af-049f964afebd",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAABQklEQVRoBe2WUQ+DMAiEdemD/v8fq2+bZ4Ihrh0ntXFzkBin5YD7dKb9c4l5njsc0zStZ33dLTGOYzcMw3boa6zrfPkt9b5dn2TgnHmsMSFmpZa+tvQLzN7Kabm+AiiZZwHU6lsatGqnT8OzAHJPXu5ZA1y9vv0FMPAexlEAXv2VEDYAueFxj4kSPFbP9GiVk/0GaENM4xI89g1ierTKefsGaPOsAeTpQwNpNfhZdR9nFfrVOgmbGiuwCdKbH9kUMVrUrtVb89WsJwxnRck8o0XtWr01X806BUCeuJy1Iaa56OR8VM/08OYcBqCHhyEmxDjOHj3Tw5tDfwNyw8MMEwJgb57VMz28OfQbkBsexpgowWP1TA9vDgWgZJ41UKv3mmN0f78PYCBFThAIAkEgCASBIBAEgkAQCAJBIAgEgZsReAFX95NrnnQtSAAAAABJRU5ErkJggg=="
+    }
+  ]
+}

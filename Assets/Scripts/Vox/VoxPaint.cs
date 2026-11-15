@@ -4,7 +4,8 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 복셀 모델(.vox)의 칠하기와 반투명 정도. 가져오기 코드가 모든 모델의 맨 위 오브젝트에 붙인다(Docs/v2 복셀 모델링 규칙 3절).
+    /// Blockbench 모델(.bbmodel)의 칠하기, 반투명 정도, 발광 세기. 가져오기 코드가 모든 모델의 맨 위 오브젝트에 붙인다
+    /// (Docs/v2 블록벤치 모델링 규칙 3절: Color = ValueColor, Glass = GlassValueColor, GrayGlass = Glass, Light = Light 렌더러).
     /// 칠할 색은 값 색(ValueColor)과 반투명 값 색(GlassValueColor) 렌더러에, 반투명 정도는 두 반투명 렌더러(Glass, GlassValueColor)에
     /// <c>_BaseColor</c>로 준다(밝기 텍스처와 곱해짐). Play 모드가 아니어도 인스펙터에서 바꾸면 바로 보인다.
     /// 이 모델을 칠하는 곳은 여기 하나로 둔다: 기물·캐릭터 코드는 렌더러를 직접 칠하지 않고 <see cref="Color"/>를 바꾼다.
@@ -18,11 +19,13 @@ namespace SlimeColorMaker
         public const string ValuePartName = "ValueColor";
         public const string GlassPartName = "Glass";
         public const string GlassValuePartName = "GlassValueColor";
+        public const string LightPartName = "Light";
 
         /// <summary>처음 반투명 정도(불투명도). 반투명 재질의 기본값도 이 값이다.</summary>
         public const float DefaultOpacity = 0.5f;
 
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         [Tooltip("값 색(33~40)과 반투명 값 색(41~48) 부분을 칠하는 색. 흰색이면 칠하지 않은 것과 같다(알파는 쓰지 않음).")]
         [SerializeField] Color color = Color.white;
@@ -30,6 +33,10 @@ namespace SlimeColorMaker
         [Tooltip("반투명 부분(41~56)의 불투명도. 0이면 안 보이고 1이면 불투명하다.")]
         [Range(0f, 1f)]
         [SerializeField] float opacity = DefaultOpacity;
+
+        [Tooltip("발광 부분(Blockbench Light, 렌더러 Light)의 발광 세기. 발광 = 칠하는 색 × 휘도 × 이 값. 0이면 빛나지 않는다.")]
+        [Min(0f)]
+        [SerializeField] float lightIntensity = 1f;
 
         [Header("재질감 (비우면 광택 0.2 · 반사 0 · 빛 맺힘 · 주변 반사 켬)")]
         [Tooltip("일반 칸(값 색·반투명이 아닌 칸)의 재질감. 메뉴 Create > Slime~ColorMaker~ > 재질감으로 만든 애셋(Assets/Data/Finishes).")]
@@ -40,6 +47,9 @@ namespace SlimeColorMaker
 
         [Tooltip("반투명 칸(41~56, 렌더러 Glass·GlassValueColor)의 재질감.")]
         [SerializeField] SurfaceFinish glassFinish;
+
+        [Tooltip("발광 부분(렌더러 Light)의 재질감.")]
+        [SerializeField] SurfaceFinish lightFinish;
 
         MaterialPropertyBlock block;
 
@@ -53,6 +63,7 @@ namespace SlimeColorMaker
         {
             ValuePartName => valueFinish,
             GlassPartName or GlassValuePartName => glassFinish,
+            LightPartName => lightFinish,
             _ => bodyFinish,
         };
 
@@ -76,6 +87,20 @@ namespace SlimeColorMaker
             }
         }
 
+        public float LightIntensity
+        {
+            get => lightIntensity;
+            set
+            {
+                lightIntensity = Mathf.Max(0f, value);
+                Apply();
+            }
+        }
+
+        /// <summary>렌더러의 바탕 발광(Light 렌더러만, 나머지는 검정). 상호작용 강조가 이 값에 더해 쓴다.</summary>
+        public Color EmissionFor(Renderer target) =>
+            target.name == LightPartName ? new Color(color.r, color.g, color.b, 1f) * lightIntensity : Color.black;
+
         void OnEnable() => Apply();
 
         void OnValidate()
@@ -95,7 +120,7 @@ namespace SlimeColorMaker
             {
                 Color? value = target.name switch
                 {
-                    ValuePartName => paint,
+                    ValuePartName or LightPartName => paint,
                     GlassValuePartName => new Color(paint.r, paint.g, paint.b, opacity),
                     GlassPartName => new Color(1f, 1f, 1f, opacity),
                     _ => null,
@@ -103,6 +128,7 @@ namespace SlimeColorMaker
                 if (value == null) continue;
                 target.GetPropertyBlock(block);
                 block.SetColor(BaseColorId, value.Value);
+                if (target.name == LightPartName) block.SetColor(EmissionColorId, EmissionFor(target));
                 target.SetPropertyBlock(block);
             }
         }

@@ -88,8 +88,10 @@ namespace SlimeColorMaker
             while ((count = Physics.SphereCastNonAlloc(look, collision.collisionRadius, back, hits, distance, ~0, QueryTriggerInteraction.Ignore)) == hits.Length)
                 hits = new RaycastHit[hits.Length * 2];
             float nearest = distance;
+            // 거리 0은 쏘기 전부터 기준점 구와 겹친 물체다(상자처럼 속이 찬 콜라이더만 돌려줌). 턱을 오른 직후 기준점이 몸 모델을 따라 잠깐 낮아져
+            // 방금 올라선 디딤판과 겹친 것이므로, 카메라와 캐릭터 사이를 가리는 것으로 보지 않는다(벽은 캐릭터 반지름이 구보다 커서 겹치지 않음).
             for (int i = 0; i < count; i++)
-                if (!hits[i].transform.IsChildOf(target)) nearest = Mathf.Min(nearest, hits[i].distance - collision.collisionMargin);
+                if (hits[i].distance > 0f && !hits[i].transform.IsChildOf(target)) nearest = Mathf.Min(nearest, hits[i].distance - collision.collisionMargin);
             return Mathf.Max(collision.minDistance, nearest);
         }
 
