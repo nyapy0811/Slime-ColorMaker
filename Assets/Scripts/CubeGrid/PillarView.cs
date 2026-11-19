@@ -22,7 +22,7 @@ namespace SlimeColorMaker
         [SerializeField] GameObject fullModel;
 
         [Tooltip("모양. 큐브 격자 빌더가 지을 때 정한다.")]
-        [SerializeField] PillarShape shape = PillarShape.Full;
+        [SerializeField, PerPlacement] PillarShape shape = PillarShape.Full;
 
         /// <summary>모양. 바꾸면 그 모양의 모델만 켠다(에디터에서는 빌더가 프리팹 오버라이드로 기록한다).</summary>
         public PillarShape Shape

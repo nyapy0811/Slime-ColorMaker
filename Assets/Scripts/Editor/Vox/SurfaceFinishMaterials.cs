@@ -11,6 +11,7 @@ namespace SlimeColorMaker
     /// <see cref="VoxPaint"/>의 재질감이 바뀌면 그 모델의 렌더러마다 원래 재질(.bbmodel 가져오기 재질)에 재질감을 입힌 재질로 바꿔 끼운다.
     /// 그 재질은 재질감 애셋의 하위 애셋('모델 파일 이름(확장자 포함)/재질 이름')이라 같은 모델·같은 재질감끼리 하나를 같이 쓴다(묶어 그리기 유지).
     /// 재질감 값이 바뀌면 그 하위 재질들만 다시 맞추므로 프리팹을 다시 저장할 필요가 없다. 재질감을 비우면 원래 재질로 돌린다.
+    /// 겉모습 프리셋(<see cref="ModelLook"/>)의 재질감이 바뀌면 그 프리셋을 쓰는 프리팹 애셋들을 열어 재질을 다시 끼운다(바뀔 것이 있을 때만).
     /// 인스펙터 변경 중(OnValidate)에는 애셋을 만들 수 없어 한 틱 미뤄 처리한다.
     /// </summary>
     [InitializeOnLoad]
@@ -18,6 +19,7 @@ namespace SlimeColorMaker
     {
         static readonly HashSet<VoxPaint> paints = new();
         static readonly HashSet<SurfaceFinish> finishes = new();
+        static readonly HashSet<ModelLook> looks = new();
         static bool scheduled;
 
         static SurfaceFinishMaterials()
@@ -30,6 +32,11 @@ namespace SlimeColorMaker
             SurfaceFinish.Changed += finish =>
             {
                 finishes.Add(finish);
+                Schedule();
+            };
+            ModelLook.Changed += look =>
+            {
+                looks.Add(look);
                 Schedule();
             };
         }
@@ -48,8 +55,43 @@ namespace SlimeColorMaker
                 if (finish != null) Refresh(finish);
             foreach (var paint in paints.ToList())
                 if (paint != null) Apply(paint);
+            foreach (var look in looks.ToList())
+                if (look != null) ApplyUsers(look);
             finishes.Clear();
             paints.Clear();
+            looks.Clear();
+        }
+
+        /// <summary>프리셋을 쓰는 프리팹 애셋과 열린 프리팹 편집 화면의 모델들에 재질을 다시 끼운다.</summary>
+        static void ApplyUsers(ModelLook look)
+        {
+            foreach (string path in ModelLookGUI.UsersOf(look))
+            {
+                var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (asset == null || !asset.GetComponentsInChildren<VoxPaint>(true).Any(paint => paint.Look == look && NeedsApply(paint))) continue;
+                using var scope = new PrefabUtility.EditPrefabContentsScope(path);
+                foreach (var paint in scope.prefabContentsRoot.GetComponentsInChildren<VoxPaint>(true))
+                    if (paint.Look == look) Apply(paint);
+            }
+            var stage = UnityEditor.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+            if (stage != null)
+                foreach (var paint in stage.prefabContentsRoot.GetComponentsInChildren<VoxPaint>(true))
+                    if (paint.Look == look) Apply(paint);
+        }
+
+        static bool NeedsApply(VoxPaint paint) => paint.GetComponentsInChildren<Renderer>(true).Any(renderer =>
+        {
+            var source = PrefabUtility.GetCorrespondingObjectFromOriginalSource(renderer);
+            if (source == null || source == renderer) return false;
+            var finish = paint.FinishFor(renderer);
+            return !source.sharedMaterials.Select(original => finish == null || original == null ? original : Existing(finish, original))
+                .SequenceEqual(renderer.sharedMaterials);
+        });
+
+        static Material Existing(SurfaceFinish finish, Material original)
+        {
+            string name = $"{Path.GetFileName(AssetDatabase.GetAssetPath(original))}/{original.name}";
+            return AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GetAssetPath(finish)).OfType<Material>().FirstOrDefault(material => material.name == name);
         }
 
         /// <summary>재질감의 하위 재질들을 지금 값으로 맞춘다.</summary>

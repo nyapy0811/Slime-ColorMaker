@@ -1,14 +1,12 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace SlimeColorMaker
 {
     /// <summary>
     /// 재질감 고르기 한 줄: [펼치기] 이름 | 재질감 애셋 칸 | 새로 만들기. 펼치면 그 애셋의 값(광택·반사·빛 맺힘·주변 반사)을 그 자리에서 고친다.
-    /// 프리팹 맨 위 오브젝트의 '재질감' 칸(<see cref="SurfaceFinishHeader"/>)과 미끄러운 코팅 설정 인스펙터가 같이 쓴다.
+    /// 모델 겉모습 프리셋 칸(<see cref="ModelLookGUI"/>)과 미끄러운 코팅 설정 인스펙터가 같이 쓴다.
     /// </summary>
     public static class SurfaceFinishGUI
     {
@@ -78,92 +76,6 @@ namespace SlimeColorMaker
             var finish = ScriptableObject.CreateInstance<SurfaceFinish>();
             AssetDatabase.CreateAsset(finish, AssetDatabase.GenerateUniqueAssetPath($"{FinishFolder}/{name}.asset"));
             return finish;
-        }
-    }
-
-    /// <summary>
-    /// 프리팹 맨 위 오브젝트의 인스펙터 머리 부분에 '재질감' 칸을 그린다(컴포넌트를 더하지 않음).
-    /// 프리팹 애셋(Project 창), 프리팹 편집 화면의 맨 위, 씬에 놓인 프리팹의 맨 위를 고르면 나온다. 그 아래 모든 복셀 모델(<see cref="VoxPaint"/>)의
-    /// 부위(일반·값 색·반투명) 중 실제로 있는 것만 한 줄씩 보이고, 고르면 모든 모델의 그 부위를 함께 바꾼다(컨베이어 무늬 12장 등).
-    /// 씬에서 골랐으면 그 프리팹 애셋을 고친다(놓인 것 모두 바뀜). 모델마다 다르면 '여러 값'.
-    /// </summary>
-    [InitializeOnLoad]
-    static class SurfaceFinishHeader
-    {
-        static readonly string[] PartLabels = { "일반", "값 색", "반투명" };
-        static readonly string[] PartFields = { "bodyFinish", "valueFinish", "glassFinish" };
-        static readonly string[] PartFileNames = { "Body", "Value", "Glass" };
-
-        static SurfaceFinishHeader() => Editor.finishedDefaultHeaderGUI += OnHeader;
-
-        static void OnHeader(Editor editor)
-        {
-            if (editor.targets.Length != 1 || editor.target is not GameObject go) return;
-            if (!TryGetPrefab(go, out string prefabPath)) return;
-            var paints = go.GetComponentsInChildren<VoxPaint>(true);
-            if (paints.Length == 0) return;
-
-            string prefabName = prefabPath != null ? System.IO.Path.GetFileNameWithoutExtension(prefabPath) : go.name;
-            EditorGUILayout.Space(2f);
-            EditorGUILayout.LabelField(prefabPath != null && !EditorUtility.IsPersistent(go) ? $"재질감 (프리팹 '{prefabName}'에 적용)" : "재질감", EditorStyles.boldLabel);
-            for (int part = 0; part < PartFields.Length; part++)
-            {
-                var owners = paints.Where(paint => HasPart(paint, part)).ToList();
-                if (owners.Count == 0) continue;
-                var values = owners.Select(paint => (SurfaceFinish)new SerializedObject(paint).FindProperty(PartFields[part]).objectReferenceValue).Distinct().ToList();
-                bool mixed = values.Count > 1;
-                if (SurfaceFinishGUI.Field(PartLabels[part], values[0], mixed, $"{prefabName}{PartFileNames[part]}", $"{prefabName}/{part}", out var picked))
-                    Set(go, prefabPath, part, picked);
-            }
-            EditorGUILayout.Space(2f);
-        }
-
-        // 재질감 칸을 보일 오브젝트: 프리팹 편집 화면의 맨 위(경로 없음, 바로 고침), 프리팹 애셋의 맨 위, 씬의 가장 바깥 프리팹 인스턴스 맨 위.
-        // 가져온 모델(.bbmodel) 자체는 고칠 수 없어 뺀다.
-        static bool TryGetPrefab(GameObject go, out string prefabPath)
-        {
-            prefabPath = null;
-            var stage = PrefabStageUtility.GetCurrentPrefabStage();
-            if (stage != null && stage.prefabContentsRoot == go) return true;
-            if (EditorUtility.IsPersistent(go))
-            {
-                prefabPath = AssetDatabase.GetAssetPath(go);
-                return go.transform.parent == null && prefabPath.EndsWith(".prefab");
-            }
-            if (!PrefabUtility.IsOutermostPrefabInstanceRoot(go)) return false;
-            prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
-            return prefabPath.EndsWith(".prefab");
-        }
-
-        static bool HasPart(VoxPaint paint, int part) =>
-            paint.GetComponentsInChildren<Renderer>(true).Any(renderer => PartOf(renderer) == part);
-
-        static int PartOf(Renderer renderer) => renderer.name switch
-        {
-            VoxPaint.ValuePartName => 1,
-            VoxPaint.GlassPartName or VoxPaint.GlassValuePartName => 2,
-            _ => 0,
-        };
-
-        static void Set(GameObject go, string prefabPath, int part, SurfaceFinish finish)
-        {
-            if (prefabPath == null)
-            {
-                foreach (var paint in go.GetComponentsInChildren<VoxPaint>(true)) SetOne(paint, part, finish, undo: true);
-                return;
-            }
-            using var scope = new PrefabUtility.EditPrefabContentsScope(prefabPath);
-            foreach (var paint in scope.prefabContentsRoot.GetComponentsInChildren<VoxPaint>(true)) SetOne(paint, part, finish, undo: false);
-        }
-
-        static void SetOne(VoxPaint paint, int part, SurfaceFinish finish, bool undo)
-        {
-            if (!HasPart(paint, part)) return;
-            var serialized = new SerializedObject(paint);
-            serialized.FindProperty(PartFields[part]).objectReferenceValue = finish;
-            if (undo) serialized.ApplyModifiedProperties();
-            else serialized.ApplyModifiedPropertiesWithoutUndo();
-            SurfaceFinishMaterials.Apply(paint);
         }
     }
 }

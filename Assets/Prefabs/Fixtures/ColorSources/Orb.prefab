@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1959399052681496092}
-  - component: {fileID: 1390710257538733583}
   - component: {fileID: 8416537884071974335}
   - component: {fileID: 4933722197394593766}
   m_Layer: 6
@@ -35,24 +34,6 @@ Transform:
   - {fileID: 1452459499659823461}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1390710257538733583
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4248790584534183962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a98dfb5d4dc72d41a015be34708388f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.InteractHighlightView
-  renderers:
-  - {fileID: 2127237880867565349}
-  - {fileID: 7194733540480715585}
-  color: {r: 1, g: 1, b: 1, a: 1}
-  maxIntensity: 0.25
-  period: 2
 --- !u!114 &8416537884071974335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.ColorSource
   fixtureId: 0
-  highlight: {fileID: 1390710257538733583}
   value:
     r: 3
     g: 0
@@ -102,6 +82,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1959399052681496092}
     m_Modifications:
+    - target: {fileID: -9096544260138406144, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -524242764763514458, guid: 36e4b5ecca978b048852c579b15b7ecc, type: 2}
+    - target: {fileID: -7337495641342735797, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: -4514123090168326488, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: m_Name
       value: Model
@@ -114,10 +102,26 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: -3305297835631358667, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: -3067136164873354986, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: -2769364654077481693, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -7681061859317671748, guid: f554c6bc8babe1f4c98a315f755148a3, type: 2}
+    - target: {fileID: -2769364654077481693, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 9026921997637718538, guid: f554c6bc8babe1f4c98a315f755148a3, type: 2}
+    - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 03ef7edf6c0f0a04898a693986f01b3f, type: 2}
     - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: color.b
       value: 0
@@ -133,6 +137,22 @@ PrefabInstance:
     - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: opacity
       value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: bodyFinish
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: glassFinish
+      value: 
+      objectReference: {fileID: 11400000, guid: f554c6bc8babe1f4c98a315f755148a3, type: 2}
+    - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: lightFinish
+      value: 
+      objectReference: {fileID: 11400000, guid: 36e4b5ecca978b048852c579b15b7ecc, type: 2}
+    - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: lightIntensity
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1810512134718315977, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -178,6 +198,26 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 5836712767766884239, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Intensity
+      value: 1.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -186,16 +226,6 @@ PrefabInstance:
 --- !u!4 &1452459499659823461 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1810512134718315977, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
-  m_PrefabInstance: {fileID: 939025851955467436}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &2127237880867565349 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -8030656335162147959, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
-  m_PrefabInstance: {fileID: 939025851955467436}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &7194733540480715585 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7985096546801147885, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
   m_PrefabInstance: {fileID: 939025851955467436}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &7719024816288175876 stripped

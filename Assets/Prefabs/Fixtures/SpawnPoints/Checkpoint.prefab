@@ -69,7 +69,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Checkpoint
   fixtureId: 0
-  highlight: {fileID: 0}
   inactiveView: {fileID: 792618496711306519}
   activeView: {fileID: 6340644723576916777}
 --- !u!1001 &561325036690731372
@@ -124,6 +123,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6696893183589805603, guid: e791061fa34b2554aa682bea6225054a, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: ea8b9383cfe05464fb17888a43d7cb3b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -155,6 +158,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4112305530277410154, guid: 2c2ed7a1b9535f54889349c815994971, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: ea8b9383cfe05464fb17888a43d7cb3b, type: 2}
     - target: {fileID: 5966196552753206496, guid: 2c2ed7a1b9535f54889349c815994971, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

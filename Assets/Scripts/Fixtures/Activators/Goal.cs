@@ -25,7 +25,6 @@ namespace SlimeColorMaker
                 return;
             }
             cleared = true;
-            RefreshHighlight();
             MapManager.Current.Clear();
         }
     }

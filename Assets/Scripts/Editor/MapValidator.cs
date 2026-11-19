@@ -178,7 +178,7 @@ namespace SlimeColorMaker
             var blocks = new HashSet<Vector3Int>(grid.Data.blocks);
             foreach (var stair in grid.Data.stairs) blocks.Add(stair.cell);
             foreach (var pillar in grid.Data.pillars) blocks.Add(pillar.cell);
-            var occupied = new Dictionary<Vector3Int, Component>();
+            var occupied = new Dictionary<Vector3Int, List<Component>>();
             var placed = FixtureIdAssigner.FixturesIn(scene).Cast<Component>().Concat(CubeGridEditing.TestModelsIn(scene));
             foreach (var fixture in placed)
             {
@@ -195,12 +195,20 @@ namespace SlimeColorMaker
                     Debug.LogError($"[맵 검사] '{fixture.name}'이 블록이나 계단, 기둥과 같은 칸 {cell}에 있다.", fixture);
                     problems++;
                 }
-                if (occupied.TryGetValue(cell, out var other))
+                if (!occupied.TryGetValue(cell, out var others)) occupied[cell] = others = new List<Component>();
+                var face = CubeGridEditing.BarrierFaceOf(fixture.gameObject);
+                foreach (var other in others)
                 {
-                    Debug.LogError($"[맵 검사] 칸 {cell}에 기물이나 시험 모델이 둘 있다: '{other.name}', '{fixture.name}'.", fixture);
+                    // 한 칸에 여럿은 방벽끼리만, 면이 다를 때.
+                    var otherFace = CubeGridEditing.BarrierFaceOf(other.gameObject);
+                    if (face.HasValue && otherFace.HasValue && face != otherFace) continue;
+                    Debug.LogError(face.HasValue && otherFace.HasValue
+                        ? $"[맵 검사] 칸 {cell}의 같은 면({face})에 방벽이 둘 있다: '{other.name}', '{fixture.name}'."
+                        : $"[맵 검사] 칸 {cell}에 기물이나 시험 모델이 둘 있다: '{other.name}', '{fixture.name}'(한 칸에 여럿은 면이 다른 방벽끼리만).", fixture);
                     problems++;
+                    break;
                 }
-                else occupied[cell] = fixture;
+                others.Add(fixture);
             }
             return problems;
         }

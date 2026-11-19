@@ -63,6 +63,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 259451162006404235}
     m_Modifications:
     - target: {fileID: -2467213028673062283, guid: 0d1f557dbe396f44d86ec1003b958727, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 7bb4ee4fa68e0b145b985b50c2c9f4c2, type: 2}
+    - target: {fileID: -2467213028673062283, guid: 0d1f557dbe396f44d86ec1003b958727, type: 3}
       propertyPath: bodyFinish
       value: 
       objectReference: {fileID: 11400000, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}

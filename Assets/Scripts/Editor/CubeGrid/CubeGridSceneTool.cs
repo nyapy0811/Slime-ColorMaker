@@ -114,8 +114,9 @@ namespace SlimeColorMaker
             }
             else
             {
-                var placeAt = hit ? cell + normal : GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush);
-                if (placeAt.HasValue) CubeGridEditing.Place(grid, placeAt.Value, CubeGridEditing.StairTurn(CameraForward()));
+                int turn = CubeGridEditing.StairTurn(CameraForward());
+                var placeAt = hit ? CubeGridEditing.PlaceTarget(grid, cell, normal, turn) : GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush);
+                if (placeAt.HasValue) CubeGridEditing.Place(grid, placeAt.Value, turn);
             }
             e.Use();
         }
@@ -230,7 +231,7 @@ namespace SlimeColorMaker
             {
                 remove = e.control;
                 bool hit = Pick(grid, e.mousePosition, out var cell, out var normal);
-                if (hit) cells.Add(remove ? cell : cell + normal);
+                if (hit) cells.Add(remove ? cell : CubeGridEditing.PlaceTarget(grid, cell, normal, CubeGridEditing.StairTurn(CameraForward())));
                 else if (!remove && GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush) is { } ground) cells.Add(ground);
             }
 

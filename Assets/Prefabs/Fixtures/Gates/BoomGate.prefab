@@ -64,7 +64,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserWall
   fixtureId: 0
-  highlight: {fileID: 0}
   requiredColor:
     r: 6
     g: 3
@@ -167,6 +166,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3010670825146016224}
     m_Modifications:
+    - target: {fileID: -8501176854726430633, guid: b1e4114bb884ec8428f830ccf05eeaa6, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 86a83de82f19598428da76c9b50e2106, type: 2}
     - target: {fileID: -8501176854726430633, guid: b1e4114bb884ec8428f830ccf05eeaa6, type: 3}
       propertyPath: color.b
       value: 0.5
@@ -312,6 +315,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: -149519223618691406, guid: a196b24cc31e0934495d50215a3817b2, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 86a83de82f19598428da76c9b50e2106, type: 2}
     - target: {fileID: 4331065948495537800, guid: a196b24cc31e0934495d50215a3817b2, type: 3}
       propertyPath: m_Layer
       value: 6

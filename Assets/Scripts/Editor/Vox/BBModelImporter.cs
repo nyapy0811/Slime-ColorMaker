@@ -16,7 +16,7 @@ namespace SlimeColorMaker
     /// Glass = GlassValueColor, GrayGlass = Glass, Light = Light. 큐브끼리 맞닿아 완전히 덮인 면은 버린다(반투명은 바깥 껍질만).
     /// 좌표는 Blockbench (X, Y, Z) → Unity (X, Y, −Z)이고 그룹·큐브 회전은 꼭짓점에 굽는다(자식 오브젝트는 회전 없음).
     /// </summary>
-    [ScriptedImporter(1, "bbmodel")]
+    [ScriptedImporter(4, "bbmodel")]
     public class BBModelImporter : ScriptedImporter
     {
         const float PixelSize = 1f / 16f;
@@ -174,6 +174,7 @@ namespace SlimeColorMaker
                 ctx.AddObjectToAsset("mesh:" + id, mesh);
                 target.AddComponent<MeshFilter>().sharedMesh = mesh;
                 target.AddComponent<MeshRenderer>().sharedMaterials = materials[part];
+                if (part == Part.Light) AddLightSource(owner, group, ownerOrigin[owner]);
             }
 
             if (boxColliders)
@@ -201,7 +202,7 @@ namespace SlimeColorMaker
         }
 
         /// <summary>
-        /// 파일 안 모든 렌더러가 같이 쓰는 재질. 칠하기와 상호작용 강조는 기물 컴포넌트가 MaterialPropertyBlock으로 렌더러마다 바꾸므로
+        /// 파일 안 모든 렌더러가 같이 쓰는 재질. 칠하기는 기물 컴포넌트가 MaterialPropertyBlock으로 렌더러마다 바꾸므로
         /// 발광을 켜 두고(검정) 나머지는 임시 회색 재질(Temp)과 맞춘다.
         /// </summary>
         static Material NewMaterial(string name, Shader shader, Texture2D baseMap)
@@ -260,6 +261,22 @@ namespace SlimeColorMaker
             for (var group = node.parent; group != null; group = group.parent)
                 if (group.rotation != Vector3.zero) return true;
             return false;
+        }
+
+        // 발광 부분(부품마다)의 가운데에 광원 하나(포인트, 실시간, 처음은 꺼짐). 색·세기·범위·그림자는 VoxPaint가 겉모습 값대로 맞춘다.
+        static void AddLightSource(Transform owner, IEnumerable<Quad> quads, Vector3 origin)
+        {
+            var vertices = quads.SelectMany(q => q.vertices).ToList();
+            var bounds = new Bounds(vertices[0], Vector3.zero);
+            foreach (var v in vertices) bounds.Encapsulate(v);
+            var holder = new GameObject(UniqueChildName(owner, "LightSource"));
+            holder.transform.SetParent(owner, false);
+            holder.transform.localPosition = (bounds.center - origin) * PixelSize;
+            var light = holder.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.lightmapBakeType = LightmapBakeType.Realtime;
+            light.shadows = LightShadows.None;
+            light.enabled = false;
         }
 
         static string UniqueChildName(Transform parent, string name)

@@ -45,6 +45,10 @@ PrefabInstance:
       value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 7055683373519784683, guid: 12e013b4595b6314d90cdc92f15545c2, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: ab32cc24a32c74947b2d274e092103a5, type: 2}
+    - target: {fileID: 7055683373519784683, guid: 12e013b4595b6314d90cdc92f15545c2, type: 3}
       propertyPath: bodyFinish
       value: 
       objectReference: {fileID: 11400000, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}

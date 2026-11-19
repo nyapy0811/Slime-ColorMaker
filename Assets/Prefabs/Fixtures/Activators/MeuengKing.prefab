@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7846592279083139667}
-  - component: {fileID: 5222098991059307253}
   - component: {fileID: 6338167652662790735}
   - component: {fileID: 8356149011840848604}
   - component: {fileID: 5453584517965621237}
@@ -36,24 +35,6 @@ Transform:
   - {fileID: 1344704147305887178}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5222098991059307253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4808676435208310991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a98dfb5d4dc72d41a015be34708388f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.InteractHighlightView
-  renderers:
-  - {fileID: 6241701311847498202}
-  - {fileID: 2457640646835602774}
-  color: {r: 1, g: 1, b: 1, a: 1}
-  maxIntensity: 0.25
-  period: 2
 --- !u!114 &6338167652662790735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Goal
   fixtureId: 0
-  highlight: {fileID: 5222098991059307253}
   requiredColor:
     r: 6
     g: 3
@@ -130,6 +110,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 592458409993508865, guid: 8711b45810144334eb49b2f30a6393be, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 01e50102a2a2f2444a4c5da1e7920981, type: 2}
     - target: {fileID: 592458409993508865, guid: 8711b45810144334eb49b2f30a6393be, type: 3}
       propertyPath: color.b
       value: 0.5
@@ -213,15 +197,5 @@ MonoBehaviour:
 --- !u!4 &1344704147305887178 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1410932223158756176, guid: 8711b45810144334eb49b2f30a6393be, type: 3}
-  m_PrefabInstance: {fileID: 89502641208350362}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &2457640646835602774 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 2532906488957785036, guid: 8711b45810144334eb49b2f30a6393be, type: 3}
-  m_PrefabInstance: {fileID: 89502641208350362}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &6241701311847498202 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 6314891550814656320, guid: 8711b45810144334eb49b2f30a6393be, type: 3}
   m_PrefabInstance: {fileID: 89502641208350362}
   m_PrefabAsset: {fileID: 0}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18659c5e2ee35345b589104fb901740, type: 3}
+  m_Name: Orb
+  m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.ModelLook
+  opacity: 0.5
+  lightIntensity: 3
+  bloomBoost: 2
+  lightRange: 3
+  lightScale: 0.5
+  lightShadows: 1
+  bodyFinish: {fileID: 0}
+  valueFinish: {fileID: 0}
+  glassFinish: {fileID: 11400000, guid: f554c6bc8babe1f4c98a315f755148a3, type: 2}
+  lightFinish: {fileID: 11400000, guid: 36e4b5ecca978b048852c579b15b7ecc, type: 2}

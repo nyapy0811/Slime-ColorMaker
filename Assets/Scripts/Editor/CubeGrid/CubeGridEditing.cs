@@ -10,7 +10,7 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작.
-    /// 고른 붓으로 칸에 블록·계단·기둥·기물·시험 모델을 놓고 지운다. 한 칸에는 하나만 두며, 블록과 계단, 기둥은 큐브 격자 데이터에, 기물과 시험 모델은
+    /// 고른 붓으로 칸에 블록·계단·기둥·기물·시험 모델을 놓고 지운다. 한 칸에는 하나만 두며(방벽끼리만 면이 다르면 한 칸에 여럿), 블록과 계단, 기둥은 큐브 격자 데이터에, 기물과 시험 모델은
     /// 씬의 오브젝트로 칸 바닥 가운데에 놓는다(맵 안 id는 기물을 놓을 때 고침). 계단은 씬 카메라가 보는 쪽으로 오르게, 차단기는 씬 카메라가
     /// 보는 쪽으로 지나가게(앞이 그쪽) 놓고, '돌리기'로 90°씩 더 돌린다(둘이 같은 돌림 값을 씀). 편집 한 번이 Undo 하나다.
     /// </summary>
@@ -234,23 +234,47 @@ namespace SlimeColorMaker
             return go.AddComponent<CubeGrid>();
         }
 
-        /// <summary>씬의 기물과 시험 모델이 든 칸(칸 바닥 가운데에 놓인 자리 기준).</summary>
-        public static Dictionary<Vector3Int, GameObject> ObjectCells(CubeGrid grid)
+        /// <summary>씬의 기물과 시험 모델이 든 칸(칸 바닥 가운데에 놓인 자리 기준). 한 칸에 여럿은 방벽끼리뿐이다.</summary>
+        public static Dictionary<Vector3Int, List<GameObject>> ObjectCells(CubeGrid grid)
         {
-            var cells = new Dictionary<Vector3Int, GameObject>();
+            var cells = new Dictionary<Vector3Int, List<GameObject>>();
+            void Add(Component placed)
+            {
+                var cell = CubeGridRules.CellAt(placed.transform.position);
+                if (!cells.TryGetValue(cell, out var list)) cells[cell] = list = new List<GameObject>();
+                list.Add(placed.gameObject);
+            }
             var scene = grid.gameObject.scene;
-            foreach (var fixture in FixtureIdAssigner.FixturesIn(scene))
-                cells.TryAdd(CubeGridRules.CellAt(fixture.transform.position), fixture.gameObject);
-            foreach (var model in TestModelsIn(scene))
-                cells.TryAdd(CubeGridRules.CellAt(model.transform.position), model.gameObject);
+            foreach (var fixture in FixtureIdAssigner.FixturesIn(scene)) Add(fixture);
+            foreach (var model in TestModelsIn(scene)) Add(model);
             return cells;
         }
 
         public static IEnumerable<CubeTestModel> TestModelsIn(UnityEngine.SceneManagement.Scene scene) =>
             scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<CubeTestModel>(true));
 
-        public static bool IsFilled(CubeGrid grid, Dictionary<Vector3Int, GameObject> objects, Vector3Int cell) =>
+        public static bool IsFilled(CubeGrid grid, Dictionary<Vector3Int, List<GameObject>> objects, Vector3Int cell) =>
             CubeGridRules.IsOccupied(grid.Data, cell) || objects.ContainsKey(cell);
+
+        /// <summary>칸의 <paramref name="face"/> 면에 방벽을 놓을 수 있나: 블록·계단·기둥이 없고, 든 것이 모두 방벽이며 그 면은 비었다.</summary>
+        public static bool CanAddBarrier(CubeGrid grid, Dictionary<Vector3Int, List<GameObject>> objects, Vector3Int cell, CellFace face) =>
+            !CubeGridRules.IsOccupied(grid.Data, cell)
+            && (!objects.TryGetValue(cell, out var placed) || placed.All(go => BarrierFaceOf(go) is { } other && other != face));
+
+        /// <summary>방벽이면 그 면, 아니면 null.</summary>
+        public static CellFace? BarrierFaceOf(GameObject go) =>
+            go.TryGetComponent(out BarrierView _) && go.TryGetComponent(out CellFaceMount mount) ? mount.Face : null;
+
+        /// <summary>
+        /// 가리킨 칸(<paramref name="hit"/>, 들어간 면 <paramref name="normal"/>)에 붓으로 놓을 칸. 보통은 그 앞 칸이고,
+        /// 방벽 붓이 방벽만 든 칸을 가리켰고 놓을 면이 비었으면 그 칸 자체다(한 칸에 방벽 여럿).
+        /// </summary>
+        public static Vector3Int PlaceTarget(CubeGrid grid, Vector3Int hit, Vector3Int normal, int turn)
+        {
+            if (SelectedBrush != Brush.Barrier) return hit + normal;
+            var objects = ObjectCells(grid);
+            return objects.ContainsKey(hit) && CanAddBarrier(grid, objects, hit, BarrierFace(turn)) ? hit : hit + normal;
+        }
 
         /// <summary>빈 칸이면 고른 붓으로 놓는다. 계단은 <paramref name="stairTurn"/> 방향으로 오르고, 차단기는 그 방향으로 지나간다.</summary>
         public static void Place(CubeGrid grid, Vector3Int cell, int stairTurn) => PlaceAll(grid, new[] { cell }, "칸에 놓기", stairTurn: stairTurn);
@@ -258,7 +282,7 @@ namespace SlimeColorMaker
         /// <summary>범위의 빈 칸에 블록을 놓는다(범위 놓기는 블록만).</summary>
         public static void PlaceBlocks(CubeGrid grid, IEnumerable<Vector3Int> cells) => PlaceAll(grid, cells, "블록 범위 놓기", blocksOnly: true);
 
-        /// <summary>칸의 블록·계단·기물·시험 모델을 지운다. 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
+        /// <summary>칸의 블록·계단·기물·시험 모델을 지운다(칸에 방벽이 여럿이면 모두). 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
         public static void Remove(CubeGrid grid, IEnumerable<Vector3Int> cells)
         {
             var config = RequireConfig();
@@ -269,7 +293,9 @@ namespace SlimeColorMaker
                 foreach (var cell in cells)
                 {
                     CubeGridRules.Remove(grid.Data, cell);
-                    if (objects.Remove(cell, out var placed) && !placed.TryGetComponent<StartPoint>(out _)) Undo.DestroyObjectImmediate(placed);
+                    if (!objects.Remove(cell, out var placed)) continue;
+                    foreach (var go in placed)
+                        if (!go.TryGetComponent<StartPoint>(out _)) Undo.DestroyObjectImmediate(go);
                 }
             }, config);
         }
@@ -299,12 +325,16 @@ namespace SlimeColorMaker
             {
                 foreach (var cell in cells)
                 {
-                    if (IsFilled(grid, objects, cell)) continue;
+                    if (brush == Brush.Barrier ? !CanAddBarrier(grid, objects, cell, BarrierFace(stairTurn)) : IsFilled(grid, objects, cell)) continue;
                     if (brush == Brush.Block) CubeGridRules.AddBlock(grid.Data, cell);
                     else if (brush == Brush.Stair) CubeGridRules.AddStair(grid.Data, cell, stairTurn);
                     else if (brush == Brush.Pillar) CubeGridRules.AddPillar(grid.Data, cell, PillarHasTop, PillarHasBase);
-                    else if (brush == Brush.TestModel) objects[cell] = PlaceTestModel(grid, prefab, cell);
-                    else objects[cell] = PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
+                    else
+                    {
+                        var placed = brush == Brush.TestModel ? PlaceTestModel(grid, prefab, cell) : PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
+                        if (!objects.TryGetValue(cell, out var list)) objects[cell] = list = new List<GameObject>();
+                        list.Add(placed);
+                    }
                 }
                 if (IsFixture(brush)) FixtureIdAssigner.FixIds(grid.gameObject.scene);
             }, config);

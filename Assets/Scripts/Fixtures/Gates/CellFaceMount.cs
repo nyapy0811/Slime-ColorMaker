@@ -15,7 +15,7 @@ namespace SlimeColorMaker
         [SerializeField] Transform pivot;
 
         [Tooltip("붙을 면: 북 +Z, 동 +X, 남 −Z, 서 −X, 위(칸 윗면), 아래(칸 바닥면)")]
-        [SerializeField] CellFace face = CellFace.West;
+        [SerializeField, PerPlacement] CellFace face = CellFace.West;
 
         public Transform Pivot => pivot;
 

@@ -70,6 +70,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2942499088593269440, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
     - target: {fileID: -1325692310006332231, guid: 1f9d42bec38eb3947b1ac3c67a9e37dd, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 69adaad65281b9d4cac7e8c9e971c790, type: 2}
+    - target: {fileID: -1325692310006332231, guid: 1f9d42bec38eb3947b1ac3c67a9e37dd, type: 3}
       propertyPath: bodyFinish
       value: 
       objectReference: {fileID: 11400000, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
@@ -231,6 +235,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8957986442323186843, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
     - target: {fileID: -276209260634952062, guid: 9cbbfb09c8a6d3b4987d196f737d3d89, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 69adaad65281b9d4cac7e8c9e971c790, type: 2}
+    - target: {fileID: -276209260634952062, guid: 9cbbfb09c8a6d3b4987d196f737d3d89, type: 3}
       propertyPath: bodyFinish
       value: 
       objectReference: {fileID: 11400000, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
@@ -364,6 +372,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 553011606981716156, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
     - target: {fileID: 3216758725932133928, guid: bb8ff42e9e1d0e44e8a685c207faeb09, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 69adaad65281b9d4cac7e8c9e971c790, type: 2}
+    - target: {fileID: 3216758725932133928, guid: bb8ff42e9e1d0e44e8a685c207faeb09, type: 3}
       propertyPath: bodyFinish
       value: 
       objectReference: {fileID: 11400000, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
@@ -472,6 +484,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: -7312770399206302253, guid: cac60a6f9a2e6a243ac3a4a978736d9a, type: 2}
+    - target: {fileID: -873418139740223819, guid: 69d998e54cb7cd84fb901c310a6e3fa5, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 69adaad65281b9d4cac7e8c9e971c790, type: 2}
     - target: {fileID: -873418139740223819, guid: 69d998e54cb7cd84fb901c310a6e3fa5, type: 3}
       propertyPath: bodyFinish
       value: 

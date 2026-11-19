@@ -37,7 +37,7 @@ namespace SlimeColorMaker
         [SerializeField] GameObject[] leftFrames;
 
         [Tooltip("모양: 직진(Straight), 우회전(Right), 좌회전(Left). 큐브 맵 편집의 컨베이어 붓이 놓을 때 정한다.")]
-        [SerializeField] ConveyorShape shape;
+        [SerializeField, PerPlacement] ConveyorShape shape;
 
         Vector3Int cell;
         int shown = -1;

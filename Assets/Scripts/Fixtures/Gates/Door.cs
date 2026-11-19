@@ -40,7 +40,6 @@ namespace SlimeColorMaker
             IsOpen = true;
             SetBlocking(false);
             view.SetOpen(true);
-            RefreshHighlight();
             EventBus.Publish(new DoorOpened());
         }
 
@@ -51,7 +50,6 @@ namespace SlimeColorMaker
             IsOpen = JsonUtility.FromJson<State>(state).open;
             SetBlocking(!IsOpen);
             view.SetOpenImmediate(IsOpen);
-            RefreshHighlight();
         }
     }
 }

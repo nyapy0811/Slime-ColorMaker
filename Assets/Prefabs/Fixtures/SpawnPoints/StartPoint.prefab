@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.StartPoint
   fixtureId: 0
-  highlight: {fileID: 0}
 --- !u!1001 &586110661905820362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59,6 +58,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: View
       objectReference: {fileID: 0}
+    - target: {fileID: -4112305530277410154, guid: 2c2ed7a1b9535f54889349c815994971, type: 3}
+      propertyPath: look
+      value: 
+      objectReference: {fileID: 11400000, guid: 716cfe5d4ab6252418f081b010dc4dce, type: 2}
     - target: {fileID: 5966196552753206496, guid: 2c2ed7a1b9535f54889349c815994971, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

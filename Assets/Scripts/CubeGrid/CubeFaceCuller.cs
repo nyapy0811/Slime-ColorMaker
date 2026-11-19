@@ -4,11 +4,13 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 지형(블록·계단)의 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다(Play 시작할 때 <see cref="CubeGrid"/>가 부름).
+    /// 지형(블록·계단)과 방벽 판의 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다(Play 시작할 때 <see cref="CubeGrid"/>가 부름).
     /// 칸 경계에 놓인 면을 방향마다 16 × 16 칸 그림(칸마다 그 자리 원래 면의 UV 대응식, 복셀 1칸 = 1/16)으로 바꾸고, 이웃의 맞은편 면이 덮는 칸을 지운 뒤
     /// 남은 칸을 같은 대응식끼리 큰 사각형으로 다시 합친다(새 꼭짓점의 UV는 대응식으로 계산: 팔레트 모델은 상수, 텍스처 모델은 면을 따라 변함).
     /// 칸 경계에 있지 않은 면(계단 안쪽 단)과 이웃이 없는 방향의 면은 그대로다.
-    /// 좌표는 칸 가운데를 원점으로 한 월드 축이라 돌려 놓인 계단도 그대로 맞대어 본다. 불투명 렌더러만 덮는 쪽·지우는 쪽이 된다.
+    /// 좌표는 칸 가운데를 원점으로 한 월드 축이라 돌려 놓인 계단·방벽도 그대로 맞대어 본다.
+    /// 불투명 면은 불투명 이웃에만 지워지고(반투명 뒤에서는 보여야 함), 반투명 면은 불투명·반투명 이웃 모두에 지워진다(모델 가져오기 규칙과 같음).
+    /// 방벽이 열려 사라지거나 다시 닫히면 <see cref="Refresh"/>로 그 칸과 이웃 칸을 다시 맞춘다(꺼진 렌더러는 덮지 않음).
     /// 같은 (모델, 놓인 방향, 이웃 모양) 조합은 메시를 한 번만 만들어 나눠 쓴다. 블록 오브젝트·콜라이더·데이터·씬은 그대로다.
     /// </summary>
     public sealed class CubeFaceCuller
@@ -23,7 +25,7 @@ namespace SlimeColorMaker
         sealed class Shape
         {
             public string key;
-            public bool opaque;
+            public bool opaque, glass;
             public Matrix4x4 toCell;
             public Vector3[] vertices;
             public Vector3[] normals;
@@ -36,6 +38,7 @@ namespace SlimeColorMaker
         sealed class Part
         {
             public MeshFilter filter;
+            public Mesh original;
             public Shape shape;
         }
 
@@ -64,19 +67,32 @@ namespace SlimeColorMaker
         }
         readonly List<Mesh> created = new();
 
-        /// <summary>격자 아래 만든 부분의 블록·계단 메시를 덮인 칸을 뺀 메시로 바꾼다.</summary>
-        public void Apply(CubeGrid grid)
+        /// <summary>격자 아래 만든 부분의 블록·계단과 방벽 판 메시를 덮인 칸을 뺀 메시로 바꾼다.</summary>
+        public void Apply(CubeGrid grid, IEnumerable<Transform> barriers)
         {
             var generated = grid.transform.Find(CubeGridBuilder.GeneratedPartsName);
-            if (generated == null) return;
-            foreach (Transform kind in generated)
-                foreach (Transform part in kind)
-                    Collect(part);
+            if (generated != null)
+                foreach (Transform kind in generated)
+                    foreach (Transform part in kind)
+                        Collect(part, includeInactive: false);
+            foreach (var barrier in barriers) Collect(barrier, includeInactive: true);
 
-            foreach (var (cell, parts) in cells)
-                foreach (var part in parts)
-                    if (part.shape.opaque && Variant(cell, part.shape) is { } mesh)
-                        part.filter.sharedMesh = mesh;
+            foreach (var cell in cells.Keys) Fit(cell);
+        }
+
+        /// <summary>칸과 여섯 이웃 칸의 메시를 지금 켜진 이웃 기준으로 다시 맞춘다(방벽이 사라지거나 다시 생길 때).</summary>
+        public void Refresh(Vector3Int cell)
+        {
+            Fit(cell);
+            foreach (var step in Steps) Fit(cell + step);
+        }
+
+        void Fit(Vector3Int cell)
+        {
+            if (!cells.TryGetValue(cell, out var parts)) return;
+            foreach (var part in parts)
+                if (part.shape.opaque || part.shape.glass)
+                    part.filter.sharedMesh = Variant(cell, part.shape) ?? part.original;
         }
 
         /// <summary>만든 메시를 지운다.</summary>
@@ -86,17 +102,17 @@ namespace SlimeColorMaker
             created.Clear();
         }
 
-        void Collect(Transform part)
+        void Collect(Transform part, bool includeInactive)
         {
             var cell = CubeGridRules.CellAt(part.position);
             var center = CubeGridRules.CellCenter(cell);
             if (!cells.TryGetValue(cell, out var list)) cells[cell] = list = new List<Part>();
-            foreach (var filter in part.GetComponentsInChildren<MeshFilter>())
+            foreach (var filter in part.GetComponentsInChildren<MeshFilter>(includeInactive))
             {
                 if (filter.sharedMesh == null) continue;
                 var toCell = Matrix4x4.Translate(-center) * filter.transform.localToWorldMatrix;
                 var renderer = filter.GetComponent<Renderer>();
-                list.Add(new Part { filter = filter, shape = ShapeOf(filter.sharedMesh, toCell, renderer) });
+                list.Add(new Part { filter = filter, original = filter.sharedMesh, shape = ShapeOf(filter.sharedMesh, toCell, renderer) });
             }
         }
 
@@ -110,9 +126,10 @@ namespace SlimeColorMaker
 
             shape = new Shape { key = key, toCell = toCell };
             shapes[key] = shape;
-            shape.opaque = mesh.isReadable && mesh.subMeshCount == 1 && renderer != null && renderer.sharedMaterial != null
-                && renderer.sharedMaterial.renderQueue < 2500;
-            if (!shape.opaque) return shape;
+            bool usable = mesh.isReadable && mesh.subMeshCount == 1 && renderer != null && renderer.sharedMaterial != null;
+            shape.opaque = usable && renderer.sharedMaterial.renderQueue < 2500;
+            shape.glass = usable && !shape.opaque;
+            if (!usable) return shape;
 
             var vertices = mesh.vertices;
             var normals = mesh.normals;
@@ -203,7 +220,9 @@ namespace SlimeColorMaker
                 int opposite = d ^ 1;
                 foreach (var neighbor in neighbors)
                 {
-                    if (!neighbor.shape.opaque) continue;
+                    // 불투명 이웃은 모두를, 반투명 이웃은 반투명 면만 덮는다. 꺼진(사라진 방벽) 이웃은 덮지 않는다.
+                    if (!(neighbor.shape.opaque || neighbor.shape.glass && shape.glass)) continue;
+                    if (!neighbor.filter.gameObject.activeInHierarchy) continue;
                     var face = neighbor.shape.faces[opposite];
                     for (int c = 0; c < face.Length; c++)
                     {

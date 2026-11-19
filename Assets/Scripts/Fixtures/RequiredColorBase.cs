@@ -12,7 +12,7 @@ namespace SlimeColorMaker
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [Tooltip("요구 색. 문·목적지는 모든 채널 1 이상·세 채널이 모두 같지 않음·한도 안, 레이저 벽(빼는 색)은 (0,0,0)과 세 채널이 같은 값이 아니고 한도 안(맵 검사가 알림).")]
-        [SerializeField] ColorValue requiredColor = new(6, 3, 3);
+        [SerializeField, PerPlacement] ColorValue requiredColor = new(6, 3, 3);
 
         [Tooltip("요구 색으로 칠할 렌더러")]
         [SerializeField] Renderer[] requiredColorRenderers;
