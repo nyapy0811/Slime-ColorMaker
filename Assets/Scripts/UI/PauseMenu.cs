@@ -57,7 +57,7 @@ namespace SlimeColorMaker
         }
 
         // 씬을 불러오면 UI 씬도 다시 얹히므로 메뉴는 검은 화면 아래에 그대로 둔다.
-        void AskRestart() => Confirm.Ask("처음부터 다시 시작할까요?\n저장된 체크포인트도 지워집니다.", () =>
+        void AskRestart() => Confirm.Ask("시작지점으로 돌아갑니다.", () =>
         {
             BackStack.Remove(Resume);
             SceneFlow.Restart();
@@ -66,17 +66,14 @@ namespace SlimeColorMaker
         // 맵 씬은 그대로이므로 메뉴를 닫고 게임으로 돌아간 뒤 되돌린다. 체크포인트가 없으면 '처음부터'와 같다.
         void AskReturnToCheckpoint()
         {
-            string message = MapManager.Current.HasCheckpoint
-                ? "마지막 체크포인트로 돌아갈까요?\n그 뒤의 진행은 사라집니다."
-                : "닿은 체크포인트가 없어 처음부터 다시 시작합니다.\n돌아갈까요?";
-            Confirm.Ask(message, () =>
+            Confirm.Ask("마지막 체크포인트로 돌아갑니다.", () =>
             {
                 Resume();
                 MapManager.Current.ReturnToCheckpoint();
             });
         }
 
-        void AskMainMenu() => Confirm.Ask("메인 메뉴로 갈까요?\n마지막 체크포인트 뒤의 진행은 사라집니다.", () =>
+        void AskMainMenu() => Confirm.Ask("메인메뉴로 돌아갑니다.", () =>
         {
             BackStack.Remove(Resume);
             SceneFlow.GoToMainMenu();

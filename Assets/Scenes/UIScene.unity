@@ -1687,10 +1687,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 424742433}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Script: {fileID: 11500000, guid: 710e2c7040d10444d9f9e74f6c6007dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 51947c5c5be7b7c4190ca0a4f20d14e9, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1698,7 +1698,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 3672040553233493811, guid: 294f09d60324b3543870cea9761f484f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -40,10 +40,7 @@ namespace SlimeColorMaker
             switch (ProgressStore.Current.StartWarning(entry.mapId))
             {
                 case MapStartWarning.ClearsThisCheckpoint:
-                    Confirm.Ask("이 맵에 저장된 체크포인트가 지워집니다.\n처음부터 시작할까요?", () => StartMap(entry, false));
-                    break;
-                case MapStartWarning.OverwritesOtherCheckpoint:
-                    Confirm.Ask("다른 맵의 체크포인트가 저장되어 있습니다.\n이 맵의 체크포인트에 닿으면 그 기록은 지워집니다.\n시작할까요?", () => StartMap(entry, false));
+                    Confirm.Ask("기록을 지우고 처음부터 하시겠습니까?", () => StartMap(entry, false));
                     break;
                 default:
                     StartMap(entry, false);

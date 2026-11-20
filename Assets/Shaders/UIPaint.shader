@@ -1,6 +1,8 @@
 // Slime~ColorMaker~: UI 픽셀아트(.pxo, PxoImporter) 그림의 셰이더. Unity 기본 UI 셰이더(UI/Default)에 칠하는 방식 읽기를 더했다.
-// 텍스처 RGB는 휘도 Y 회색, 알파는 방식이다: 255 = Gray(Y 그대로), 254 = Color(이미지 색 × Y), 0 = 투명(Docs/v2 UI 픽셀아트 규칙).
-// 이미지 색(Image.color)의 RGB는 Color 픽셀에만, 알파는 모든 픽셀에 곱한다(흐려지기·숨기기용). 나머지(마스크, RectMask2D 자르기)는 UI/Default와 같다.
+// 알파는 방식이다: 255 = Gray(RGB = 휘도 Y, 그대로), 254 = Color(RGB = Y, 이미지 색 × Y), 253 = Tint(R = 명도 V, G = 채도 S,
+// V × (흰색 × (1 − S) + 이미지 색 × S)), 0 = 투명(Docs/v2 UI 픽셀아트 규칙). Tint의 섞기는 sRGB 값으로 계산한다(Linear 색 공간이면 바꿔 계산 후 되돌림:
+// 그림 도구에서 본 색과 같게). 이미지 색(Image.color)의 RGB는 Color·Tint 픽셀에만, 알파는 모든 픽셀에 곱한다(흐려지기·숨기기용).
+// 나머지(마스크, RectMask2D 자르기)는 UI/Default와 같다.
 Shader "Slime~ColorMaker~/UI Paint"
 {
     Properties
@@ -106,14 +108,25 @@ Shader "Slime~ColorMaker~/UI Paint"
                 return OUT;
             }
 
+            // Tint: V × (흰색 × (1 − S) + 칠할 색 × S)를 sRGB 값으로 계산한다(텍스처 V·S는 sRGB 텍스처라 Linear 색 공간에서는 풀려서 들어옴).
+            half3 Tint(half4 texel, half3 tint)
+            {
+                if (IsGammaSpace()) return texel.r * lerp(half3(1, 1, 1), tint, texel.g);
+                half v = LinearToGammaSpaceExact(texel.r);
+                half s = LinearToGammaSpaceExact(texel.g);
+                return GammaToLinearSpace(v * lerp(half3(1, 1, 1), LinearToGammaSpace(tint), s));
+            }
+
             fixed4 frag(v2f IN) : SV_Target
             {
                 half4 texel = tex2D(_MainTex, IN.texcoord);
-                // 방식: 알파 254(Color)면 이미지 색을 곱하고, 255(Gray)면 그대로. 0.5 아래는 투명.
+                // 방식: 알파 255(Gray)는 그대로, 254(Color)는 이미지 색을 곱하고, 253(Tint)은 흰색에서 이미지 색으로 섞는다. 0.5 아래는 투명.
                 half opaque = step(0.5, texel.a);
-                half paint = opaque * step(texel.a, 254.5 / 255.0);
+                half tint = opaque * step(texel.a, 253.5 / 255.0);
+                half paint = opaque * step(texel.a, 254.5 / 255.0) - tint;
                 half4 color;
                 color.rgb = (texel.rgb + _TextureSampleAdd.rgb) * lerp(half3(1, 1, 1), IN.color.rgb, paint);
+                color.rgb = lerp(color.rgb, Tint(texel, IN.color.rgb), tint);
                 color.a = opaque * IN.color.a;
 
                 #ifdef UNITY_UI_CLIP_RECT

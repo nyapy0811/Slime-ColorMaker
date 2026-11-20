@@ -79,12 +79,9 @@ namespace SlimeColorMaker
             return ClearCheckpoint(checkpoint.mapId);
         }
 
-        /// <summary>그 맵을 처음부터 시작하기 전에 띄울 경고.</summary>
-        public MapStartWarning StartWarning(string mapId)
-        {
-            if (!hasCheckpoint) return MapStartWarning.None;
-            return checkpoint.mapId == mapId ? MapStartWarning.ClearsThisCheckpoint : MapStartWarning.OverwritesOtherCheckpoint;
-        }
+        /// <summary>그 맵을 처음부터 시작하기 전에 띄울 경고. 그 맵에 체크포인트가 저장돼 있을 때만 경고한다(다른 맵의 체크포인트는 묻지 않음).</summary>
+        public MapStartWarning StartWarning(string mapId) =>
+            hasCheckpoint && checkpoint.mapId == mapId ? MapStartWarning.ClearsThisCheckpoint : MapStartWarning.None;
     }
 
     /// <summary>맵을 처음부터 시작하기 전에 띄울 경고.</summary>
@@ -93,8 +90,6 @@ namespace SlimeColorMaker
         None,
         /// <summary>이 맵에 체크포인트가 저장돼 있다: 시작하면 지운다.</summary>
         ClearsThisCheckpoint,
-        /// <summary>다른 맵의 체크포인트가 저장돼 있다: 이 맵의 체크포인트에 닿으면 덮어쓴다.</summary>
-        OverwritesOtherCheckpoint,
     }
 
     /// <summary>맵 하나의 기록. 맵은 맵 목록의 고정 문자열 맵 id로 찾는다.</summary>

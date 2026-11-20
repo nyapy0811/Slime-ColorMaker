@@ -72,7 +72,7 @@ namespace SlimeColorMaker
             Assert.AreEqual(MapStartWarning.None, save.StartWarning("a"));
             save.SetCheckpoint(Snapshot("a", 1));
             Assert.AreEqual(MapStartWarning.ClearsThisCheckpoint, save.StartWarning("a"));
-            Assert.AreEqual(MapStartWarning.OverwritesOtherCheckpoint, save.StartWarning("b"));
+            Assert.AreEqual(MapStartWarning.None, save.StartWarning("b"));
         }
 
         [Test]

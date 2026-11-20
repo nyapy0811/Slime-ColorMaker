@@ -7,23 +7,25 @@ namespace SlimeColorMaker
     /// <summary>
     /// Pixelorama <c>.pxo</c>를 UI 스프라이트로 가져온다(약속은 Docs/v2 UI 픽셀아트 규칙).
     /// 보이는 레이어를 Pixelorama 화면처럼 위 레이어부터 겹치고, 각 픽셀은 그 자리 맨 위 레이어의 태그(레이어나 감싼 그룹의 이름, 대소문자 무시:
-    /// Gray·Color, 없으면 Gray)를 따른다. 텍스처 한 장에 프레임을 가로로 이어 붙이고 프레임마다 스프라이트(Normal·Hover·Pressed·Disabled 순)를 만든다.
-    /// 텍스처: RGB = 휘도 Y(BT.601) 회색, 알파 = 방식(<see cref="PaintImage"/>의 UI Paint 셰이더가 읽음: Gray 255, Color 254, 투명 0). 필터 없음·압축 없음.
+    /// Gray·Color·Tint, 없으면 Gray)를 따른다. 텍스처 한 장에 프레임을 가로로 이어 붙이고 프레임마다 스프라이트(Normal·Hover·Pressed·Disabled 순)를 만든다.
+    /// 텍스처: 알파 = 방식(<see cref="PaintImage"/>의 UI Paint 셰이더가 읽음: Gray 255, Color 254, Tint 253, 투명 0). Gray·Color는 RGB = 휘도 Y(BT.601) 회색,
+    /// Tint는 R = HSV 명도 V, G = 채도 S, B = 0(색조는 버림). 필터 없음·압축 없음.
     /// 스프라이트의 픽셀/유닛은 100 ÷ 3이라 캔버스 기준(1920 × 1080, 기준 픽셀/유닛 100)에서 그림 1픽셀 = 3픽셀이다.
     /// </summary>
-    [ScriptedImporter(1, "pxo")]
+    [ScriptedImporter(2, "pxo")]
     public class PxoImporter : ScriptedImporter
     {
         /// <summary>UI 그림 1픽셀이 기준 화면(1920 × 1080)에서 차지하는 픽셀.</summary>
         public const int PixelScale = 3;
 
         /// <summary>방식마다 텍스처 알파 값(UI Paint 셰이더와 같아야 함).</summary>
-        public const byte GrayAlpha = 255, ColorAlpha = 254;
+        public const byte GrayAlpha = 255, ColorAlpha = 254, TintAlpha = 253;
 
         static readonly Dictionary<string, byte> Tags = new()
         {
             ["gray"] = GrayAlpha,
             ["color"] = ColorAlpha,
+            ["tint"] = TintAlpha,
         };
 
         static readonly string[] StateNames = { "Normal", "Hover", "Pressed", "Disabled" };
@@ -85,11 +87,21 @@ namespace SlimeColorMaker
                         if (canvasX < 0 || canvasX >= file.width) continue;
                         int i = (y * cel.width + x) * 4;
                         if (cel.pixels[i + 3] < 128) continue; // 규칙 3절: 투명은 0, 불투명은 255만(반투명은 반으로 나눔)
-                        byte luma = Luma(cel.pixels[i], cel.pixels[i + 1], cel.pixels[i + 2]);
-                        target[(file.height - 1 - canvasY) * stride + left + canvasX] = new Color32(luma, luma, luma, mode);
+                        byte r = cel.pixels[i], g = cel.pixels[i + 1], b = cel.pixels[i + 2];
+                        target[(file.height - 1 - canvasY) * stride + left + canvasX] = mode == TintAlpha ? Tint(r, g, b) : Gray(Luma(r, g, b), mode);
                     }
                 }
             }
+        }
+
+        static Color32 Gray(byte luma, byte mode) => new(luma, luma, luma, mode);
+
+        // Tint: R = 명도 V = 가장 큰 값, G = 채도 S = (가장 큰 값 − 가장 작은 값) ÷ 가장 큰 값(V가 0이면 0).
+        static Color32 Tint(byte r, byte g, byte b)
+        {
+            int max = Mathf.Max(r, Mathf.Max(g, b)), min = Mathf.Min(r, Mathf.Min(g, b));
+            byte saturation = max == 0 ? (byte)0 : (byte)Mathf.RoundToInt(255f * (max - min) / max);
+            return new Color32((byte)max, saturation, 0, TintAlpha);
         }
 
         // 휘도 Y = 0.299 R + 0.587 G + 0.114 B (sRGB 값 그대로, 블록벤치 규칙과 같음).
