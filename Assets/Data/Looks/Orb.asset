@@ -13,9 +13,8 @@ MonoBehaviour:
   m_Name: Orb
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.ModelLook
   opacity: 0.5
-  lightIntensity: 3
-  bloomBoost: 2
-  lightRange: 3
+  lightIntensity: 5
+  lightRange: 10
   lightScale: 0.5
   lightShadows: 1
   bodyFinish: {fileID: 0}

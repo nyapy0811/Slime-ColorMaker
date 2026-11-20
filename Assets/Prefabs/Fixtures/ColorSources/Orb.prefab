@@ -203,6 +203,10 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Range
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: m_Color.b
       value: 0
       objectReference: {fileID: 0}
@@ -216,7 +220,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: m_Intensity
-      value: 1.5
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6396851039256342250, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -65,7 +65,7 @@ namespace SlimeColorMaker
             transform.SetPositionAndRotation(lookPoint + back * currentDistance, rotation);
         }
 
-        // 카메라 당기기: 바라보는 점에서 카메라 쪽으로 구를 쏴 지형·기물(므엥·트리거 제외)에 걸리면 그 앞까지 바로 당기고,
+        // 카메라 당기기: 바라보는 점에서 카메라 쪽으로 구를 쏴 지형·기물(므엥·트리거·방벽 제외)에 걸리면 그 앞까지 바로 당기고,
         // 걸린 것이 없어지면 원래 거리로 서서히 돌아간다. 원래 거리는 휠 거리다. 당겨져 있지 않던 카메라는 휠 거리를 그대로 따라간다
         // (휠로 멀어질 때 되돌아가는 속도에 묶이지 않게).
         void UpdateDistance(Vector3 look, Vector3 back, float previousZoom)
@@ -90,8 +90,10 @@ namespace SlimeColorMaker
             float nearest = distance;
             // 거리 0은 쏘기 전부터 기준점 구와 겹친 물체다(상자처럼 속이 찬 콜라이더만 돌려줌). 턱을 오른 직후 기준점이 몸 모델을 따라 잠깐 낮아져
             // 방금 올라선 디딤판과 겹친 것이므로, 카메라와 캐릭터 사이를 가리는 것으로 보지 않는다(벽은 캐릭터 반지름이 구보다 커서 겹치지 않음).
+            // 방벽(반투명 판)은 너머가 보이므로 가리는 것으로 보지 않는다.
             for (int i = 0; i < count; i++)
-                if (hits[i].distance > 0f && !hits[i].transform.IsChildOf(target)) nearest = Mathf.Min(nearest, hits[i].distance - collision.collisionMargin);
+                if (hits[i].distance > 0f && !hits[i].transform.IsChildOf(target) && hits[i].collider.GetComponentInParent<BarrierView>() == null)
+                    nearest = Mathf.Min(nearest, hits[i].distance - collision.collisionMargin);
             return Mathf.Max(collision.minDistance, nearest);
         }
 

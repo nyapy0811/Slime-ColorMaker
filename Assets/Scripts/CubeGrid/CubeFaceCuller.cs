@@ -5,9 +5,10 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 지형(블록·계단)과 방벽 판의 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다(Play 시작할 때 <see cref="CubeGrid"/>가 부름).
-    /// 칸 경계에 놓인 면을 방향마다 16 × 16 칸 그림(칸마다 그 자리 원래 면의 UV 대응식, 복셀 1칸 = 1/16)으로 바꾸고, 이웃의 맞은편 면이 덮는 칸을 지운 뒤
-    /// 남은 칸을 같은 대응식끼리 큰 사각형으로 다시 합친다(새 꼭짓점의 UV는 대응식으로 계산: 팔레트 모델은 상수, 텍스처 모델은 면을 따라 변함).
-    /// 칸 경계에 있지 않은 면(계단 안쪽 단)과 이웃이 없는 방향의 면은 그대로다.
+    /// 축에 맞춘 면을 (방향, 평면 위치: 칸 안 1/16 간격 17곳)마다 16 × 16 칸 그림(칸마다 그 자리 원래 면의 UV 대응식, 복셀 1칸 = 1/16)으로 바꾸고,
+    /// 맞은편 면이 덮는 칸을 지운 뒤 남은 칸을 같은 대응식끼리 큰 사각형으로 다시 합친다(새 꼭짓점의 UV는 대응식으로 계산: 팔레트 모델은 상수, 텍스처 모델은 면을 따라 변함).
+    /// 맞은편 면은 이웃 칸 모델의 칸 경계 면(칸 경계 면끼리)과, 같은 칸의 다른 모델이 같은 평면에서 반대쪽을 보는 면(한 칸의 방벽 여럿이 맞닿는 면)이다.
+    /// 덮는 면이 없는 면(계단 안쪽 단, 이웃이 없는 방향)은 그대로다.
     /// 좌표는 칸 가운데를 원점으로 한 월드 축이라 돌려 놓인 계단·방벽도 그대로 맞대어 본다.
     /// 불투명 면은 불투명 이웃에만 지워지고(반투명 뒤에서는 보여야 함), 반투명 면은 불투명·반투명 이웃 모두에 지워진다(모델 가져오기 규칙과 같음).
     /// 방벽이 열려 사라지거나 다시 닫히면 <see cref="Refresh"/>로 그 칸과 이웃 칸을 다시 맞춘다(꺼진 렌더러는 덮지 않음).
@@ -16,12 +17,13 @@ namespace SlimeColorMaker
     public sealed class CubeFaceCuller
     {
         const int Resolution = 16;
+        const int Planes = Resolution + 1; // 방향마다 면 평면 위치 0~16(칸 기준 -0.5 ~ 0.5)
         const float Epsilon = 0.001f;
 
         static readonly Vector3[] Directions = { Vector3.right, Vector3.left, Vector3.up, Vector3.down, Vector3.forward, Vector3.back };
         static readonly Vector3Int[] Steps = { Vector3Int.right, Vector3Int.left, Vector3Int.up, Vector3Int.down, Vector3Int.forward, Vector3Int.back };
 
-        // 한 모델 메시가 한 방향으로 놓인 모양: 칸 기준 꼭짓점과 칸 경계 면 그림.
+        // 한 모델 메시가 한 방향으로 놓인 모양: 칸 기준 꼭짓점과 면 평면 그림.
         sealed class Shape
         {
             public string key;
@@ -31,9 +33,15 @@ namespace SlimeColorMaker
             public Vector3[] normals;
             public Vector2[] uvs;
             public int[] triangles;
-            public int[] triangleFace;                      // 삼각형이 놓인 칸 경계 방향(없으면 -1)
-            public readonly int[][] faces = new int[6][];   // 방향마다 칸별 UV 대응식 번호(없으면 -1)
+            public int[] triangleFace;                              // 삼각형이 놓인 면 평면(PlaneKey, 없으면 -1)
+            public readonly Dictionary<int, int[]> faces = new();   // 면 평면마다 칸별 UV 대응식 번호(없으면 -1)
         }
+
+        // 면 평면 번호: 방향 d와 그 축의 평면 위치 k(0~16).
+        static int PlaneKey(int d, int k) => d * Planes + k;
+
+        // 방향 d의 칸 경계 면 평면(+ 방향은 0.5, − 방향은 -0.5).
+        static int BoundaryKey(int d) => PlaneKey(d, d % 2 == 0 ? Resolution : 0);
 
         sealed class Part
         {
@@ -92,7 +100,7 @@ namespace SlimeColorMaker
             if (!cells.TryGetValue(cell, out var parts)) return;
             foreach (var part in parts)
                 if (part.shape.opaque || part.shape.glass)
-                    part.filter.sharedMesh = Variant(cell, part.shape) ?? part.original;
+                    part.filter.sharedMesh = Variant(cell, part, parts) ?? part.original;
         }
 
         /// <summary>만든 메시를 지운다.</summary>
@@ -143,21 +151,16 @@ namespace SlimeColorMaker
             shape.uvs = mesh.uv;
             shape.triangles = mesh.triangles;
             shape.triangleFace = new int[shape.triangles.Length / 3];
-            for (int d = 0; d < 6; d++)
-            {
-                shape.faces[d] = new int[Resolution * Resolution];
-                System.Array.Fill(shape.faces[d], -1);
-            }
             for (int t = 0; t < shape.triangleFace.Length; t++)
             {
-                shape.triangleFace[t] = BoundaryFace(shape, t);
+                shape.triangleFace[t] = FacePlane(shape, t);
                 if (shape.triangleFace[t] >= 0) Rasterize(shape, t, shape.triangleFace[t]);
             }
             return shape;
         }
 
-        // 삼각형이 칸 경계 평면(방향 쪽 0.5)에 놓이고 바깥을 보면 그 방향, 아니면 -1.
-        static int BoundaryFace(Shape shape, int t)
+        // 삼각형이 축에 맞춘 면 평면(칸 안 1/16 간격)에 놓이면 그 평면 번호(보는 방향 + 위치), 아니면 -1.
+        static int FacePlane(Shape shape, int t)
         {
             var a = shape.vertices[shape.triangles[t * 3]];
             var b = shape.vertices[shape.triangles[t * 3 + 1]];
@@ -165,24 +168,31 @@ namespace SlimeColorMaker
             var normal = Vector3.Cross(b - a, c - a).normalized;
             for (int d = 0; d < 6; d++)
             {
-                var direction = Directions[d];
-                if (Vector3.Dot(normal, direction) < 0.99f) continue;
-                if (Mathf.Abs(Vector3.Dot(a, direction) - 0.5f) < Epsilon && Mathf.Abs(Vector3.Dot(b, direction) - 0.5f) < Epsilon
-                    && Mathf.Abs(Vector3.Dot(c, direction) - 0.5f) < Epsilon) return d;
+                if (Vector3.Dot(normal, Directions[d]) < 0.99f) continue;
+                int axis = d / 2;
+                float position = a[axis];
+                if (Mathf.Abs(b[axis] - position) >= Epsilon || Mathf.Abs(c[axis] - position) >= Epsilon) return -1;
+                int k = Mathf.RoundToInt((position + 0.5f) * Resolution);
+                if (k < 0 || k > Resolution || Mathf.Abs(position - Edge(k)) >= Epsilon) return -1;
+                return PlaneKey(d, k);
             }
             return -1;
         }
 
         // 면 칸 가운데가 삼각형 안이면 그 칸에 삼각형의 UV 대응식을 둔다.
-        void Rasterize(Shape shape, int t, int d)
+        void Rasterize(Shape shape, int t, int plane)
         {
-            var (ua, ub) = Axes(d);
+            var (ua, ub) = Axes(plane / Planes);
             var p0 = Plane(shape.vertices[shape.triangles[t * 3]], ua, ub);
             var p1 = Plane(shape.vertices[shape.triangles[t * 3 + 1]], ua, ub);
             var p2 = Plane(shape.vertices[shape.triangles[t * 3 + 2]], ua, ub);
             Vector2 UvOf(int k) => shape.uvs.Length > 0 ? shape.uvs[shape.triangles[t * 3 + k]] : Vector2.zero;
             int uv = UvIndex(Map(p0, p1, p2, UvOf(0), UvOf(1), UvOf(2)));
-            var face = shape.faces[d];
+            if (!shape.faces.TryGetValue(plane, out var face))
+            {
+                shape.faces[plane] = face = new int[Resolution * Resolution];
+                System.Array.Fill(face, -1);
+            }
             for (int j = 0; j < Resolution; j++)
                 for (int i = 0; i < Resolution; i++)
                     if (Inside(new Vector2(CellMid(i), CellMid(j)), p0, p1, p2)) face[i + j * Resolution] = uv;
@@ -207,34 +217,32 @@ namespace SlimeColorMaker
             return new UvMap(uv0 - da * p0.x - db * p0.y, da, db);
         }
 
-        // 이 칸 이 모양의 메시: 이웃이 덮는 방향이 없으면 null(원래 메시 그대로).
-        Mesh Variant(Vector3Int cell, Shape shape)
+        // 이 칸 이 부분의 메시: 덮인 면이 없으면 null(원래 메시 그대로).
+        Mesh Variant(Vector3Int cell, Part part, List<Part> sameCell)
         {
-            var covered = new bool[6][];
-
+            var shape = part.shape;
+            var covered = new Dictionary<int, bool[]>();
             string key = shape.key;
-            bool any = false;
+
+            // 이웃 칸: 칸 경계 면끼리.
             for (int d = 0; d < 6; d++)
             {
                 if (!cells.TryGetValue(cell + Steps[d], out var neighbors)) continue;
-                int opposite = d ^ 1;
                 foreach (var neighbor in neighbors)
-                {
-                    // 불투명 이웃은 모두를, 반투명 이웃은 반투명 면만 덮는다. 꺼진(사라진 방벽) 이웃은 덮지 않는다.
-                    if (!(neighbor.shape.opaque || neighbor.shape.glass && shape.glass)) continue;
-                    if (!neighbor.filter.gameObject.activeInHierarchy) continue;
-                    var face = neighbor.shape.faces[opposite];
-                    for (int c = 0; c < face.Length; c++)
-                    {
-                        if (face[c] < 0 || shape.faces[d][c] < 0) continue;
-                        covered[d] ??= new bool[face.Length];
-                        covered[d][c] = true;
-                        any = true;
-                    }
-                    key += $"|{d}:{neighbor.shape.key}";
-                }
+                    if (Covers(neighbor, shape) && Cover(shape, BoundaryKey(d), neighbor.shape, BoundaryKey(d ^ 1), covered))
+                        key += $"|{d}:{neighbor.shape.key}";
             }
-            if (!any) return null;
+            // 같은 칸: 같은 평면에서 반대쪽을 보는 면끼리(한 칸의 방벽 여럿이 맞닿는 면).
+            foreach (var other in sameCell)
+            {
+                if (other == part || !Covers(other, shape)) continue;
+                bool touched = false;
+                foreach (var plane in shape.faces.Keys)
+                    touched |= Cover(shape, plane, other.shape, PlaneKey((plane / Planes) ^ 1, plane % Planes), covered);
+                if (touched) key += $"|s:{other.shape.key}";
+            }
+
+            if (covered.Count == 0) return null;
             if (variants.TryGetValue(key, out var cached)) return cached;
             var mesh = Build(shape, covered);
             variants[key] = mesh;
@@ -242,7 +250,26 @@ namespace SlimeColorMaker
             return mesh;
         }
 
-        Mesh Build(Shape shape, bool[][] covered)
+        // 불투명 이웃은 모두를, 반투명 이웃은 반투명 면만 덮는다. 꺼진(사라진 방벽) 이웃은 덮지 않는다.
+        static bool Covers(Part other, Shape shape) =>
+            (other.shape.opaque || other.shape.glass && shape.glass) && other.filter.gameObject.activeInHierarchy;
+
+        // shape의 평면 mine에서 other의 평면 theirs가 덮는 칸을 covered에 표시한다. 덮은 칸이 있으면 true.
+        static bool Cover(Shape shape, int mine, Shape other, int theirs, Dictionary<int, bool[]> covered)
+        {
+            if (!shape.faces.TryGetValue(mine, out var face) || !other.faces.TryGetValue(theirs, out var otherFace)) return false;
+            bool any = false;
+            for (int c = 0; c < face.Length; c++)
+            {
+                if (face[c] < 0 || otherFace[c] < 0) continue;
+                if (!covered.TryGetValue(mine, out var marks)) covered[mine] = marks = new bool[face.Length];
+                marks[c] = true;
+                any = true;
+            }
+            return any;
+        }
+
+        Mesh Build(Shape shape, Dictionary<int, bool[]> covered)
         {
             var vertices = new List<Vector3>();
             var normals = new List<Vector3>();
@@ -250,11 +277,11 @@ namespace SlimeColorMaker
             var triangles = new List<int>();
             var remap = new Dictionary<int, int>();
 
-            // 덮인 방향의 경계 면은 빼고(아래에서 남은 칸만 다시 만듦), 나머지 삼각형은 그대로 옮긴다.
+            // 덮인 평면의 면은 빼고(아래에서 남은 칸만 다시 만듦), 나머지 삼각형은 그대로 옮긴다.
             for (int t = 0; t < shape.triangleFace.Length; t++)
             {
-                int d = shape.triangleFace[t];
-                if (d >= 0 && covered[d] != null) continue;
+                int plane = shape.triangleFace[t];
+                if (plane >= 0 && covered.ContainsKey(plane)) continue;
                 for (int k = 0; k < 3; k++)
                 {
                     int index = shape.triangles[t * 3 + k];
@@ -270,13 +297,12 @@ namespace SlimeColorMaker
                 }
             }
 
-            for (int d = 0; d < 6; d++)
+            foreach (var (plane, marks) in covered)
             {
-                if (covered[d] == null) continue;
-                var cellsLeft = (int[])shape.faces[d].Clone();
+                var cellsLeft = (int[])shape.faces[plane].Clone();
                 for (int c = 0; c < cellsLeft.Length; c++)
-                    if (covered[d][c]) cellsLeft[c] = -1;
-                Merge(cellsLeft, d, vertices, normals, uvs, triangles);
+                    if (marks[c]) cellsLeft[c] = -1;
+                Merge(cellsLeft, plane, vertices, normals, uvs, triangles);
             }
 
             var fromCell = shape.toCell.inverse;
@@ -295,10 +321,12 @@ namespace SlimeColorMaker
         }
 
         // 남은 칸을 같은 UV 대응식끼리 큰 사각형으로 합친다(면 합치기).
-        void Merge(int[] face, int d, List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles)
+        void Merge(int[] face, int plane, List<Vector3> vertices, List<Vector3> normals, List<Vector2> uvs, List<int> triangles)
         {
+            int d = plane / Planes;
             var (ua, ub) = Axes(d);
             var direction = Directions[d];
+            float position = Edge(plane % Planes);
             for (int j = 0; j < Resolution; j++)
             {
                 for (int i = 0; i < Resolution; i++)
@@ -314,10 +342,10 @@ namespace SlimeColorMaker
                             face[x + y * Resolution] = -1;
 
                     float a0 = Edge(i), a1 = Edge(i + width), b0 = Edge(j), b1 = Edge(j + height);
-                    var v0 = Point(direction, ua, ub, a0, b0);
-                    var v1 = Point(direction, ua, ub, a1, b0);
-                    var v2 = Point(direction, ua, ub, a1, b1);
-                    var v3 = Point(direction, ua, ub, a0, b1);
+                    var v0 = Point(d / 2, position, ua, ub, a0, b0);
+                    var v1 = Point(d / 2, position, ua, ub, a1, b0);
+                    var v2 = Point(d / 2, position, ua, ub, a1, b1);
+                    var v3 = Point(d / 2, position, ua, ub, a0, b1);
                     if (Vector3.Dot(Vector3.Cross(v1 - v0, v2 - v0), direction) < 0f) (v1, v3) = (v3, v1);
                     int start = vertices.Count;
                     vertices.Add(v0); vertices.Add(v1); vertices.Add(v2); vertices.Add(v3);
@@ -348,9 +376,10 @@ namespace SlimeColorMaker
 
         static Vector2 Plane(Vector3 point, int ua, int ub) => new(point[ua], point[ub]);
 
-        static Vector3 Point(Vector3 direction, int ua, int ub, float a, float b)
+        static Vector3 Point(int axis, float position, int ua, int ub, float a, float b)
         {
-            var point = direction * 0.5f;
+            var point = Vector3.zero;
+            point[axis] = position;
             point[ua] = a;
             point[ub] = b;
             return point;
