@@ -5204,6 +5204,7 @@ GameObject:
   - component: {fileID: 1872695319}
   - component: {fileID: 1872695318}
   - component: {fileID: 1872695317}
+  - component: {fileID: 1872695321}
   m_Layer: 0
   m_Name: ValueLabel
   m_TagString: Untagged
@@ -5311,6 +5312,18 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 10
   m_TargetDisplay: 0
+--- !u!225 &1872695321
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872695314}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &1978715895
 GameObject:
   m_ObjectHideFlags: 0

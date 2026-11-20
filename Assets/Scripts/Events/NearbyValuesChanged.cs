@@ -4,17 +4,23 @@ using UnityEngine;
 
 namespace SlimeColorMaker
 {
-    /// <summary>상호작용 거리 안에서 값이 보이는 기물 하나: 그 기물 콜라이더 윗면 가운데와 값.</summary>
+    /// <summary>상호작용 거리 안에서 값이 보이는 기물 하나: 그 기물 콜라이더 전체의 경계 상자와 값.</summary>
     public readonly struct NearbyValue
     {
-        public readonly Vector3 Top;
+        public readonly Bounds Box;
         public readonly ColorValue Value;
 
-        public NearbyValue(Vector3 top, ColorValue value)
+        public NearbyValue(Bounds box, ColorValue value)
         {
-            Top = top;
+            Box = box;
             Value = value;
         }
+
+        /// <summary>경계 상자 윗면 가운데(값 상자를 띄우는 자리).</summary>
+        public Vector3 Top => new(Box.center.x, Box.max.y, Box.center.z);
+
+        /// <summary>점에서 경계 상자까지의 거리(안이면 0).</summary>
+        public float DistanceFrom(Vector3 point) => Mathf.Sqrt(Box.SqrDistance(point));
     }
 
     /// <summary>

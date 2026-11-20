@@ -45,7 +45,18 @@ namespace SlimeColorMaker
             ReportValue(idle);
         }
 
-        Vector3 Center => transform.TransformPoint(body.center);
+        /// <summary>지금 맵의 캐릭터(없으면 null). 가까운 값 표시가 거리를 잴 때 쓴다.</summary>
+        public static TouchInteractionController Current { get; private set; }
+
+        void OnEnable() => Current = this;
+
+        void OnDisable()
+        {
+            if (Current == this) Current = null;
+        }
+
+        /// <summary>캐릭터 몸(캡슐) 가운데. 값이 보이는 거리를 여기서 잰다.</summary>
+        public Vector3 Center => transform.TransformPoint(body.center);
 
         void Touch()
         {
@@ -92,7 +103,7 @@ namespace SlimeColorMaker
                 ((Component)provider).GetComponentsInChildren(parts);
                 foreach (var part in parts)
                     if (part.enabled) bounds.Encapsulate(part.bounds);
-                found.Add(new NearbyValue(new Vector3(bounds.center.x, bounds.max.y, bounds.center.z), value));
+                found.Add(new NearbyValue(bounds, value));
             }
         }
 
@@ -104,7 +115,7 @@ namespace SlimeColorMaker
             {
                 bool match = false;
                 foreach (var y in b)
-                    if (y.Top == x.Top && y.Value == x.Value) { match = true; break; }
+                    if (y.Box == x.Box && y.Value == x.Value) { match = true; break; }
                 if (!match) return false;
             }
             return true;

@@ -8,6 +8,8 @@ namespace SlimeColorMaker
     /// 가까운 값 표시(UIScene HUD). '가까운 값들 바뀜'을 받아 범위 안 기물마다 그 기물 위에
     /// 'R G B' 상자를 하나씩 보인다. 상자는 화면에 그리고(거리와 상관없이 크기가 같고 벽에 가려지지 않음), 매 프레임 기물 윗면에서
     /// 조금 위의 점을 지금 카메라(<see cref="Camera.main"/>)로 화면 자리로 바꿔 맞춘다. 카메라 뒤쪽 기물의 상자는 숨긴다.
+    /// 캐릭터와 기물의 거리에 따라 보이기 시작하는 거리에서 '제 크기 거리'까지 상자가 시작 크기에서 제 크기로 커지고 투명에서 불투명해진다
+    /// (게임 규칙 <see cref="GameRulesConfig"/>, 투명도는 상자의 CanvasGroup).
     /// 입력이 잠기면 값이 비므로 따로 듣지 않아도 숨는다.
     /// </summary>
     public class NearbyValueLabel : MonoBehaviour
@@ -56,9 +58,23 @@ namespace SlimeColorMaker
                 if (visible && RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screen, null, out var local))
                 {
                     var rect = (RectTransform)labels[i].transform;
+                    float near = Nearness(shown[i]);
+                    rect.localScale = Vector3.one * Mathf.Lerp(StartScale, 1f, near);
+                    labels[i].GetComponent<CanvasGroup>().alpha = near;
                     rect.anchoredPosition = SnapToPixels(area, rect, local);
                 }
             }
+        }
+
+        static float StartScale => MapManager.Current != null ? MapManager.Current.Rules.valueStartScale : 1f;
+
+        // 가까운 정도: 보이기 시작하는 거리에서 0, 제 크기 거리 안에서 1.
+        static float Nearness(NearbyValue value)
+        {
+            var player = TouchInteractionController.Current;
+            if (player == null || MapManager.Current == null) return 1f;
+            var rules = MapManager.Current.Rules;
+            return Mathf.InverseLerp(rules.interactDistance, rules.valueFullDistance, value.DistanceFrom(player.Center));
         }
 
         // 화면 픽셀 격자에 맞춘다: 상자 왼쪽 아래 모서리가 화면의 정수 픽셀에 오게 반올림한다. 그림 1픽셀은 늘 화면 n픽셀(PixelCanvasScaler)이라
@@ -68,7 +84,7 @@ namespace SlimeColorMaker
             var canvas = area.GetComponentInParent<Canvas>().rootCanvas;
             var root = (RectTransform)canvas.transform;
             Vector2 origin = (Vector2)root.InverseTransformPoint(area.position) - root.rect.min;
-            Vector2 pivot = Vector2.Scale(rect.pivot, rect.rect.size);
+            Vector2 pivot = Vector2.Scale(rect.pivot, rect.rect.size) * rect.localScale.x;
             Vector2 corner = (origin + local - pivot) * canvas.scaleFactor; // 화면 픽셀
             corner = new Vector2(Mathf.Round(corner.x), Mathf.Round(corner.y)) / canvas.scaleFactor;
             return corner - origin + pivot;
