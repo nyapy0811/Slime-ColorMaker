@@ -1,0 +1,251 @@
+<title>Slime~ColorMaker~ UI 그림 목록</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Silkscreen&display=swap">
+<style>
+/* 레이아웃: 위에 만들 그림 카드(번호), 아래에 화면별 실제 배치 재현(같은 번호 표시) */
+:root {
+  --bg: #eef0f3; --surface: #ffffff; --fg: #1d2026; --muted: #5e6572; --line: #d5d9e0;
+  --accent: #2f8f86; --accent-ink: #ffffff; --warn: #a3622a;
+  --screen: #2a2e36; --screen-ink: #ffffff;
+  --body: "Noto Sans KR", system-ui, sans-serif; --pixel: "Silkscreen", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --screen: #0f1115; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --screen: #0f1115; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+h1 { font-size: clamp(24px, 4vw, 34px); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 68ch; margin-top: 10px; }
+.eyebrow { font: 11px var(--pixel); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; color: var(--muted); font-size: 13px; }
+.facts b { color: var(--fg); font-weight: 500; }
+
+/* 그림 카드 */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 8px; min-width: 0; }
+.card-head { display: flex; gap: 10px; align-items: baseline; }
+.num { font: 13px var(--pixel); background: var(--accent); color: var(--accent-ink); min-width: 24px; height: 24px;
+  display: inline-grid; place-items: center; border-radius: 4px; flex: none; }
+.file { font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); }
+.kv { display: grid; grid-template-columns: 74px 1fr; gap: 2px 10px; font-size: 13px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; font-variant-numeric: tabular-nums; }
+.note { font-size: 13px; color: var(--warn); }
+.none .num { background: var(--line); color: var(--muted); }
+
+/* 화면 재현 */
+.screens { display: grid; gap: 28px; }
+.shot { display: grid; gap: 10px; }
+.shot-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+.shot-meta span { color: var(--muted); font-size: 13px; }
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; max-width: 100%; background: var(--screen);
+  border-radius: 6px; overflow: hidden; container-type: inline-size; color: var(--screen-ink); }
+.stage .world { position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 calc(100cqw / 24 - 1px), rgba(255,255,255,.04) 0 calc(100cqw / 24)),
+              repeating-linear-gradient(90deg, transparent 0 calc(100cqw / 24 - 1px), rgba(255,255,255,.04) 0 calc(100cqw / 24)); }
+.el { position: absolute; display: flex; align-items: center; justify-content: center; white-space: nowrap; box-sizing: border-box; }
+.el.col { flex-direction: column; justify-content: flex-start; align-items: stretch; }
+.tag { position: absolute; top: -0.9cqw; left: -0.9cqw; font: 1.1cqw var(--pixel); background: var(--accent); color: var(--accent-ink);
+  min-width: 1.9cqw; height: 1.9cqw; display: grid; place-items: center; border-radius: .35cqw; z-index: 3; box-shadow: 0 0 0 .2cqw var(--screen); }
+.fixture { position: absolute; border: .15cqw dashed rgba(255,255,255,.35); border-radius: .3cqw; font-size: 1cqw; color: rgba(255,255,255,.5);
+  display: grid; place-items: end center; padding-bottom: .4cqw; }
+.legend { font-size: 13px; color: var(--muted); }
+footer { color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Slime~ColorMaker~ · UI pixel art</div>
+    <h1>UI 그림 목록</h1>
+    <p class="lede">지금 게임에 있는 UI와 HUD 화면 다섯 개를 장면 파일(UIScene, MainMenu)의 실제 위치와 크기대로 다시 그렸습니다. 지금은 모두 그림 없이 단색 사각형과 글자로만 되어 있습니다. 각 화면의 번호가 아래 '만들 그림' 번호와 같습니다.</p>
+    <div class="facts">
+      <span>기준 화면 <b>1920 × 1080</b></span>
+      <span>그림 1픽셀 = 화면 <b>3픽셀</b> (판 640 × 360)</span>
+      <span>만들 그림 <b>6개</b></span>
+      <span>글자는 그림에 넣지 않음 (폰트)</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>만들 그림</h2>
+    <p class="legend" style="margin-bottom:14px">크기는 '지금 화면 크기 ÷ 3'입니다. 늘어나는 그림(9-슬라이스)은 가장 작은 크기로 그리면 되고, 정확한 칸 크기는 그림을 넣을 때 메인 세션이 3픽셀 격자에 맞춥니다.</p>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section>
+    <h2>화면별 배치</h2>
+    <p class="legend" style="margin-bottom:14px">모두 1920 × 1080 비율입니다. 점선 상자는 게임 속 기물 자리(예시), 숫자 상자는 예시 값입니다.</p>
+    <div class="screens" id="screens"></div>
+  </section>
+
+  <footer>
+    <p>출처: <span class="file">Assets/Scenes/UIScene.unity</span>, <span class="file">Assets/Scenes/MainMenu.unity</span>, <span class="file">Assets/Scripts/UI/**</span> (2026-11-20 기준, 커밋 3507686 뒤). 그림 규칙은 <span class="file">Docs/v2 UI 픽셀아트 규칙.md</span>.</p>
+    <p>그림이 필요 없는 것: 화면 어둡게 하는 덮개(검정 60%), 화면 페이드(검정), 지금 시간·최고 시간 글자(폰트).</p>
+  </footer>
+</div>
+
+<script>
+// ---- 만들 그림 ----
+const ART = [
+  { n: 1, name: "창 바탕", file: "Common/PanelWindow.pxo", kind: "9-슬라이스, 1프레임",
+    where: "일시정지, 클리어, 확인 창, 맵 목록, 맵 미리보기 (5곳)",
+    size: "140×127 ~ 273×227 (지금 420×380 ~ 820×680)", color: "Gray (지금 짙은 회색)" },
+  { n: 2, name: "기본 버튼", file: "Common/ButtonMain.pxo", kind: "9-슬라이스, 4프레임 (기본·올림·누름·꺼짐)",
+    where: "버튼 15개: 일시정지 4, 클리어 3, 확인 창 2, 메인 메뉴 3, 맵 시작·이어하기 2, 뒤로 1",
+    size: "높이 21~32, 폭 73~140 (지금 높이 64·72·96)", color: "Gray" },
+  { n: 3, name: "맵 목록 버튼", file: "Menu/ButtonMapItem.pxo", kind: "9-슬라이스, 4프레임",
+    where: "맵 선택 화면 왼쪽 목록의 맵 하나",
+    size: "193×24 (지금 580×72)", color: "Gray",
+    note: "고른 맵은 밝게 보입니다. 4프레임 규칙에 '고름' 칸이 없어서, 2번 버튼과 같이 쓸지 따로 그릴지 정해야 합니다." },
+  { n: 4, name: "값 상자 (R G B)", file: "HUD/PanelValue.pxo", kind: "9-슬라이스 또는 고정, 1프레임",
+    where: "지금 색 옆, 가까운 기물 위 (같은 그림)",
+    size: "50×13 (지금 150×40)", color: "Gray (지금 거의 검정, 92%)" },
+  { n: 5, name: "지금 색 견본", file: "HUD/IconSwatch.pxo", kind: "고정, 1프레임",
+    where: "화면 왼쪽 아래, 값 상자 왼쪽",
+    size: "13×13 (지금 40×40)", color: "Color (안쪽, 지금 색) + Gray (테두리)",
+    note: "Color 레이어를 처음 쓰는 그림입니다. 안쪽을 흰색으로 칠하면 게임 색이 그대로 나옵니다." },
+  { n: 6, name: "미리보기 틀", file: "Menu/FrameThumbnail.pxo", kind: "9-슬라이스, 1프레임",
+    where: "맵 선택 화면 오른쪽, 맵 썸네일 둘레",
+    size: "247×133 (지금 740×400)", color: "Gray",
+    note: "안쪽은 맵 미리보기 그림이 들어갈 자리라 비워 둡니다(투명)." },
+];
+const cards = document.getElementById("cards");
+for (const a of ART) {
+  const c = document.createElement("article");
+  c.className = "card";
+  c.innerHTML = `<div class="card-head"><span class="num">${a.n}</span><div><h3>${a.name}</h3><div class="file">Assets/Sprites/UI/${a.file}</div></div></div>
+    <dl class="kv"><dt>방식</dt><dd>${a.kind}</dd><dt>쓰는 곳</dt><dd>${a.where}</dd><dt>그림 크기</dt><dd>${a.size}</dd><dt>칠</dt><dd>${a.color}</dd></dl>
+    ${a.note ? `<p class="note">${a.note}</p>` : ""}`;
+  cards.appendChild(c);
+}
+const extra = document.createElement("article");
+extra.className = "card none";
+extra.innerHTML = `<div class="card-head"><span class="num">?</span><div><h3>제목 로고</h3><div class="file">메인 메뉴 'Color Maze'</div></div></div>
+  <p class="legend">지금은 글자(크기 110)이고 옛 이름 'Color Maze'가 그대로입니다. 규칙상 그림에 글자를 넣지 않으므로, 로고를 그림으로 만들지(규칙 예외) 폰트 글자로 둘지 정해야 합니다.</p>`;
+cards.appendChild(extra);
+
+// ---- 화면 재현 (좌표: 1920×1080, 왼쪽 위 기준, 장면 파일 값에서 계산) ----
+const W = 1920, H = 1080;
+const BOX = "rgba(41,41,46,.97)", BTN = "rgb(77,77,84)", DARK = "rgba(20,20,23,.92)";
+const pct = (v, t) => (v / t * 100) + "%";
+const cq = px => (px / W * 100) + "cqw";
+function el(stage, o) {
+  const d = document.createElement("div");
+  d.className = "el" + (o.col ? " col" : "");
+  Object.assign(d.style, { left: pct(o.x, W), top: pct(o.y, H), width: pct(o.w, W), height: pct(o.h, H),
+    background: o.bg || "transparent", fontSize: cq(o.fs || 24), opacity: o.op ?? 1,
+    justifyContent: o.align === "right" ? "flex-end" : o.align === "left" ? "flex-start" : undefined });
+  if (o.pad) d.style.padding = cq(o.pad);
+  if (o.gap) d.style.gap = cq(o.gap);
+  if (o.text != null) { const s = document.createElement("span"); s.textContent = o.text; if (o.textOp) s.style.opacity = o.textOp; d.appendChild(s); }
+  if (o.tag) { const t = document.createElement("span"); t.className = "tag"; t.textContent = o.tag; d.appendChild(t); }
+  (o.parent || stage).appendChild(d);
+  return d;
+}
+// 세로 배치 상자 안의 줄(VerticalLayoutGroup: 위쪽부터, 폭 꽉 채움)
+function row(parent, h, o = {}) {
+  const d = document.createElement("div");
+  d.className = "el";
+  Object.assign(d.style, { position: "relative", height: cq(h), flex: "none", background: o.bg || "transparent", fontSize: cq(o.fs || 30) });
+  if (o.text != null) { const s = document.createElement("span"); s.textContent = o.text; d.appendChild(s); }
+  if (o.tag) { const t = document.createElement("span"); t.className = "tag"; t.textContent = o.tag; d.appendChild(t); }
+  parent.appendChild(d);
+  return d;
+}
+function fixture(stage, x, y, w, h, label) {
+  const f = document.createElement("div");
+  f.className = "fixture";
+  Object.assign(f.style, { left: pct(x, W), top: pct(y, H), width: pct(w, W), height: pct(h, H) });
+  f.textContent = label;
+  stage.appendChild(f);
+}
+function valueBox(stage, x, y, vals, tag) {
+  const b = el(stage, { x, y, w: 150, h: 40, bg: DARK, fs: 24, tag });
+  b.style.justifyContent = "space-evenly";
+  for (const v of vals) { const s = document.createElement("span"); s.textContent = v; b.appendChild(s); }
+}
+function dialog(stage, x, y, w, h, rows) {
+  el(stage, { x: 0, y: 0, w: W, h: H, bg: "rgba(0,0,0,.6)" });
+  const box = el(stage, { x, y, w, h, bg: BOX, col: true, pad: 30, gap: 18, tag: "1" });
+  box.style.overflow = "visible";
+  for (const r of rows) row(box, r.h, r);
+}
+
+const SCREENS = [
+  { title: "게임 중 HUD", scene: "UIScene · Hud", note: "맵에 있을 때 늘 보임. 가까운 값 상자는 범위 안 기물마다 하나씩 기물 위에 뜸.", draw(s) {
+      s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
+      fixture(s, 610, 470, 180, 180, "기물"); fixture(s, 1080, 540, 180, 180, "기물");
+      valueBox(s, 625, 410, ["2", "0", "0"], "4"); valueBox(s, 1095, 480, ["0", "3", "5"], "4");
+      el(s, { x: 1696, y: 24, w: 200, h: 40, text: "03:27", fs: 32, align: "right" });
+      el(s, { x: 1636, y: 64, w: 260, h: 30, text: "최고 01:58.40", fs: 22, align: "right", textOp: .75 });
+      el(s, { x: 24, y: 1016, w: 40, h: 40, bg: "rgb(255,0,0)", tag: "5" });
+      valueBox(s, 76, 1016, ["2", "0", "0"], "4");
+    } },
+  { title: "일시정지", scene: "UIScene · PauseMenu", note: "ESC로 엶. 상자 420×380 안에 제목과 버튼 4개 (지금 설정으로는 내용 높이 452가 상자보다 큼).", draw(s) {
+      s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
+      dialog(s, 750, 350, 420, 380, [
+        { h: 64, text: "일시정지", fs: 40 },
+        { h: 64, text: "계속하기", bg: BTN, tag: "2" }, { h: 64, text: "처음부터", bg: BTN },
+        { h: 64, text: "체크포인트로", bg: BTN }, { h: 64, text: "메인메뉴", bg: BTN }]);
+    } },
+  { title: "맵 클리어", scene: "UIScene · MapClearScreen", note: "목적지에 닿으면 뜸. 이번이 최고 기록이면 '새 기록'.", draw(s) {
+      s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
+      dialog(s, 730, 275, 460, 530, [
+        { h: 72, text: "클리어", fs: 48 }, { h: 64, text: "클리어 시간 01:58.40", fs: 32 }, { h: 40, text: "최고 기록 01:58.40", fs: 26 },
+        { h: 64, text: "다음 맵", bg: BTN, tag: "2" }, { h: 64, text: "다시 하기", bg: BTN }, { h: 64, text: "메인 메뉴", bg: BTN }]);
+    } },
+  { title: "확인 창", scene: "UIScene · ConfirmDialog", note: "처음부터·메인 메뉴 등을 고를 때 한 번 더 묻는 창.", draw(s) {
+      s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
+      dialog(s, 680, 360, 560, 360, [
+        { h: 130, text: "처음부터 다시 할까요?", fs: 28 },
+        { h: 64, text: "확인", bg: BTN, tag: "2" }, { h: 64, text: "취소", bg: BTN }]);
+    } },
+  { title: "메인 메뉴", scene: "MainMenu · MainMenu", note: "이어하기는 저장된 체크포인트가 있을 때만 보임.", draw(s) {
+      el(s, { x: 360, y: 200, w: 1200, h: 160, text: "Color Maze", fs: 110 });
+      const g = el(s, { x: 750, y: 490, w: 420, h: 260, col: true, gap: 18 });
+      row(g, 96, { text: "Play", bg: BTN, tag: "2" }); row(g, 72, { text: "이어하기", bg: BTN }); row(g, 72, { text: "종료", bg: BTN });
+    } },
+  { title: "맵 선택", scene: "MainMenu · MapSelect", note: "왼쪽 목록에서 맵을 고르면 오른쪽에 미리보기와 기록이 나옴. 고른 맵 버튼은 밝은 색.", draw(s) {
+      el(s, { x: 560, y: 65, w: 800, h: 90, text: "맵 선택", fs: 60 });
+      const list = el(s, { x: 200, y: 210, w: 620, h: 680, bg: BOX, col: true, pad: 20, gap: 12, tag: "1" });
+      const items = [["시험 맵 A", "클리어 · 01:58.40", true], ["시험 맵 B", "", false], ["모션 시험", "체크포인트", false]];
+      items.forEach(([n, st, sel], i) => {
+        const r = row(list, 72, { bg: sel ? "rgb(115,115,140)" : BTN, fs: 32, tag: i === 0 ? "3" : null });
+        r.style.justifyContent = "space-between"; r.style.padding = "0 " + cq(24);
+        r.insertAdjacentHTML("afterbegin", `<span>${n}</span><span style="font-size:${cq(22)};opacity:.75">${st}</span>`);
+      });
+      el(s, { x: 880, y: 210, w: 820, h: 680, bg: BOX, tag: "1" });
+      el(s, { x: 920, y: 240, w: 740, h: 400, bg: "rgb(56,56,64)", text: "미리보기 없음", fs: 28, textOp: .5, tag: "6" });
+      el(s, { x: 920, y: 655, w: 740, h: 60, text: "시험 맵 A", fs: 44 });
+      el(s, { x: 920, y: 715, w: 740, h: 80, text: "클리어 · 최고 01:58.40", fs: 26 });
+      el(s, { x: 970, y: 794, w: 300, h: 72, bg: BTN, text: "시작", fs: 30, tag: "2" });
+      el(s, { x: 1310, y: 794, w: 300, h: 72, bg: BTN, text: "이어하기", fs: 30 });
+      el(s, { x: 60, y: 966, w: 220, h: 64, bg: BTN, text: "뒤로", fs: 30, tag: "2" });
+    } },
+];
+const wrap = document.getElementById("screens");
+for (const sc of SCREENS) {
+  const f = document.createElement("figure");
+  f.className = "shot"; f.style.margin = "0";
+  f.innerHTML = `<div class="shot-meta"><h3>${sc.title}</h3><span class="file">${sc.scene}</span></div>`;
+  const stage = document.createElement("div");
+  stage.className = "stage";
+  f.appendChild(stage);
+  const cap = document.createElement("figcaption");
+  cap.className = "legend"; cap.textContent = sc.note;
+  f.appendChild(cap);
+  wrap.appendChild(f);
+  sc.draw(stage);
+}
+</script>

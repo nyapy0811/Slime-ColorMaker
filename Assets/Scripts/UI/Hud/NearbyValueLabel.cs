@@ -54,8 +54,24 @@ namespace SlimeColorMaker
                 bool visible = screen.z > 0f;
                 labels[i].gameObject.SetActive(visible);
                 if (visible && RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screen, null, out var local))
-                    ((RectTransform)labels[i].transform).anchoredPosition = local;
+                {
+                    var rect = (RectTransform)labels[i].transform;
+                    rect.anchoredPosition = SnapToPixels(area, rect, local);
+                }
             }
+        }
+
+        // 화면 픽셀 격자에 맞춘다: 상자 왼쪽 아래 모서리가 화면의 정수 픽셀에 오게 반올림한다. 그림 1픽셀은 늘 화면 n픽셀(PixelCanvasScaler)이라
+        // 모서리만 정수 픽셀이면 테두리 굵기가 흔들리지 않고, 움직임은 화면 1픽셀씩이라 부드럽다(그림 픽셀 단위로 맞추면 n픽셀씩 끊겨 떨림).
+        static Vector2 SnapToPixels(RectTransform area, RectTransform rect, Vector2 local)
+        {
+            var canvas = area.GetComponentInParent<Canvas>().rootCanvas;
+            var root = (RectTransform)canvas.transform;
+            Vector2 origin = (Vector2)root.InverseTransformPoint(area.position) - root.rect.min;
+            Vector2 pivot = Vector2.Scale(rect.pivot, rect.rect.size);
+            Vector2 corner = (origin + local - pivot) * canvas.scaleFactor; // 화면 픽셀
+            corner = new Vector2(Mathf.Round(corner.x), Mathf.Round(corner.y)) / canvas.scaleFactor;
+            return corner - origin + pivot;
         }
     }
 }
