@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "free",
+    "box_uv": false
+  },
+  "name": "BarrierMain",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "multi_file_ruleset": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 16
+  },
+  "elements": [
+    {
+      "name": "glass",
+      "box_uv": false,
+      "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
+      "allow_mirror_modeling": true,
+      "from": [
+        -8,
+        1,
+        -7
+      ],
+      "to": [
+        -7,
+        15,
+        7
+      ],
+      "autouv": 0,
+      "color": 2,
+      "origin": [
+        0,
+        1,
+        1
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            14,
+            14
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            14,
+            0,
+            28,
+            14
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            28,
+            0,
+            29,
+            14
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            29,
+            0,
+            30,
+            14
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            30,
+            0,
+            31,
+            14
+          ],
+          "texture": 0
+        },
+        "north": {
+          "uv": [
+            31,
+            0,
+            32,
+            14
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "af0266a9-6b9a-40ee-aadd-d10e7465f21c"
+    }
+  ],
+  "groups": [
+    {
+      "name": "Object 1",
+      "uuid": "742799a6-143f-49ba-8b9c-8ccd7cccc0e6",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    },
+    {
+      "name": "glass",
+      "uuid": "326229a9-a9b4-45c1-97ef-bfbdb578e896",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": false
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "742799a6-143f-49ba-8b9c-8ccd7cccc0e6",
+      "isOpen": true,
+      "children": [
+        {
+          "uuid": "326229a9-a9b4-45c1-97ef-bfbdb578e896",
+          "isOpen": true,
+          "children": [
+            "af0266a9-6b9a-40ee-aadd-d10e7465f21c"
+          ]
+        }
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "name": "Barrier.png",
+      "path": "",
+      "folder": "",
+      "namespace": "",
+      "id": "0",
+      "group": "",
+      "scope": 0,
+      "width": 64,
+      "height": 16,
+      "uv_width": 64,
+      "uv_height": 16,
+      "particle": false,
+      "use_as_default": false,
+      "layers_enabled": false,
+      "sync_to_project": "",
+      "file_format": "png",
+      "render_mode": "default",
+      "render_sides": "auto",
+      "wrap_mode": "limited",
+      "pbr_channel": "color",
+      "fps": 7,
+      "force_translucent": false,
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "internal": true,
+      "saved": false,
+      "uuid": "235bdb96-ed71-4a68-a6b7-58578673b1bf",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAAK0lEQVR42u3QMQEAAAwCIPuX3mJ4CBHIlaVNgAABAgQIECBAgAABAiYDGPfcX/lbYOjJGwAAAABJRU5ErkJggg=="
+    }
+  ]
+}

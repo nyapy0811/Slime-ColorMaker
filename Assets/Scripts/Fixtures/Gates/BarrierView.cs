@@ -5,10 +5,10 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 방벽의 겉모습(모델 Models/Fixtures/Barrier): 열리면 반투명 판이 흐려지며 사라진다(복셀 모델의 흐려짐을 0까지 내리고 끔).
-    /// 모서리 겹침 피하기: 같은 칸에 북·남 방벽이 있으면 동·서 방벽의 판이 그 끝만큼(2픽셀) 짧은 모양으로 바뀐다
-    /// (모델 Barrier·BarrierOneCorner·BarrierNoCorner, 반대쪽 끝은 OneCorner를 판 축으로 뒤집은 것). 북·남 방벽이 사라지면 원래 길이로 돌아간다.
-    /// 바닥·천장 방벽과의 겹침은 아직 다루지 않는다. Play 중에만 바꾼다(편집 화면은 온전한 판).
+    /// 방벽의 겉모습: 열리면 반투명 판이 흐려지며 사라진다(복셀 모델의 흐려짐을 0까지 내리고 끔).
+    /// 판은 조각으로 짓는다(모델 Models/Fixtures/BarrierMain·BarrierSide·BarrierCorner, 두께 1픽셀): 가운데 판 1 + 가장자리 띠 4(판의 로컬 +Z·−Z·+Y·−Y 끝)
+    /// + 모서리 4. 같은 칸의 다른 면 방벽과 가장자리가 겹치면 띠·모서리는 한쪽만 켠다(우선순위: 위·아래 > 북·남 > 동·서, 모서리는 둘레 세 판 중 가장 높은 판).
+    /// 다른 방벽이 사라지면 다시 켠다. Play 중에만 바꾼다(편집 화면은 온전한 판).
     /// 판이 사라지거나 다시 생기거나 모양이 바뀌면 알린다(큐브 격자가 맞닿은 면 숨기기를 다시 맞춤).
     /// </summary>
     public class BarrierView : OpenableView
@@ -22,8 +22,16 @@ namespace SlimeColorMaker
         [Tooltip("붙은 면을 읽을 자리 컴포넌트")]
         [SerializeField] CellFaceMount mount;
 
-        [Tooltip("판 모양 4개(복셀 모델 아래, 하나만 켬): 0 온전, 1 +Z 끝 자름(서쪽 방벽이면 북쪽 끝), 2 −Z 끝 자름, 3 두 끝 자름")]
-        [SerializeField] GameObject[] shapes = new GameObject[4];
+        [Tooltip("가장자리 띠 4개(복셀 모델 아래): 판의 로컬 +Z, −Z, +Y, −Y 끝(서쪽 방벽이면 북, 남, 위, 아래)")]
+        [SerializeField] GameObject[] sides = new GameObject[4];
+
+        [Tooltip("모서리 4개(복셀 모델 아래): 로컬 (+Y, +Z), (+Y, −Z), (−Y, +Z), (−Y, −Z)")]
+        [SerializeField] GameObject[] corners = new GameObject[4];
+
+        // 띠·모서리 차례대로 판의 로컬 방향(서쪽 면 기준).
+        static readonly Vector3[] SideAxes = { Vector3.forward, Vector3.back, Vector3.up, Vector3.down };
+        static readonly (Vector3 y, Vector3 z)[] CornerAxes =
+            { (Vector3.up, Vector3.forward), (Vector3.up, Vector3.back), (Vector3.down, Vector3.forward), (Vector3.down, Vector3.back) };
 
         static readonly Dictionary<Vector3Int, List<BarrierView>> byCell = new();
 
@@ -94,25 +102,43 @@ namespace SlimeColorMaker
                 foreach (var barrier in list) barrier.Refit();
         }
 
-        // 같은 칸의 보이는 북·남 방벽 쪽 끝을 자른 모양을 고른다(동·서 방벽만).
+        // 띠는 그 끝이 닿는 면에 더 높은 방벽이 보이면 끄고, 모서리는 닿는 두 면 중 하나라도 더 높은 방벽이 보이면 끈다.
         void Refit()
         {
-            if (mount == null || shapes == null || shapes.Length < 4) return;
-            bool plus = false, minus = false;
-            if (mount.Face is CellFace.West or CellFace.East)
-                foreach (var other in byCell[cell])
-                {
-                    if (other == this || !other.IsShown || other.mount == null || other.mount.Face is not (CellFace.North or CellFace.South)) continue;
-                    // 서쪽 방벽은 모델의 +Z 끝이 북쪽, 동쪽 방벽(180도 돌림)은 남쪽이다.
-                    bool atPlus = (other.mount.Face == CellFace.North) == (mount.Face == CellFace.West);
-                    if (atPlus) plus = true;
-                    else minus = true;
-                }
-            int index = plus && minus ? 3 : plus ? 1 : minus ? 2 : 0;
-            if (shapes[index] == null || shapes[index].activeSelf) return;
-            for (int i = 0; i < shapes.Length; i++)
-                if (shapes[i] != null) shapes[i].SetActive(i == index);
-            ShownChanged?.Invoke(this);
+            if (mount == null) return;
+            bool changed = false;
+            for (int i = 0; i < sides.Length; i++)
+                changed |= SetActive(sides[i], !Yields(FaceToward(SideAxes[i])));
+            for (int i = 0; i < corners.Length; i++)
+                changed |= SetActive(corners[i], !Yields(FaceToward(CornerAxes[i].y)) && !Yields(FaceToward(CornerAxes[i].z)));
+            if (changed) ShownChanged?.Invoke(this);
+        }
+
+        static bool SetActive(GameObject piece, bool active)
+        {
+            if (piece == null || piece.activeSelf == active) return false;
+            piece.SetActive(active);
+            return true;
+        }
+
+        // 그 면에 이 방벽보다 우선순위가 높은 방벽이 보이는가.
+        bool Yields(CellFace face)
+        {
+            foreach (var other in byCell[cell])
+                if (other != this && other.IsShown && other.mount != null && other.mount.Face == face && Priority(face) > Priority(mount.Face))
+                    return true;
+            return false;
+        }
+
+        static int Priority(CellFace face) => face switch { CellFace.Up or CellFace.Down => 2, CellFace.North or CellFace.South => 1, _ => 0 };
+
+        // 판의 로컬 방향(서쪽 면 기준)이 가리키는 칸의 면.
+        CellFace FaceToward(Vector3 local)
+        {
+            var d = CellFaceMount.Rotation(mount.Face) * local;
+            if (Mathf.Abs(d.x) > 0.5f) return d.x > 0f ? CellFace.East : CellFace.West;
+            if (Mathf.Abs(d.y) > 0.5f) return d.y > 0f ? CellFace.Up : CellFace.Down;
+            return d.z > 0f ? CellFace.North : CellFace.South;
         }
     }
 }
