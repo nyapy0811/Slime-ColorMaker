@@ -224,7 +224,7 @@ namespace SlimeColorMaker
         /// </summary>
         static Material MakeTransparent(Material material, bool backFaces)
         {
-            material.SetColor("_BaseColor", new Color(1f, 1f, 1f, VoxPaint.DefaultOpacity));
+            material.SetColor("_BaseColor", new Color(1f, 1f, 1f, 1f - VoxPaint.DefaultTransparency));
             material.SetFloat("_Cull", (float)(backFaces ? CullMode.Front : CullMode.Back));
             material.SetFloat("_QueueOffset", backFaces ? -1f : 0f);
             material.SetFloat("_Surface", 1f);

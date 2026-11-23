@@ -5,13 +5,13 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 복셀 모델(<see cref="VoxPaint"/>) 인스펙터. 겉모습 프리셋을 고르면 그 값(이 모델에 있는 부위의 것만)을 그 자리에서 고치고,
-    /// 자기 값(반투명 정도·발광·광원·재질감)은 흐리게 접어 둔다(프리셋을 비우면 다시 씀).
+    /// 자기 값(투명도·발광·광원·재질감)은 흐리게 접어 둔다(프리셋을 비우면 다시 씀).
     /// </summary>
     [CustomEditor(typeof(VoxPaint))]
     [CanEditMultipleObjects]
     class VoxPaintEditor : Editor
     {
-        static readonly string[] OwnFields = { "opacity", "lightIntensity", "lightRange", "lightScale", "lightShadows", "bodyFinish", "valueFinish", "glassFinish", "lightFinish" };
+        static readonly string[] OwnFields = { "transparency", "lightIntensity", "lightRange", "lightScale", "lightShadows", "bodyFinish", "valueFinish", "glassFinish", "lightFinish" };
         static bool ownOpen;
 
         public override void OnInspectorGUI()

@@ -1,19 +1,20 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// Blockbench 모델(.bbmodel)의 칠하기, 반투명 정도, 발광 세기. 가져오기 코드가 모든 모델의 맨 위 오브젝트에 붙인다
+    /// Blockbench 모델(.bbmodel)의 칠하기, 투명도, 발광 세기. 가져오기 코드가 모든 모델의 맨 위 오브젝트에 붙인다
     /// (Docs/v2 블록벤치 모델링 규칙 3절: Color = ValueColor, Glass = GlassValueColor, GrayGlass = Glass, Light = Light 렌더러).
-    /// 칠할 색은 값 색(ValueColor)과 반투명 값 색(GlassValueColor) 렌더러에, 반투명 정도는 두 반투명 렌더러(Glass, GlassValueColor)에
+    /// 칠할 색은 값 색(ValueColor)과 반투명 값 색(GlassValueColor) 렌더러에, 투명도는 두 반투명 렌더러(Glass, GlassValueColor)에 알파(1 − 투명도)로
     /// <c>_BaseColor</c>로 준다(밝기 텍스처와 곱해짐). Play 모드가 아니어도 인스펙터에서 바꾸면 바로 보인다.
     /// 이 모델을 칠하는 곳은 여기 하나로 둔다: 기물·캐릭터 코드는 렌더러를 직접 칠하지 않고 <see cref="Color"/>를 바꾼다.
     /// 부위(일반·값 색·반투명)마다 재질감(<see cref="SurfaceFinish"/>, 광택·반사)을 고른다: 에디터가 렌더러에 '원래 재질 + 재질감' 재질을 끼워
     /// 프리팹에 저장하므로 실행 중에는 할 일이 없다. 비우면 가져온 재질 그대로(광택 0.2, 반사 0, 빛 맺힘·주변 반사 켬)다.
     /// 발광 부분이 있으면 가져오기 코드가 만든 광원(자식 Light)도 여기서 맞춘다: 색 = 칠하는 색, 세기 = 발광 세기 × 광원 세기 배율, 범위·그림자.
     /// 기물이 <see cref="Glowing"/>을 끄면 발광과 광원이 모두 꺼진다(흡수한 색 원천).
-    /// 겉모습 프리셋(<see cref="ModelLook"/>)을 고르면 반투명 정도·발광 세기·재질감은 자기 값 대신 프리셋 값을 쓴다(비우면 자기 값).
+    /// 겉모습 프리셋(<see cref="ModelLook"/>)을 고르면 투명도·발광 세기·재질감은 자기 값 대신 프리셋 값을 쓴다(비우면 자기 값).
     /// </summary>
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -24,8 +25,8 @@ namespace SlimeColorMaker
         public const string GlassValuePartName = "GlassValueColor";
         public const string LightPartName = "Light";
 
-        /// <summary>처음 반투명 정도(불투명도). 반투명 재질의 기본값도 이 값이다.</summary>
-        public const float DefaultOpacity = 0.5f;
+        /// <summary>처음 투명도(0 = 불투명 ~ 1 = 안 보임). 반투명 재질의 기본 알파는 1 − 이 값이다.</summary>
+        public const float DefaultTransparency = 0.5f;
 
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
@@ -33,12 +34,12 @@ namespace SlimeColorMaker
         [Tooltip("값 색(33~40)과 반투명 값 색(41~48) 부분을 칠하는 색. 흰색이면 칠하지 않은 것과 같다(알파는 쓰지 않음).")]
         [SerializeField] Color color = Color.white;
 
-        [Tooltip("겉모습 프리셋(Assets/Data/Looks). 고르면 아래 반투명 정도·발광·광원·재질감 대신 프리셋 값을 쓴다. 비우면 자기 값.")]
+        [Tooltip("겉모습 프리셋(Assets/Data/Looks). 고르면 아래 투명도·발광·광원·재질감 대신 프리셋 값을 쓴다. 비우면 자기 값.")]
         [SerializeField] ModelLook look;
 
-        [Tooltip("반투명 부분(41~56)의 불투명도. 0이면 안 보이고 1이면 불투명하다.")]
+        [Tooltip("반투명 부분(41~56)의 투명도. 0이면 불투명하고 1이면 안 보인다.")]
         [Range(0f, 1f)]
-        [SerializeField] float opacity = DefaultOpacity;
+        [SerializeField] float transparency = DefaultTransparency;
 
         [Tooltip("발광 부분(Blockbench Light, 렌더러 Light)의 발광 세기. 발광 = 칠하는 색 × 휘도 × 이 값. 0이면 빛나지 않는다.")]
         [Min(0f)]
@@ -68,6 +69,7 @@ namespace SlimeColorMaker
         [Tooltip("발광 부분(렌더러 Light)의 재질감.")]
         [SerializeField] SurfaceFinish lightFinish;
 
+        readonly HashSet<Renderer> edges = new();
         MaterialPropertyBlock block;
         bool glowing = true;
         float fade = 1f;
@@ -107,13 +109,27 @@ namespace SlimeColorMaker
             }
         }
 
-        /// <summary>쓰는 반투명 정도(프리셋이 있으면 프리셋 값).</summary>
-        public float Opacity => look != null ? look.opacity : opacity;
+        /// <summary>쓰는 투명도(프리셋이 있으면 프리셋 값).</summary>
+        public float Transparency => look != null ? look.transparency : transparency;
+
+        /// <summary>가장자리로 표시한 렌더러의 투명도(프리셋의 가장자리 투명도, 프리셋이 없으면 투명도).</summary>
+        public float EdgeTransparency => look != null ? look.edgeTransparency : Transparency;
+
+        /// <summary>
+        /// 조각(<paramref name="piece"/> 아래 렌더러 전부)을 가장자리로 표시하거나 푼다(저장하지 않음). 가장자리는 투명도 대신 <see cref="EdgeTransparency"/>를 쓴다(방벽 묶음 테두리).
+        /// </summary>
+        public void SetEdge(GameObject piece, bool edge)
+        {
+            bool changed = false;
+            foreach (var target in piece.GetComponentsInChildren<Renderer>(true))
+                changed |= edge ? edges.Add(target) : edges.Remove(target);
+            if (changed) Apply();
+        }
 
         /// <summary>쓰는 발광 세기(프리셋이 있으면 프리셋 값).</summary>
         public float LightIntensity => look != null ? look.lightIntensity : lightIntensity;
 
-        /// <summary>반투명 정도에 곱하는 흐려짐(저장하지 않음, 처음은 1). 기물 연출이 바꾼다(방벽이 열리며 사라짐).</summary>
+        /// <summary>반투명 부분의 알파(1 − 투명도)에 곱하는 흐려짐(저장하지 않음, 처음은 1). 기물 연출이 바꾼다(방벽이 열리며 사라짐).</summary>
         public float Fade
         {
             get => fade;
@@ -156,15 +172,15 @@ namespace SlimeColorMaker
 #endif
         }
 
-        /// <summary>칠할 색, 반투명 정도, 발광을 렌더러와 광원에 다시 준다.</summary>
+        /// <summary>칠할 색, 투명도, 발광을 렌더러와 광원에 다시 준다.</summary>
         public void Apply()
         {
             block ??= new MaterialPropertyBlock();
             var paint = new Color(color.r, color.g, color.b, 1f);
             float glow = glowing ? LightIntensity : 0f;
-            float alpha = Opacity * fade;
             foreach (var target in GetComponentsInChildren<Renderer>(true))
             {
+                float alpha = (1f - (edges.Contains(target) ? EdgeTransparency : Transparency)) * fade;
                 Color? value = target.name switch
                 {
                     ValuePartName or LightPartName => paint,

@@ -135,8 +135,8 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
-      propertyPath: opacity
-      value: 0.25
+      propertyPath: transparency
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: -1866905710105803864, guid: 077b54272c87db6468189ab24854ffdc, type: 3}
       propertyPath: bodyFinish

@@ -12,7 +12,7 @@ namespace SlimeColorMaker
         [Tooltip("흔적 픽셀이 남아 있는 시간(초). 마지막으로 찍힌 순간부터 점점 투명해져 이 시간이 지나면 없어진다.")]
         [Min(0.1f)] public float lifetime = 5f;
 
-        [Tooltip("처음 진하기(불투명도, 0 = 투명 ~ 1 = 불투명). 남은 시간에 비례해 0으로 줄어든다.")]
-        [Range(0f, 1f)] public float opacity = 0.7f;
+        [Tooltip("처음 투명도(0 = 불투명 ~ 1 = 안 보임). 남은 시간에 비례해 1까지 늘어 없어진다.")]
+        [Range(0f, 1f)] public float transparency = 0.3f;
     }
 }

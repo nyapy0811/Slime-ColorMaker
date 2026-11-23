@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a18659c5e2ee35345b589104fb901740, type: 3}
   m_Name: Barrier
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.ModelLook
-  opacity: 0.2
+  transparency: 0.8
+  edgeTransparency: 0.5
   lightIntensity: 1
   lightRange: 3
   lightScale: 0.5

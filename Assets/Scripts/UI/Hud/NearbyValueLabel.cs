@@ -5,8 +5,8 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 가까운 값 표시(UIScene HUD). '가까운 값들 바뀜'을 받아 범위 안 기물마다 그 기물 위에
-    /// 'R G B' 상자를 하나씩 보인다. 상자는 화면에 그리고(거리와 상관없이 크기가 같고 벽에 가려지지 않음), 매 프레임 기물 윗면에서
+    /// 가까운 값 표시(UIScene HUD). '가까운 값들 바뀜'을 받아 범위 안 기물마다(이어진 방벽은 묶음마다) 그 기물 위에
+    /// 'R G B' 상자를 하나씩 보인다(묶음은 판들 위에서 캐릭터와 가장 가까운 점, <see cref="NearbyValue.TopNear"/>). 상자는 화면에 그리고(거리와 상관없이 크기가 같고 벽에 가려지지 않음), 매 프레임 기물 윗면에서
     /// 조금 위의 점을 지금 카메라(<see cref="Camera.main"/>)로 화면 자리로 바꿔 맞춘다. 카메라 뒤쪽 기물의 상자는 숨긴다.
     /// 캐릭터와 기물의 거리에 따라 보이기 시작하는 거리에서 '제 크기 거리'까지 상자가 시작 크기에서 제 크기로 커지고 투명에서 불투명해진다
     /// (게임 규칙 <see cref="GameRulesConfig"/>, 투명도는 상자의 CanvasGroup).
@@ -50,9 +50,11 @@ namespace SlimeColorMaker
         {
             var view = Camera.main;
             var area = (RectTransform)transform;
+            var player = TouchInteractionController.Current;
             for (int i = 0; i < shown.Count; i++)
             {
-                Vector3 screen = view != null ? view.WorldToScreenPoint(shown[i].Top + Vector3.up * heightAbove) : Vector3.back;
+                var top = shown[i].TopNear(player != null ? player.Center : shown[i].Box.center);
+                Vector3 screen = view != null ? view.WorldToScreenPoint(top + Vector3.up * heightAbove) : Vector3.back;
                 bool visible = screen.z > 0f;
                 labels[i].gameObject.SetActive(visible);
                 if (visible && RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screen, null, out var local))

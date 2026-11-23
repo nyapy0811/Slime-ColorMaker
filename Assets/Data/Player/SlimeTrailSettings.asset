@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SlimeTrailSettings
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.SlimeTrailSettings
   lifetime: 5
-  opacity: 0.7
+  transparency: 0.3

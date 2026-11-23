@@ -97,7 +97,9 @@ namespace SlimeColorMaker
             var serialized = new SerializedObject(look);
             serialized.Update();
             EditorGUI.indentLevel++;
-            if (hasGlass) EditorGUILayout.PropertyField(serialized.FindProperty("opacity"), new GUIContent("불투명도", serialized.FindProperty("opacity").tooltip));
+            if (hasGlass) EditorGUILayout.PropertyField(serialized.FindProperty("transparency"), new GUIContent("투명도", serialized.FindProperty("transparency").tooltip));
+            if (hasGlass && paints.Any(paint => paint.GetComponentInParent<IUsesEdgeTransparency>(true) != null))
+                EditorGUILayout.PropertyField(serialized.FindProperty("edgeTransparency"), new GUIContent("가장자리 투명도", serialized.FindProperty("edgeTransparency").tooltip));
             if (hasLight)
                 foreach (var (field, label) in LightFields)
                     EditorGUILayout.PropertyField(serialized.FindProperty(field), new GUIContent(label, serialized.FindProperty(field).tooltip));
@@ -146,13 +148,14 @@ namespace SlimeColorMaker
         static string PathOf(Transform target, Transform root) =>
             target == root ? "" : PathOf(target.parent, root) + "/" + target.name;
 
-        /// <summary>모델의 지금 값(반투명 정도·발광 세기·재질감)으로 프리셋 애셋을 만든다.</summary>
+        /// <summary>모델의 지금 값(투명도·발광 세기·재질감)으로 프리셋 애셋을 만든다.</summary>
         public static ModelLook Create(string name, VoxPaint from)
         {
             if (!AssetDatabase.IsValidFolder(ModelLook.Folder)) AssetDatabase.CreateFolder("Assets/Data", "Looks");
             var look = ScriptableObject.CreateInstance<ModelLook>();
             var source = new SerializedObject(from);
-            look.opacity = source.FindProperty("opacity").floatValue;
+            look.transparency = source.FindProperty("transparency").floatValue;
+            look.edgeTransparency = look.transparency;
             look.lightIntensity = source.FindProperty("lightIntensity").floatValue;
             look.lightRange = source.FindProperty("lightRange").floatValue;
             look.lightScale = source.FindProperty("lightScale").floatValue;

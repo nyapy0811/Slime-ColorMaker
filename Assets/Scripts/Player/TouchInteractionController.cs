@@ -8,7 +8,7 @@ namespace SlimeColorMaker
     /// 닿으면 상호작용. 캐릭터 몸(CharacterController 캡슐)을 조금 키운 모양이 상호작용하는 기물(색 원천, 문, 목적지)에
     /// 새로 닿은 순간 한 번 상호작용한다(계속 닿아 있으면 되풀이하지 않고, 떨어졌다 다시 닿으면 또 함). 트리거(오브)도 닿음으로 친다.
     /// 몸 모양을 쓰므로 막힌 기물 앞에서 멈춘 자리에서 방향과 상관없이 닿고, 캐릭터 크기를 바꿔도 닿는 범위가 따라간다.
-    /// 상호작용 거리 안에서 값이 있는 기물 전부의 (윗면 가운데, 값)을 '가까운 값들 바뀜'으로 보낸다(목록이 달라질 때만).
+    /// 상호작용 거리 안에서 값이 있는 기물 전부(이어진 방벽은 묶음 하나로)의 (경계 상자, 값)을 '가까운 값들 바뀜'으로 보낸다(목록이 달라질 때만).
     /// 입력이 잠겨 있거나 일시정지 중이면 상호작용하지 않고 값도 숨긴다(화면 페이드·일시정지·클리어 화면).
     /// 기물 레이어(<see cref="FixtureBase.LayerName"/>)만 찾아 블록은 결과에 들지 않는다. 매 프레임 도는 코드라 결과 배열·목록은 재사용한다.
     /// </summary>
@@ -87,7 +87,7 @@ namespace SlimeColorMaker
             EventBus.Publish(new NearbyValuesChanged(shown));
         }
 
-        // 거리 안에 콜라이더가 하나라도 걸친 기물. 자리는 그 기물 콜라이더 전체의 경계 상자 윗면 가운데.
+        // 거리 안에 콜라이더가 하나라도 걸친 기물. 자리는 그 기물 콜라이더 전체의 경계 상자 윗면 가운데(이어진 방벽 묶음은 판마다의 상자, 값 하나).
         void FindValues()
         {
             int count;
@@ -99,6 +99,13 @@ namespace SlimeColorMaker
                 var hit = hits[i];
                 if (hit.GetComponentInParent<IValueProvider>() is not { } provider || !seen.Add(provider)) continue;
                 if (!provider.TryGetDisplayValue(out var value)) continue;
+                // 이어진 방벽은 묶음에 값 하나: 묶음의 다른 문은 다시 세지 않는다.
+                if (provider is Door door && door.Group.Members.Length > 1)
+                {
+                    foreach (var member in door.Group.Members) seen.Add(member);
+                    found.Add(new NearbyValue(door.Group.Boxes, value));
+                    continue;
+                }
                 var bounds = hit.bounds;
                 ((Component)provider).GetComponentsInChildren(parts);
                 foreach (var part in parts)

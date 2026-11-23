@@ -9,9 +9,12 @@ namespace SlimeColorMaker
     /// 판은 조각으로 짓는다(모델 Models/Fixtures/BarrierMain·BarrierSide·BarrierCorner, 두께 1픽셀): 가운데 판 1 + 가장자리 띠 4(판의 로컬 +Z·−Z·+Y·−Y 끝)
     /// + 모서리 4. 같은 칸의 다른 면 방벽과 가장자리가 겹치면 띠·모서리는 한쪽만 켠다(우선순위: 위·아래 > 북·남 > 동·서, 모서리는 둘레 세 판 중 가장 높은 판).
     /// 다른 방벽이 사라지면 다시 켠다. Play 중에만 바꾼다(편집 화면은 온전한 판).
+    /// 이어진 방벽 묶음(<see cref="DoorGroup"/>)의 바깥 테두리인 띠·모서리는 가장자리 투명도(<see cref="ModelLook.edgeTransparency"/>)로 칠한다:
+    /// 묶음의 다른 판이 그 띠의 두 끝점을 모두 가지면(나란히 이어지거나 ㄱ자로 꺾임) 안쪽, 아니면 가장자리. 모서리는 맞닿은 띠 둘 중 하나라도 가장자리면 가장자리.
+    /// Play 시작 때 문(<see cref="Door"/>)의 Start가 한 번 부른다(이 컴포넌트는 열릴 때만 켜져 자기 Start가 안 불림, 묶음은 함께 열리므로 남은 묶음은 바뀌지 않음).
     /// 판이 사라지거나 다시 생기거나 모양이 바뀌면 알린다(큐브 격자가 맞닿은 면 숨기기를 다시 맞춤).
     /// </summary>
-    public class BarrierView : OpenableView
+    public class BarrierView : OpenableView, IUsesEdgeTransparency
     {
         [Tooltip("흐려질 복셀 모델(방벽 판)")]
         [SerializeField] VoxPaint model;
@@ -126,6 +129,36 @@ namespace SlimeColorMaker
         {
             foreach (var other in byCell[cell])
                 if (other != this && other.IsShown && other.mount != null && other.mount.Face == face && Priority(face) > Priority(mount.Face))
+                    return true;
+            return false;
+        }
+
+        /// <summary>묶음 테두리인 띠·모서리를 가장자리로 표시한다(모든 문이 등록된 뒤, Play 시작 때 한 번).</summary>
+        public void MarkEdges()
+        {
+            if (mount == null || !TryGetComponent(out Door door)) return;
+            var rotation = CellFaceMount.Rotation(mount.Face);
+            Vector3Int Axis(Vector3 local) => Vector3Int.RoundToInt(rotation * local);
+            var center = DoorGroup.FaceCenter(transform.position, mount.Face);
+            var edge = new bool[sides.Length];
+            for (int i = 0; i < sides.Length; i++)
+            {
+                var along = SideAxes[i].y != 0f ? Vector3.forward : Vector3.up; // 띠가 뻗은 방향
+                var middle = center + Axis(SideAxes[i]);
+                edge[i] = !SharedByGroup(door, middle + Axis(along), middle - Axis(along));
+                if (sides[i] != null) model.SetEdge(sides[i], edge[i]);
+            }
+            for (int i = 0; i < corners.Length; i++)
+                if (corners[i] != null) model.SetEdge(corners[i], edge[SideIndex(CornerAxes[i].y)] || edge[SideIndex(CornerAxes[i].z)]);
+        }
+
+        static int SideIndex(Vector3 local) => Array.IndexOf(SideAxes, local);
+
+        // 묶음의 다른 판이 두 점(판 꼭짓점, 두 배 좌표)을 모두 갖는가.
+        static bool SharedByGroup(Door door, Vector3Int a, Vector3Int b)
+        {
+            foreach (var other in door.Group.Members)
+                if (other != door && other.TryGetCorners(out var points) && Array.IndexOf(points, a) >= 0 && Array.IndexOf(points, b) >= 0)
                     return true;
             return false;
         }

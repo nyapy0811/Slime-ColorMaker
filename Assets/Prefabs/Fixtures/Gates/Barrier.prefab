@@ -205,7 +205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.VoxPaint
   color: {r: 1, g: 0.5, b: 0.5, a: 1}
   look: {fileID: 11400000, guid: 9eb8443582971ef4fb02312190cf0547, type: 2}
-  opacity: 0.5
+  transparency: 0.5
   lightIntensity: 1
   lightRange: 3
   lightScale: 0.5

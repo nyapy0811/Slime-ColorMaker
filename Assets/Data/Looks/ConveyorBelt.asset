@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a18659c5e2ee35345b589104fb901740, type: 3}
   m_Name: ConveyorBelt
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.ModelLook
-  opacity: 0.5
+  transparency: 0.5
   lightIntensity: 1
   bodyFinish: {fileID: 11400000, guid: 66359656f5b9e4c4f9c61cfd45243819, type: 2}
   valueFinish: {fileID: 0}

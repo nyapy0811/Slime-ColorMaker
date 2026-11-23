@@ -5,7 +5,7 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 모델 겉모습 프리셋(애셋은 Assets/Data/Looks). 복셀 모델(<see cref="VoxPaint"/>)이 고르면 자기 값 대신 이 값을 쓴다:
-    /// 반투명 정도, 발광 세기·광원(범위·세기 배율·그림자), 부위마다의 재질감. 칠하는 색은 기물·캐릭터 코드가 바꾸는 값이라 넣지 않는다.
+    /// 투명도, 발광 세기·광원(범위·세기 배율·그림자), 부위마다의 재질감. 칠하는 색은 기물·캐릭터 코드가 바꾸는 값이라 넣지 않는다.
     /// 여러 모델·프리팹이 같이 쓰고, 고치면 쓰는 곳이 모두 바뀐다(에디터가 재질도 다시 끼움).
     /// </summary>
     [CreateAssetMenu(menuName = "Slime~ColorMaker~/모델 겉모습 프리셋", fileName = "ModelLook")]
@@ -13,8 +13,11 @@ namespace SlimeColorMaker
     {
         public const string Folder = "Assets/Data/Looks";
 
-        [Tooltip("반투명 부분(41~56)의 불투명도. 0이면 안 보이고 1이면 불투명하다.")]
-        [Range(0f, 1f)] public float opacity = VoxPaint.DefaultOpacity;
+        [Tooltip("반투명 부분(41~56)의 투명도. 0이면 불투명하고 1이면 안 보인다.")]
+        [Range(0f, 1f)] public float transparency = VoxPaint.DefaultTransparency;
+
+        [Tooltip("방벽 묶음 바깥 테두리(가장자리 띠·모서리 조각)의 투명도(0 = 불투명 ~ 1 = 안 보임). 방벽만 쓴다(Play 중, 이어진 판과 맞닿은 테두리는 안쪽이라 위 값).")]
+        [Range(0f, 1f)] public float edgeTransparency = VoxPaint.DefaultTransparency;
 
         [Tooltip("발광 부분(Blockbench Light, 렌더러 Light)의 발광 세기. 발광 = 칠하는 색 × 휘도 × 이 값. 광원 세기 = 이 값 × 광원 세기 배율. 0이면 빛나지 않는다.")]
         [Min(0f)] public float lightIntensity = 1f;

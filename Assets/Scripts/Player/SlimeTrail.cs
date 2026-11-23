@@ -263,7 +263,7 @@ namespace SlimeColorMaker
             foreach (var pixel in pixels)
             {
                 var color = pixel.color;
-                color.a = settings.opacity * Mathf.Clamp01(1f - (now - pixel.time) / settings.lifetime);
+                color.a = (1f - settings.transparency) * Mathf.Clamp01(1f - (now - pixel.time) / settings.lifetime);
                 var entry = new Shown { color = color, height = pixel.position.y };
                 var grid = GridKey(pixel.position);
                 var slot = SlotOf(pixel.position);
