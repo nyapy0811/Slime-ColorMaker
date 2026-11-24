@@ -8,6 +8,6 @@ namespace SlimeColorMaker
     {
         public float bgmVolume = 0.3f; // 저장된 설정이 없을 때의 기본값. 1(0 dB)은 너무 크다.
         public float sfxVolume = 1f;
-        public float mouseSensitivity = 0.1f;
+        public float mouseSensitivity; // 0 = 정하지 않음: 카메라 설정 애셋의 기본값을 쓴다(GameSettings.MouseSensitivity).
     }
 }

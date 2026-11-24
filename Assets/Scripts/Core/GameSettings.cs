@@ -21,7 +21,9 @@ namespace SlimeColorMaker
             }
         }
 
+        /// <summary>마우스 감도: 설정 화면에서 정한 값, 정하지 않았으면 <paramref name="fallback"/>(카메라 설정 애셋의 기본값).</summary>
+        public static float MouseSensitivity(float fallback) => Current.mouseSensitivity > 0f ? Current.mouseSensitivity : fallback;
+
         public static void Save() => SaveManager.Instance.SaveJson(FileName, Current);
-        public static bool HasSave() => SaveManager.Instance.HasJson(FileName);
     }
 }

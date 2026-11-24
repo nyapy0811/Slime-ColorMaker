@@ -1,0 +1,399 @@
+<title>Slime~ColorMaker~ UI 추가 후보</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Silkscreen&display=swap">
+<style>
+/* 'UI 그림 목록'과 같은 틀: 1920×1080 화면을 비율로 재현, 그린 그림(창·값 상자·견본)은 그대로 씌움. 새로 넣을 것은 청록 점선. */
+:root {
+  --bg: #eef0f3; --surface: #ffffff; --fg: #1d2026; --muted: #5e6572; --line: #d5d9e0;
+  --accent: #2f8f86; --accent-ink: #ffffff; --warn: #a3622a;
+  --screen: #2a2e36; --screen-ink: #ffffff; --new: #5fe0d2;
+  --body: "Noto Sans KR", system-ui, sans-serif; --pixel: "Silkscreen", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --screen: #0f1115; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --screen: #0f1115; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 44px; }
+h1 { font-size: clamp(24px, 4vw, 34px); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 70ch; margin-top: 10px; }
+.eyebrow { font: 11px var(--pixel); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; color: var(--muted); font-size: 13px; }
+.facts b { color: var(--fg); font-weight: 500; }
+.legend { font-size: 13px; color: var(--muted); }
+.file { font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); overflow-wrap: anywhere; }
+
+/* 요약 표 */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 640px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; }
+td a { color: inherit; }
+.rec { font: 11px var(--pixel); background: var(--accent); color: var(--accent-ink); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+.yes { color: var(--warn); font-weight: 500; }
+
+/* 항목 */
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 22px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; scroll-margin-top: 16px; }
+.item-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.num { font: 12px var(--pixel); color: var(--muted); }
+.kv { display: grid; grid-template-columns: 64px 1fr; gap: 3px 10px; font-size: 13px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+
+/* 화면 재현 */
+.stage { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--screen);
+  border-radius: 6px; overflow: hidden; container-type: inline-size; color: var(--screen-ink); }
+.world { position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 calc(100cqw / 24 - 1px), rgba(255,255,255,.04) 0 calc(100cqw / 24)),
+              repeating-linear-gradient(90deg, transparent 0 calc(100cqw / 24 - 1px), rgba(255,255,255,.04) 0 calc(100cqw / 24)); }
+.el { position: absolute; display: flex; align-items: center; justify-content: center; white-space: nowrap; box-sizing: border-box; font-family: var(--body); }
+.el.col { flex-direction: column; justify-content: flex-start; align-items: stretch; }
+.el > span, .el > i { position: relative; z-index: 1; }
+.skin { position: absolute; inset: 0; border: calc(27 / 1920 * 100cqw) solid transparent; image-rendering: pixelated;
+  border-image: var(--panel) 9 fill / calc(27 / 1920 * 100cqw) stretch; }
+.skin.btn { filter: brightness(.85); }
+.skin.gold { filter: sepia(1) saturate(3.5) hue-rotate(-12deg) brightness(.95); }
+.valuebox { background: var(--value) center / 100% 100% no-repeat; image-rendering: pixelated; }
+.px { image-rendering: pixelated; background-size: 100% 100%; background-repeat: no-repeat; }
+.new { outline: .18cqw dashed var(--new); outline-offset: .3cqw; }
+.fixture { position: absolute; border: .15cqw dashed rgba(255,255,255,.35); border-radius: .3cqw; font-size: 1cqw; color: rgba(255,255,255,.5);
+  display: grid; place-items: end center; padding-bottom: .4cqw; }
+.dim { opacity: .55; }
+
+/* 새 아이콘 판 */
+.sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.icon-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 6px; justify-items: start; }
+.icon-card .well { background: var(--screen); border-radius: 6px; padding: 12px; width: 100%; box-sizing: border-box; display: grid; place-items: center; min-height: 72px; }
+.icon-card img { image-rendering: pixelated; }
+.icon-card b { font-size: 14px; font-weight: 500; }
+footer { color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Slime~ColorMaker~ · UI 추가 후보</div>
+    <h1>추가하면 좋을 UI·HUD</h1>
+    <p class="lede">지금 게임에 없는 UI·HUD 후보 15개를 모의 화면과 함께 모았습니다. 화면은 'UI 그림 목록'과 같은 1920 × 1080 비율이고, 이미 그리신 그림(창·버튼·값 상자·지금 색 견본)은 그대로 씌웠습니다. <b>새로 넣는 부분은 청록 점선</b>으로 표시했습니다. 새 아이콘은 대략의 모양만 잡은 예시라 직접 다시 그리시면 됩니다.</p>
+    <div class="facts">
+      <span>후보 <b>15</b>개</span>
+      <span>새 아이콘 예시 <b>12</b>장</span>
+      <span>그림 1픽셀 = 화면 <b>3픽셀</b></span>
+      <span>작성 <b>2026-11-24</b> (커밋 9feda52 기준)</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>한눈에 보기</h2>
+    <p class="legend" style="margin-bottom:14px">'추천'은 먼저 하면 좋을 순서입니다. '코드'는 메인 세션이 할 일, '규칙'은 게임 규칙에 닿아 결정 로그에 남길지 정해야 하는 항목입니다.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>이름</th><th>묶음</th><th>새 그림</th><th>코드</th><th>규칙</th><th>추천</th></tr></thead>
+      <tbody id="summary"></tbody>
+    </table></div>
+  </section>
+
+  <section id="groups"></section>
+
+  <section>
+    <h2>새 아이콘 예시</h2>
+    <p class="legend" style="margin-bottom:14px">위 모의 화면에 쓴 아이콘을 4배로 키운 것입니다. 흰색·회색으로 그려 두면 Gray 방식으로 그대로 쓰거나, 코드에서 색을 입힐 수 있습니다(예: ▲ 초록, ▼ 빨강).</p>
+    <div class="sheet" id="sheet"></div>
+  </section>
+
+  <footer>
+    <p>기준: 지금 있는 UI(<span class="file">UIScene</span>·<span class="file">MainMenu</span>)와 코드 주석의 빈 자리(<span class="file">MainMenu.cs</span>·<span class="file">PauseMenu.cs</span> "설정은 설정 화면을 만들 때 더한다", <span class="file">SettingsData.cs</span>). 숫자·맵 이름·시간은 예시입니다.</p>
+    <p>그린 그림이 있는 부분(창·버튼·값 상자·견본·슬라이더)은 실제 파일, 아이콘·슬라임 전환 무늬는 모의 그림입니다.</p>
+  </footer>
+</div>
+
+<script>
+const ART_PANEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAl0lEQVR42u3bsQ2AMAxFwSzpST0gLECQQ4d9kVym+Ne/tV5eZl4dbp2+LsM/QXQdX0LYfYqIX94RQqfhFYgx40sI3cfvEEaN3yIAGDT+CQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+gPoBSYCjE9mRFOyOeGkdFY8PTifvwErmzafCk+R1AAAAABJRU5ErkJggg==";
+const ART_VALUE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAPCAYAAABJGff8AAAAO0lEQVR42mPQ0tT8P1wwA4h4+/btkMconpGQkCIbDwb9o54Z9cyoZ0Y9M+qZUc+MembEe2bYtM2GCwYAeJZRx0feukcAAAAASUVORK5CYII=";
+const ART_SWATCH = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAQElEQVR42mNgYGD4TwFm+O9LBkbR3EACxqp5MxEYr+YzeDBRmp9hwSRp/o+Eh5Bmsv1MdmiTHc9kpzCy0za5GABc50N2GsKwewAAAABJRU5ErkJggg==";
+const ART_SL_TRACK = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAECAYAAABREWWJAAAAHElEQVR42mNgAIIZM2b8JxUzkKsRbgBFmilxNgACTpuJD5MtTQAAAABJRU5ErkJggg==";
+const ART_SL_FILL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAECAYAAABREWWJAAAAHElEQVR42mNgAAIfH5//pGIGcjXCDaBIMyXOBgAjNmmp9QE06AAAAABJRU5ErkJggg==";
+const ART_SL_HANDLE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAANklEQVR42mNgAILS0tL/uLC+vv5/BpgiEIcQZoAx2NnZsWIMhfisRlGID4NMBrsTl7UwDFIDACSpWxWXnACmAAAAAElFTkSuQmCC";
+document.documentElement.style.setProperty("--panel", `url("${ART_PANEL}")`);
+document.documentElement.style.setProperty("--value", `url("${ART_VALUE}")`);
+
+// ---- 아이콘 (문자 격자 → PNG). # 흰색, + 회색, k 짙은 색 ----
+const PAL = { "#": "#ffffff", "+": "#a9aeb8", "k": "#1b1d22" };
+const ICONS = {
+  up:     { name: "▲ 모자람", use: "색 거부", g: ["..#..", ".###.", "#####"] },
+  down:   { name: "▼ 넘침", use: "색 거부", g: ["#####", ".###.", "..#.."] },
+  plus:   { name: "+ 더함", use: "흡수 알림(선택)", g: ["..#..", "..#..", "#####", "..#..", "..#.."] },
+  check:  { name: "클리어 체크", use: "맵 선택", g: ["......#", ".....##", "#...##.", "##.##..", ".###..."] },
+  crown:  { name: "므엥킹 얼굴", use: "목표 색 HUD", g: [".#..#..#.", ".#######.", ".#######.", "..#####..", ".#######.", "#########", "##k###k##", "#########", "####k####", ".#######."] },
+  flag:   { name: "체크포인트 깃발", use: "체크포인트 알림", g: ["#.......", "#####...", "#######.", "########", "#######.", "#####...", "#.......", "#.......", "#.......", "##......"] },
+  save:   { name: "저장 중", use: "체크포인트 알림", g: ["#######..", "#+++#+#..", "#+++#+##.", "#+++++++#", "#########", "#k#####k#", "#k#####k#", "#k#####k#", "#########"] },
+  star:   { name: "새 기록 별", use: "클리어 화면", g: ["....#....", "...###...", "#########", ".#######.", "..#####..", "..#####..", ".###.###.", ".##...##.", "#.......#"] },
+  warn:   { name: "! 경고", use: "확인 창", g: [".....#.....", "....###....", "....#k#....", "...##k##...", "...##k##...", "..###k###..", "..#######..", ".####k####.", "###########", "###########"] },
+  cursor: { name: "커서", use: "메뉴", g: ["k.......", "kk......", "k#k.....", "k##k....", "k###k...", "k####k..", "k#####k.", "k######k", "k###kkkk", "k#k#k...", "kk.k#k..", "....kk.."] },
+  mouse:  { name: "마우스(시점)", use: "조작 안내", g: [".#####.", "#++#++#", "#++#++#", "#++#++#", "#######", "#.....#", "#.....#", "#.....#", "#.....#", "#.....#", ".#####."] },
+  wheel:  { name: "휠(거리)", use: "조작 안내", g: [".#####.", "#kk#kk#", "#kk#kk#", "#kk#kk#", "#######", "#.....#", "#.....#", "#.....#", "#.....#", "#.....#", ".#####."] },
+};
+for (const ic of Object.values(ICONS)) {
+  const h = ic.g.length, w = ic.g[0].length, c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const x = c.getContext("2d");
+  ic.g.forEach((r, y) => [...r].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, y, 1, 1); } }));
+  Object.assign(ic, { w, h, url: c.toDataURL() });
+}
+
+// ---- 화면 재현 도구 (좌표: 1920×1080 화면 픽셀, 왼쪽 위 기준) ----
+const W = 1920, H = 1080;
+const pct = (v, t) => (v / t * 100) + "%";
+const cq = px => (px / W * 100) + "cqw";
+function el(p, o) {
+  const d = document.createElement("div");
+  d.className = "el" + (o.col ? " col" : "") + (o.value ? " valuebox" : "") + (o.cls ? " " + o.cls : "");
+  Object.assign(d.style, { left: pct(o.x, o.pw || W), top: pct(o.y, o.ph || H), width: pct(o.w, o.pw || W), height: pct(o.h, o.ph || H),
+    background: o.bg || undefined, fontSize: cq(o.fs || 36), fontWeight: o.bold ? 700 : undefined, color: o.color || undefined,
+    opacity: o.op ?? undefined, justifyContent: o.align === "right" ? "flex-end" : o.align === "left" ? "flex-start" : undefined });
+  if (o.pad) d.style.padding = cq(o.pad);
+  if (o.gap) d.style.gap = cq(o.gap);
+  if (o.skin) { const s = document.createElement("div"); s.className = "skin" + (o.skin === true ? "" : " " + o.skin); d.prepend(s); }
+  if (o.text != null) { const s = document.createElement("span"); s.textContent = o.text; d.appendChild(s); }
+  if (o.html) d.insertAdjacentHTML("beforeend", o.html);
+  p.appendChild(d);
+  return d;
+}
+// 아이콘: 그림 크기 × 3 = 화면 크기
+function icon(p, name, x, y, o = {}) {
+  const ic = ICONS[name];
+  const d = el(p, { x, y, w: ic.w * 3, h: ic.h * 3, cls: "px" + (o.cls ? " " + o.cls : ""), op: o.op });
+  d.style.backgroundImage = `url("${ic.url}")`;
+  return d;
+}
+// 줄 안에 넣는 아이콘(흐름 배치)
+const iconHTML = (name, extra = "") => { const ic = ICONS[name];
+  return `<i class="px" style="display:inline-block;width:${cq(ic.w * 3)};height:${cq(ic.h * 3)};background-image:url('${ic.url}');${extra}"></i>`; };
+function world(s) { s.insertAdjacentHTML("beforeend", '<div class="world"></div>'); }
+function fixture(s, x, y, w, h, label) {
+  const f = document.createElement("div");
+  f.className = "fixture";
+  Object.assign(f.style, { left: pct(x, W), top: pct(y, H), width: pct(w, W), height: pct(h, H) });
+  f.textContent = label;
+  s.appendChild(f);
+}
+// 값 상자 153 × 45, 숫자 칸 x 6·54·102, y 6, 45 × 33. cells[i] = {op, color}
+function valueBox(s, x, y, vals, o = {}) {
+  const b = el(s, { x, y, w: 153, h: 45, value: true, cls: o.cls });
+  return vals.map((v, i) => el(b, { x: 6 + i * 48, y: 6, w: 45, h: 33, pw: 153, ph: 45, text: v, fs: 30, ...(o.cells?.[i] || {}) }));
+}
+// 게임 중 HUD 바탕: 진행 시간(오른쪽 위), 지금 색 견본 + 값 상자(왼쪽 아래)
+function hud(s, vals = ["2", "0", "0"], o = {}) {
+  world(s);
+  el(s, { x: 1696, y: 24, w: 200, h: 40, text: "03:27", fs: 36, align: "right" });
+  el(s, { x: 1636, y: 64, w: 260, h: 30, text: "최고 01:58.40", fs: 30, align: "right", op: .75 });
+  const sw = el(s, { x: 24, y: 1011, w: 45, h: 45, cls: "px" });
+  sw.style.backgroundImage = `url("${ART_SWATCH}")`;
+  return valueBox(s, 75, 1011, vals, o);
+}
+function dim(s) { el(s, { x: 0, y: 0, w: W, h: H, bg: "rgba(0,0,0,.6)" }); }
+function dialog(s, x, y, w, h, o = {}) {
+  dim(s);
+  return el(s, { x, y, w, h, skin: true, col: true, pad: 30, gap: 18, cls: o.cls });
+}
+function row(p, h, o = {}) {
+  const d = document.createElement("div");
+  d.className = "el" + (o.cls ? " " + o.cls : "");
+  Object.assign(d.style, { position: "relative", height: cq(h), flex: "none", fontSize: cq(o.fs || 36), fontWeight: o.bold ? 700 : undefined, gap: o.gap ? cq(o.gap) : undefined });
+  if (o.skin) { const s = document.createElement("div"); s.className = "skin " + o.skin; d.prepend(s); }
+  if (o.text != null) { const s = document.createElement("span"); s.textContent = o.text; d.appendChild(s); }
+  if (o.html) d.insertAdjacentHTML("beforeend", o.html);
+  p.appendChild(d);
+  return d;
+}
+
+// ---- 후보 ----
+const GROUPS = [
+  { id: "g1", title: "1. 코드에 자리만 잡혀 있는 것", lede: "코드 주석이나 저장 형식은 이미 있는데 화면·그림이 없는 것입니다." },
+  { id: "g2", title: "2. 퍼즐을 풀 때 도움이 되는 것", lede: "색을 맞추는 퍼즐이라, 지금 색과 필요한 색의 차이를 바로 읽게 해 주는 표시들입니다. 그림은 적고 코드가 대부분입니다." },
+  { id: "g3", title: "3. 있으면 좋은 것", lede: "분위기와 친절함을 더하는 것들입니다. 급하지 않습니다." },
+];
+const slider = (label, val, ratio) => `
+  <span style="width:${cq(210)};text-align:left">${label}</span>
+  <span style="position:relative;width:${cq(270)};height:${cq(18)};display:inline-block" class="new">
+    <i style="position:absolute;left:0;right:0;top:${cq(3)};height:${cq(12)};border:solid transparent;border-width:0 ${cq(3)};border-image:url('${ART_SL_TRACK}') 0 1 fill / 0 ${cq(3)} stretch;image-rendering:pixelated;box-sizing:border-box"></i>
+    <i style="position:absolute;left:0;width:${ratio * 100}%;top:${cq(3)};height:${cq(12)};border:solid transparent;border-width:0 ${cq(3)};border-image:url('${ART_SL_FILL}') 0 1 fill / 0 ${cq(3)} stretch;image-rendering:pixelated;box-sizing:border-box"></i>
+    <i class="px" style="position:absolute;left:calc(${ratio * 100}% - ${cq(15)});top:0;width:${cq(30)};height:${cq(18)};background-image:url('${ART_SL_HANDLE}')"></i>
+  </span>
+  <span style="width:${cq(90)};text-align:right;font-size:${cq(30)}">${val}</span>`;
+
+const ITEMS = [
+  { g: "g1", title: "설정 화면", rec: 1, art: "없음 — 슬라이더 트랙·채움·손잡이 그림 완료(Common/Slider*.pxo), 창은 PanelRounded", code: "있음", rule: false,
+    what: "BGM·효과음 볼륨, 마우스 감도. 저장 형식(SettingsData)은 이미 있고 화면만 없습니다. 메인 메뉴와 일시정지에 '설정' 버튼을 더합니다. → 2026-11-24 적용됨(음량 0~100, 마우스 감도 0.005~0.1·기본 0.02, ESC·닫기로 닫음).",
+    draw(s) { world(s);
+      const d = dialog(s, 600, 285, 720, 510);
+      row(d, 96, { text: "설정", fs: 72, bold: true });
+      row(d, 72, { html: slider("BGM", "30", .3), gap: 18 });
+      row(d, 72, { html: slider("효과음", "100", 1), gap: 18 });
+      row(d, 72, { html: slider("마우스 감도", "0.020", .16), gap: 18 });
+      row(d, 66, { text: "닫기", skin: "btn" }); } },
+  { g: "g1", title: "맵 선택 꾸밈", rec: 6, art: "미리보기 틀(목록 6번), 클리어 체크 아이콘", code: "조금", rule: false,
+    what: "썸네일에 틀을 씌우고, 클리어한 맵은 목록에서 체크로 표시합니다. 미리보기 틀은 'UI 그림 목록'에 남아 있던 6번입니다.",
+    draw(s) {
+      el(s, { x: 560, y: 62, w: 800, h: 96, text: "맵 선택", fs: 72, bold: true });
+      const list = el(s, { x: 201, y: 210, w: 618, h: 678, skin: true, col: true, pad: 21, gap: 12 });
+      [["시험 맵 A", "01:58.40", true, true], ["시험 맵 B", "", false, false], ["모션 시험", "체크포인트", false, false]].forEach(([n, st, sel, clear]) => {
+        const r = row(list, 72, { skin: sel ? "btn" : "btn", fs: 36 });
+        if (sel) r.firstChild.style.filter = "brightness(.85) sepia(.3) hue-rotate(170deg)";
+        r.style.justifyContent = "space-between"; r.style.padding = "0 " + cq(27);
+        r.insertAdjacentHTML("beforeend", `<span style="display:flex;align-items:center;gap:${cq(12)}">${clear ? iconHTML("check", "outline:.18cqw dashed var(--new);outline-offset:.3cqw") : `<i style="display:inline-block;width:${cq(21)}"></i>`}${n}</span><span style="font-size:${cq(30)};opacity:.75">${st}</span>`);
+      });
+      el(s, { x: 879, y: 210, w: 822, h: 678, skin: true });
+      el(s, { x: 920, y: 239, w: 740, h: 400, bg: "linear-gradient(160deg,#4b5a6e,#2f3a48 60%,#3d4a3a)", text: "맵 썸네일", fs: 36, op: .9 });
+      el(s, { x: 911, y: 230, w: 758, h: 418, cls: "new", html: `<i style="position:absolute;inset:0;border:${cq(9)} solid #c9ccd2;border-radius:${cq(6)}"></i>` });
+      el(s, { x: 920, y: 648, w: 740, h: 90, text: "시험 맵 A", fs: 72, bold: true });
+      el(s, { x: 920, y: 726, w: 740, h: 70, text: "클리어 · 최고 01:58.40", fs: 30 });
+      el(s, { x: 969, y: 804, w: 300, h: 72, skin: "btn", text: "시작", fs: 36 });
+      el(s, { x: 1311, y: 804, w: 300, h: 72, skin: "btn", text: "이어하기", fs: 36 });
+    } },
+  { g: "g1", title: "클리어 화면 '새 기록'", rec: null, art: "별 아이콘, 금색 꼬리표(창 그림에 금색 틴트로도 가능)", code: "조금", rule: false,
+    what: "지금은 '새 기록'이 글자뿐입니다. 이번이 최고 기록이면 클리어 시간 옆에 별 꼬리표를 붙입니다.",
+    draw(s) { world(s);
+      const d = dialog(s, 699, 264, 522, 552);
+      row(d, 96, { text: "클리어", fs: 72, bold: true });
+      row(d, 66, { text: "클리어 시간 01:58.40", fs: 36 });
+      row(d, 42, { text: "최고 기록 01:58.40", fs: 30 });
+      row(d, 66, { text: "다음 맵", skin: "btn" }); row(d, 66, { text: "다시 하기", skin: "btn" }); row(d, 66, { text: "메인 메뉴", skin: "btn" });
+      const b = el(s, { x: 1092, y: 324, w: 228, h: 72, skin: "gold", cls: "new", fs: 33, bold: true, color: "#3a2a00", gap: 9,
+        html: iconHTML("star", "filter:brightness(.25) sepia(1)") + "<span>새 기록</span>" });
+      b.style.transform = "rotate(8deg)"; } },
+
+  { g: "g2", title: "색 거부 표시", rec: 2, art: "▲▼ 화살표(5 × 3)", code: "있음", rule: false,
+    what: "문·목적지에 맞지 않는 색으로 닿으면 값 상자를 흔들고, 채널마다 모자라면 ▲, 넘치면 ▼를 띄웁니다. 아래 예: 지금 7 0 0, 요구 5 0 3 → 빨강 ▼, 파랑 ▲.",
+    draw(s) { hud(s, ["7", "0", "0"]);
+      fixture(s, 860, 470, 200, 200, "므엥킹(목적지)");
+      valueBox(s, 884, 410, ["5", "0", "3"], { cls: "new" });
+      icon(s, "down", 905, 386, { cls: "new" }); icon(s, "up", 1001, 386, { cls: "new" });
+      [[858, .5], [846, .25], [1047, .5], [1059, .25]].forEach(([x, op]) => el(s, { x, y: 418, w: 6, h: 30, bg: "#fff", op })); } },
+  { g: "g2", title: "목표 색 HUD", rec: 3, art: "므엥킹 얼굴 아이콘 (값 상자는 PanelValue)", code: "있음", rule: true,
+    what: "이 맵 목적지의 요구 색을 화면 위 가운데에 늘 보이고, 지금 색과 같은 채널만 밝게 합니다. 정답을 늘 보여 줄지는 규칙 결정입니다.",
+    draw(s) { hud(s, ["5", "0", "0"]);
+      const g = el(s, { x: 774, y: 21, w: 372, h: 60, skin: true, cls: "new", gap: 12, align: "left" }); g.style.padding = "0 " + cq(27);
+      icon(g, "crown", 0, 0).style.cssText += `position:relative;left:auto;top:auto;width:${cq(27)};height:${cq(30)}`;
+      g.insertAdjacentHTML("beforeend", `<span style="font-size:${cq(30)}">목표</span>`);
+      const vb = el(s, { x: 966, y: 28, w: 153, h: 45, value: true });
+      [["5", 1], ["0", 1], ["3", .35]].forEach(([v, op], i) => el(vb, { x: 6 + i * 48, y: 6, w: 45, h: 33, pw: 153, ph: 45, text: v, fs: 30, op }));
+      fixture(s, 1500, 380, 200, 200, "므엥킹(멀리)"); } },
+  { g: "g2", title: "흡수 알림", rec: 4, art: "없음(글자) — + 아이콘은 선택", code: "있음", rule: false,
+    what: "오브를 먹으면 오브 자리에서 '+2 0 0'이 떠오르고, 왼쪽 아래 값 상자의 바뀐 칸 위에 '+2'가 잠깐 뜨며 지금 색 견본이 한 번 통통 튑니다.",
+    draw(s) { hud(s, ["4", "0", "0"]);
+      fixture(s, 880, 520, 160, 160, "오브(흡수됨)");
+      el(s, { x: 870, y: 430, w: 180, h: 45, text: "+2 0 0", fs: 36, bold: true, color: "#9ff0b4", cls: "new" });
+      el(s, { x: 870, y: 478, w: 180, h: 30, text: "↑", fs: 30, op: .4 });
+      el(s, { x: 81, y: 960, w: 45, h: 40, text: "+2", fs: 30, bold: true, color: "#9ff0b4", cls: "new" });
+      el(s, { x: 15, y: 1002, w: 63, h: 63, cls: "new", html: `<i style="position:absolute;inset:0;border:${cq(3)} solid rgba(255,255,255,.55)"></i>` }); } },
+  { g: "g2", title: "채널 한도 표시", rec: null, art: "작은 MAX 꼬리표(선택, 글자로도 됨)", code: "조금", rule: false,
+    what: "채널이 최대값 15에 닿아 더는 안 오를 때 그 숫자 색을 바꾸고 MAX 꼬리표를 붙입니다. 오브를 먹어도 값이 잘린다는 걸 알려 줍니다.",
+    draw(s) { hud(s, ["15", "3", "0"], { cells: [{ color: "#ffd166" }] });
+      el(s, { x: 69, y: 972, w: 69, h: 33, text: "MAX", fs: 24, bold: true, bg: "#ffd166", color: "#2a2200", cls: "new" });
+      fixture(s, 860, 470, 200, 200, "오브 3 0 0"); valueBox(s, 884, 410, ["3", "0", "0"]); } },
+  { g: "g2", title: "체크포인트 알림", rec: 5, art: "깃발 아이콘, 저장 중 아이콘", code: "있음", rule: false,
+    what: "체크포인트에 닿으면 위 가운데에 '체크포인트'가 잠깐 뜨고, 저장하는 동안 오른쪽 아래에 저장 아이콘을 보입니다.",
+    draw(s) { hud(s);
+      fixture(s, 860, 560, 200, 120, "체크포인트");
+      el(s, { x: 765, y: 120, w: 390, h: 72, skin: true, cls: "new", gap: 15, html: iconHTML("flag") + "<span>체크포인트</span>" });
+      icon(s, "save", 1863, 1023, { cls: "new" }); } },
+
+  { g: "g3", title: "맵 이름 띠", rec: null, art: "가로 띠(9-슬라이스) — 창 그림으로도 됨", code: "조금", rule: false,
+    what: "맵을 시작할 때 화면 가운데에 맵 번호와 이름이 1~2초 떴다가 사라집니다.",
+    draw(s) { hud(s);
+      const d = el(s, { x: 510, y: 426, w: 900, h: 186, skin: true, col: true, pad: 24, cls: "new" });
+      row(d, 42, { text: "맵 1", fs: 30 }).style.opacity = .75;
+      row(d, 90, { text: "시험 맵 A", fs: 72, bold: true }); } },
+  { g: "g3", title: "조작 안내", rec: null, art: "키캡(창 그림 18 × 18로도 됨), 마우스·휠 아이콘", code: "조금", rule: false,
+    what: "첫 맵이나 일시정지 창에 조작법을 보입니다. 이동 WASD, 시점 마우스, 카메라 거리 휠, 일시정지 ESC.",
+    draw(s) { hud(s);
+      const key = (t, w = 54) => `<span style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:${cq(w)};height:${cq(54)};font-size:${cq(27)}"><i class="skin btn"></i><span style="position:relative">${t}</span></span>`;
+      const lab = t => `<span style="font-size:${cq(30)};margin:0 ${cq(30)} 0 ${cq(9)}">${t}</span>`;
+      el(s, { x: 210, y: 930, w: 1500, h: 60, gap: 6, cls: "new",
+        html: key("W") + key("A") + key("S") + key("D") + lab("이동") + iconHTML("mouse") + lab("시점") + iconHTML("wheel") + lab("거리") + key("ESC", 96) + lab("일시정지") }); } },
+  { g: "g3", title: "버튼 상태 4장", rec: null, art: "버튼 프레임 3장 추가(같은 파일)", code: "조금", rule: false,
+    what: "지금은 밝기 틴트로만 구분합니다. 그림으로 나누면 누름은 1픽셀 내려간 모양, 꺼짐은 테두리만 남은 모양처럼 차이를 줄 수 있습니다.",
+    draw(s) { world(s);
+      [["보통", "brightness(.85)", 0, 1], ["올림", "brightness(1)", 0, 1], ["누름", "brightness(.7)", 3, 1], ["꺼짐", "brightness(.5)", 0, .5]].forEach(([n, f, dy, op], i) => {
+        const b = el(s, { x: 255 + i * 360, y: 474 + dy, w: 330, h: 72, skin: "btn", text: "다음 맵", op, cls: i ? "new" : "" });
+        b.firstChild.style.filter = f;
+        el(s, { x: 255 + i * 360, y: 570, w: 330, h: 40, text: n, fs: 30, op: .7 }); }); } },
+  { g: "g3", title: "확인 창 경고 아이콘", rec: null, art: "! 경고 아이콘", code: "조금", rule: false,
+    what: "진행이 사라지는 확인 창(처음부터·체크포인트로·메인 메뉴) 위에 ! 표시를 붙여 실수를 줄입니다.",
+    draw(s) { world(s);
+      const d = dialog(s, 681, 321, 558, 438);
+      const r = row(d, 60); icon(r, "warn", 0, 0, { cls: "new" }).style.cssText += `position:relative;left:auto;top:auto;width:${cq(33)};height:${cq(30)}`;
+      row(d, 114, { text: "처음부터 다시 할까요?", fs: 36 });
+      row(d, 66, { text: "확인", skin: "btn" }); row(d, 66, { text: "취소", skin: "btn" }); } },
+  { g: "g3", title: "픽셀 커서", rec: null, art: "커서 1~2장(기본·누름)", code: "조금", rule: false,
+    what: "메뉴에서 OS 기본 화살표 대신 픽셀 커서를 씁니다. 커서는 OS가 그려서 화면 배율과 따로 놀기 때문에 크기를 정해 두어야 합니다(예: 24 × 36).",
+    draw(s) {
+      el(s, { x: 360, y: 200, w: 1200, h: 160, text: "Slime~ColorMaker~", fs: 108, bold: true });
+      const g = el(s, { x: 750, y: 492, w: 420, h: 252, col: true, gap: 18 });
+      row(g, 96, { text: "Play", skin: "btn" }).firstChild.style.filter = "brightness(1)";
+      row(g, 72, { text: "이어하기", skin: "btn" }); row(g, 72, { text: "종료", skin: "btn" });
+      icon(s, "cursor", 1020, 540, { cls: "new" }); } },
+  { g: "g3", title: "화면 전환 무늬", rec: null, art: "전환 무늬(큰 그림 또는 반복 조각)", code: "있음", rule: false,
+    what: "지금의 검정 페이드 대신 슬라임이 위에서 흘러내려 덮었다가 걷힙니다. 색은 지금 색을 쓸 수 있습니다.",
+    draw(s) { hud(s);
+      const cols = 40;
+      for (let i = 0; i < cols; i++) {
+        const h = Math.round((430 + 110 * Math.sin(i * 1.7) + 70 * Math.sin(i * 0.6)) / 24) * 24;
+        el(s, { x: i * 48 - 1, y: 0, w: 50, h, bg: "#c94545" });
+        el(s, { x: i * 48 + 12, y: h, w: 24, h: 24, bg: "#c94545" });
+        el(s, { x: i * 48, y: 0, w: 48, h: 24, bg: "#e06a6a" });
+      }
+    } },
+  { g: "g3", title: "크레딧", rec: null, art: "없음(창 그림 같이 씀)", code: "조금", rule: false,
+    what: "메인 메뉴에서 여는 크레딧. 폰트(Galmuri, SIL OFL 1.1)와 쓴 도구를 적습니다. OFL은 표기가 의무는 아니지만 밝혀 두면 좋습니다.",
+    draw(s) {
+      const d = dialog(s, 630, 252, 660, 576);
+      row(d, 96, { text: "크레딧", fs: 72, bold: true });
+      [["폰트", "Galmuri · Lee Minseo (SIL OFL 1.1)"], ["엔진", "Unity"], ["모델링", "Blockbench"], ["픽셀 그림", "Pixelorama"]].forEach(([k, v]) =>
+        row(d, 54, { fs: 30, html: `<span style="width:${cq(170)};opacity:.7;text-align:left">${k}</span><span style="flex:1;text-align:left">${v}</span>` }).style.padding = "0 " + cq(15));
+      row(d, 66, { text: "닫기", skin: "btn" }); } },
+];
+
+// ---- 그리기 ----
+const tbody = document.getElementById("summary");
+const groupsEl = document.getElementById("groups");
+groupsEl.style.cssText = "display:grid;gap:40px";
+const groupBox = {};
+for (const g of GROUPS) {
+  const sec = document.createElement("div");
+  sec.innerHTML = `<h2>${g.title}</h2><p class="legend" style="margin-bottom:14px">${g.lede}</p><div class="items"></div>`;
+  groupsEl.appendChild(sec);
+  groupBox[g.id] = sec.querySelector(".items");
+}
+ITEMS.forEach((it, i) => {
+  const n = i + 1, gname = GROUPS.find(g => g.id === it.g).title.replace(/^\d\.\s*/, "");
+  tbody.insertAdjacentHTML("beforeend", `<tr><td class="n">${n}</td><td><a href="#item-${n}">${it.title}</a></td><td>${gname}</td><td>${it.art}</td>
+    <td>${it.code}</td><td>${it.rule ? '<span class="yes">정해야 함</span>' : "—"}</td><td>${it.rec ? `<span class="rec">${it.rec}</span>` : ""}</td></tr>`);
+  const a = document.createElement("article");
+  a.className = "item"; a.id = "item-" + n;
+  a.innerHTML = `<div class="item-head"><span class="num">#${n}</span><h3>${it.title}</h3>${it.rec ? `<span class="rec">추천 ${it.rec}</span>` : ""}</div>`;
+  const stage = document.createElement("div");
+  stage.className = "stage";
+  a.appendChild(stage);
+  a.insertAdjacentHTML("beforeend", `<dl class="kv"><dt>내용</dt><dd>${it.what}</dd><dt>새 그림</dt><dd>${it.art}</dd>
+    <dt>코드</dt><dd>${it.code === "있음" ? "메인 세션 작업 있음" : "메인 세션 작업 조금(배치·연결)"}</dd>${it.rule ? '<dt>규칙</dt><dd class="yes">결정 로그에 남길지 정해야 함</dd>' : ""}</dl>`);
+  groupBox[it.g].appendChild(a);
+  it.draw(stage);
+});
+const sheet = document.getElementById("sheet");
+for (const ic of Object.values(ICONS)) {
+  sheet.insertAdjacentHTML("beforeend", `<div class="icon-card"><div class="well"><img src="${ic.url}" width="${ic.w * 4}" height="${ic.h * 4}" alt="${ic.name}"></div>
+    <b>${ic.name}</b><span class="legend">${ic.w} × ${ic.h} · ${ic.use}</span></div>`);
+}
+</script>

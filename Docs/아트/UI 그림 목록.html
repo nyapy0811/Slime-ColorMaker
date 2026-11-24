@@ -90,13 +90,13 @@ footer { color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
   <header>
     <div class="eyebrow">Slime~ColorMaker~ · UI pixel art</div>
     <h1>UI 그림 목록</h1>
-    <p class="lede">지금 게임에 있는 UI와 HUD 화면 다섯 개를 장면 파일의 실제 위치와 크기대로 다시 그렸습니다. 창·버튼·값 상자에는 직접 그리신 그림을 그대로 씌웠습니다. 각 화면의 번호는 아래 '그림' 번호와 같습니다.</p>
+    <p class="lede">지금 게임에 있는 UI와 HUD 화면 일곱 개를 장면 파일의 실제 위치와 크기대로 다시 그렸습니다. 창·버튼·값 상자에는 직접 그리신 그림을 그대로 씌웠습니다. 각 화면의 번호는 아래 '그림' 번호와 같습니다.</p>
     <div class="facts">
       <span>기준 화면 <b>1920 × 1080</b></span>
       <span>그림 1픽셀 = 화면 <b>3픽셀</b></span>
-      <span>그림 파일 <b>3</b>개 적용 · 남은 그림 <b>1</b>개</span>
+      <span>그림 파일 <b>6</b>개 적용 · 남은 그림 <b>1</b>개</span>
       <span>폰트 <b>Galmuri</b></span>
-      <span>반영 커밋 <b>3f0ca99</b></span>
+      <span>반영 <b>2026-11-24</b> 설정 화면</span>
     </div>
   </header>
 
@@ -129,7 +129,7 @@ footer { color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
   </section>
 
   <footer>
-    <p>출처: <span class="file">Assets/Scenes/UIScene.unity</span>, <span class="file">Assets/Scenes/MainMenu.unity</span>, <span class="file">Assets/Sprites/UI/**</span> (2026-11-20, 커밋 3f0ca99 기준). 그림 규칙은 <span class="file">Docs/v2 UI 픽셀아트 규칙.md</span>.</p>
+    <p>출처: <span class="file">Assets/Scenes/UIScene.unity</span>, <span class="file">Assets/Scenes/MainMenu.unity</span>, <span class="file">Assets/Sprites/UI/**</span> (2026-11-24, 설정 화면 반영 기준). 그림 규칙은 <span class="file">Docs/v2 UI 픽셀아트 규칙.md</span>.</p>
     <p>그림이 필요 없는 것: 화면을 어둡게 하는 덮개(검정 60%), 화면 페이드(검정), 미리보기 그림 자리의 바탕(맵 썸네일이 들어감).</p>
   </footer>
 </div>
@@ -138,6 +138,9 @@ footer { color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
 const ART_PANEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAl0lEQVR42u3bsQ2AMAxFwSzpST0gLECQQ4d9kVym+Ne/tV5eZl4dbp2+LsM/QXQdX0LYfYqIX94RQqfhFYgx40sI3cfvEEaN3yIAGDT+CQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+gPoBSYCjE9mRFOyOeGkdFY8PTifvwErmzafCk+R1AAAAABJRU5ErkJggg==";
 const ART_VALUE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAPCAYAAABJGff8AAAAO0lEQVR42mPQ0tT8P1wwA4h4+/btkMconpGQkCIbDwb9o54Z9cyoZ0Y9M+qZUc+MembEe2bYtM2GCwYAeJZRx0feukcAAAAASUVORK5CYII=";
 const ART_SWATCH = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAQElEQVR42mNgYGD4TwFm+O9LBkbR3EACxqp5MxEYr+YzeDBRmp9hwSRp/o+Eh5Bmsv1MdmiTHc9kpzCy0za5GABc50N2GsKwewAAAABJRU5ErkJggg==";
+const ART_SL_TRACK = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAECAYAAABREWWJAAAAHElEQVR42mNgAIIZM2b8JxUzkKsRbgBFmilxNgACTpuJD5MtTQAAAABJRU5ErkJggg==";
+const ART_SL_FILL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAECAYAAABREWWJAAAAHElEQVR42mNgAAIfH5//pGIGcjXCDaBIMyXOBgAjNmmp9QE06AAAAABJRU5ErkJggg==";
+const ART_SL_HANDLE = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAGCAYAAAD68A/GAAAANklEQVR42mNgAILS0tL/uLC+vv5/BpgiEIcQZoAx2NnZsWIMhfisRlGID4NMBrsTl7UwDFIDACSpWxWXnACmAAAAAElFTkSuQmCC";
 document.documentElement.style.setProperty("--panel", `url("${ART_PANEL}")`);
 document.documentElement.style.setProperty("--value", `url("${ART_VALUE}")`);
 
@@ -158,13 +161,19 @@ const ART = [
   { n: 6, name: "미리보기 틀", done: false, file: "Menu/FrameThumbnail.pxo (예정)",
     kv: [["지금", "그림 없음(썸네일 자리 740 × 400, 바탕 짙은 회색)"], ["그림 크기", "약 247 × 133, 9-슬라이스, 안쪽 투명"]],
     note: "썸네일 자리 740 × 400은 3의 배수가 아니라, 그림을 넣을 때 741 × 402 같은 크기로 맞춰야 합니다." },
+  { n: 7, name: "슬라이더 트랙", done: true, file: "Common/SliderTrack.pxo", img: ART_SL_TRACK,
+    kv: [["그림", "15 × 4, 9-슬라이스 테두리 1 · 0 · 1 · 0(왼·위·오·아래), Gray, 회색 152"], ["쓰는 곳", "설정 화면 슬라이더 바탕(막대 화면 330 × 12)"]] },
+  { n: 8, name: "슬라이더 채움", done: true, file: "Common/SliderTrackFill.pxo", img: ART_SL_FILL,
+    kv: [["그림", "15 × 4, 트랙과 같은 모양·테두리, Gray, 회색 76"], ["쓰는 곳", "슬라이더 값까지 채워지는 부분(Fill)"]] },
+  { n: 9, name: "슬라이더 손잡이", done: true, file: "Common/SliderHandle.pxo", img: ART_SL_HANDLE,
+    kv: [["그림", "10 × 6, 늘이지 않음, Gray(몸통 47, 밝은 테두리 117, 그림자 7)"], ["쓰는 곳", "슬라이더 손잡이(화면 30 × 18, 트랙보다 위아래 1픽셀씩 큼)"], ["움직임", "양 끝에서 15씩 안쪽까지(음량 1칸 = 그림 1픽셀)"]] },
 ];
 const cards = document.getElementById("cards");
 for (const a of ART) {
   const c = document.createElement("article");
   c.className = "card";
   c.innerHTML = `<div class="card-head"><span class="num">${a.n}</span><div><h3>${a.name}</h3><div class="file">Assets/Sprites/UI/${a.file}</div></div>
-      <span class="state ${a.done ? "done" : "todo"}">${a.done ? "적용됨" : "남음"}</span></div>
+      <span class="state ${a.done ? "done" : "todo"}">${a.state || (a.done ? "적용됨" : "남음")}</span></div>
     ${a.img ? `<div class="thumb"><img src="${a.img}" alt="${a.name} 그림"></div>` : ""}
     <dl class="kv">${a.kv.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
     ${a.note ? `<p class="note">${a.note}</p>` : ""}`;
@@ -242,12 +251,12 @@ const SCREENS = [
       el(s, { x: 24, y: 1011, w: 45, h: 45, bg: `url("${ART_SWATCH}") center / 100% 100% no-repeat`, tag: "5" }).style.imageRendering = "pixelated";
       valueBox(s, 75, 1011, ["2", "0", "0"], "4");
     } },
-  { title: "일시정지", scene: "UIScene · PauseMenu", note: "ESC로 엶. 상자 420 × 492.", draw(s) {
+  { title: "일시정지", scene: "UIScene · PauseMenu", note: "ESC로 엶. 상자 420 × 576.", draw(s) {
       s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
-      dialog(s, 750, 294, 420, 492, [
+      dialog(s, 750, 252, 420, 576, [
         { h: 96, text: "일시정지", fs: 72, bold: true },
         { h: 66, text: "계속하기", skin: "btn", tag: "2" }, { h: 66, text: "처음부터", skin: "btn" },
-        { h: 66, text: "체크포인트로", skin: "btn" }, { h: 66, text: "메인메뉴", skin: "btn" }]);
+        { h: 66, text: "체크포인트로", skin: "btn" }, { h: 66, text: "설정", skin: "btn" }, { h: 66, text: "메인메뉴", skin: "btn" }]);
     } },
   { title: "맵 클리어", scene: "UIScene · MapClearScreen", note: "목적지에 닿으면 뜸. 이번이 최고 기록이면 '새 기록'. 상자 462 × 552.", draw(s) {
       s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
@@ -263,8 +272,26 @@ const SCREENS = [
     } },
   { title: "메인 메뉴", scene: "MainMenu · MainMenu", note: "이어하기는 저장된 체크포인트가 있을 때만 보임. 제목은 당분간 글자.", draw(s) {
       el(s, { x: 360, y: 200, w: 1200, h: 160, text: "Slime~ColorMaker~", fs: 108, bold: true, tag: "?" });
-      const g = el(s, { x: 750, y: 492, w: 420, h: 252, col: true, gap: 18 });
-      row(g, 96, { text: "Play", skin: "btn", tag: "2" }); row(g, 72, { text: "이어하기", skin: "btn" }); row(g, 72, { text: "종료", skin: "btn" });
+      const g = el(s, { x: 750, y: 492, w: 420, h: 342, col: true, gap: 10 });
+      row(g, 96, { text: "Play", skin: "btn", tag: "2" }); row(g, 72, { text: "이어하기", skin: "btn" }); row(g, 72, { text: "설정", skin: "btn" }); row(g, 72, { text: "종료", skin: "btn" });
+    } },
+  { title: "설정", scene: "UIScene · SettingsScreen", note: "메인 메뉴·일시정지의 '설정'으로 엶. ESC나 닫기로 닫음. 상자 744 × 510(줄 간격은 근사). 줄 안: 이름 0~216, 슬라이더 240~570, 값 588~684. 음량 0~100(1 단위), 마우스 감도 0.005~0.1(기본 0.02).", draw(s) {
+      s.insertAdjacentHTML("beforeend", '<div class="world"></div>');
+      el(s, { x: 0, y: 0, w: W, h: H, bg: "rgba(0,0,0,.6)" });
+      const box = el(s, { x: 588, y: 285, w: 744, h: 510, skin: true, col: true, pad: 30, gap: 12, tag: "1" });
+      row(box, 96, { text: "설정", fs: 72, bold: true });
+      // 막대 330 × 12, 손잡이 30 × 18은 양 끝에서 15 안쪽까지(가운데 기준 15 ~ 315)
+      [["BGM", "30", .3, true], ["효과음", "100", 1], ["마우스 감도", "0.020", (0.02 - 0.005) / 0.095]].forEach(([n, v, r, tagged]) => {
+        const d = row(box, 66, {});
+        d.style.justifyContent = "flex-start"; // 이름 0~216, 슬라이더 240~570, 값 588~684
+        const bar = (img, w) => `<i style="position:absolute;left:0;width:${w};top:${cq(3)};height:${cq(12)};box-sizing:border-box;border:solid transparent;border-width:0 ${cq(3)};border-image:url('${img}') 0 1 fill / 0 ${cq(3)} stretch;image-rendering:pixelated"></i>`;
+        d.insertAdjacentHTML("beforeend", `<span style="width:${cq(216)};margin-right:${cq(24)};text-align:left">${n}</span>
+          <span style="position:relative;display:inline-block;width:${cq(330)};height:${cq(18)}">${bar(ART_SL_TRACK, "100%")}${bar(ART_SL_FILL, cq(15 + r * 300))}
+            <i style="position:absolute;left:${cq(r * 300)};top:0;width:${cq(30)};height:${cq(18)};background:url('${ART_SL_HANDLE}') center / 100% 100%;image-rendering:pixelated"></i>
+            ${tagged ? '<span class="tag" style="left:-1.2cqw">7</span>' : ""}</span>
+          <span style="width:${cq(96)};margin-left:${cq(18)};text-align:right;font-size:${cq(30)}">${v}</span>`);
+      });
+      row(box, 66, { text: "닫기", skin: "btn", tag: "2" });
     } },
   { title: "맵 선택", scene: "MainMenu · MapSelect", note: "왼쪽 목록에서 맵을 고르면 오른쪽에 미리보기와 기록이 나옴. 고른 맵은 푸른 틴트.", draw(s) {
       el(s, { x: 560, y: 62, w: 800, h: 96, text: "맵 선택", fs: 72, bold: true });

@@ -19,7 +19,6 @@ namespace SlimeColorMaker
         [SerializeField] CameraCollisionSettings collision;
 
         Camera view;
-        float mouseSensitivity;
         float yaw;
         float pitch;
         float currentDistance;
@@ -30,7 +29,6 @@ namespace SlimeColorMaker
         void Awake()
         {
             view = GetComponent<Camera>();
-            mouseSensitivity = GameSettings.HasSave() ? GameSettings.Current.mouseSensitivity : settings.mouseSensitivity;
             var angles = transform.eulerAngles;
             yaw = angles.y;
             pitch = Mathf.Clamp(Mathf.DeltaAngle(0f, angles.x), settings.minPitch, settings.maxPitch);
@@ -48,7 +46,7 @@ namespace SlimeColorMaker
             if (target == null) return;
             if (Time.timeScale > 0f && !InputManager.Instance.IsGameplayLocked)
             {
-                Vector2 look = InputManager.Instance.ReadLook() * mouseSensitivity;
+                Vector2 look = InputManager.Instance.ReadLook() * GameSettings.MouseSensitivity(settings.mouseSensitivity);
                 yaw += look.x;
                 pitch = Mathf.Clamp(pitch - look.y, settings.minPitch, settings.maxPitch);
                 zoomTarget -= InputManager.Instance.ReadZoom() * settings.zoomStep;

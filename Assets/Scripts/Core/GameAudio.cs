@@ -36,6 +36,12 @@ namespace SlimeColorMaker
         IEnumerator ApplySavedVolumeNextFrame()
         {
             yield return null;
+            ApplyVolumes();
+        }
+
+        /// <summary>settings.json 값(<see cref="GameSettings.Current"/>)의 음량을 믹서에 준다. 설정 화면이 값을 바꿀 때마다 부른다.</summary>
+        public void ApplyVolumes()
+        {
             SetMixerVolume(BgmParam, GameSettings.Current.bgmVolume);
             SetMixerVolume(SfxParam, GameSettings.Current.sfxVolume);
         }

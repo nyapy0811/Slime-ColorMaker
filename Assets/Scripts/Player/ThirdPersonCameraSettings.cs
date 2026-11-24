@@ -30,7 +30,7 @@ namespace SlimeColorMaker
         [Tooltip("시야각(도, 세로 기준). 클수록 넓게 보인다.")]
         [Range(30f, 120f)] public float fieldOfView = 90f;
 
-        [Tooltip("마우스 감도. settings.json에 저장된 값이 있으면 그 값을 쓴다(맵을 시작할 때 한 번 정함).")]
+        [Tooltip("마우스 감도 기본값. 설정 화면에서 정한 값(settings.json)이 있으면 그 값을 쓴다(바꾸면 바로 반영). 설정 화면 슬라이더도 처음엔 이 값을 보인다.")]
         public float mouseSensitivity = 0.02f;
 
         [Tooltip("위아래 각도 아래 한도(도). 양수가 위에서 내려다봄")]

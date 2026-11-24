@@ -7,8 +7,8 @@ namespace SlimeColorMaker
     /// 일시정지 메뉴(UIScene). ESC를 읽는 곳이기도 하다:
     /// 뒤로 가기 스택에 닫을 화면이 있으면 맨 위를 닫고, 스택이 비어 있고 게임 중일 때만 일시정지를 연다.
     /// 일시정지는 잠금이 아니라 <c>Time.timeScale = 0</c>으로 멈추고, 열린 동안 스택에 '계속하기'를 넣어 ESC로 닫힌다.
-    /// 버튼은 계속하기·처음부터·체크포인트로·메인메뉴이고, 진행이 사라지는 세 버튼은 확인 창을 거친다.
-    /// '설정'은 설정 화면을 만들 때 더한다. 화면 페이드 중에는 ESC를 받지 않는다.
+    /// 버튼은 계속하기·처음부터·체크포인트로·설정·메인메뉴이고, 진행이 사라지는 세 버튼은 확인 창을 거친다.
+    /// '설정'은 설정 화면(<see cref="SettingsScreen"/>)을 연다(ESC로 닫으면 일시정지로 돌아옴). 화면 페이드 중에는 ESC를 받지 않는다.
     /// </summary>
     public class PauseMenu : MonoBehaviour
     {
@@ -16,6 +16,7 @@ namespace SlimeColorMaker
         [SerializeField] Button resumeButton;
         [SerializeField] Button restartButton;
         [SerializeField] Button checkpointButton;
+        [SerializeField] Button settingsButton;
         [SerializeField] Button mainMenuButton;
 
         void Awake()
@@ -24,6 +25,7 @@ namespace SlimeColorMaker
             resumeButton.onClick.AddListener(Resume);
             restartButton.onClick.AddListener(AskRestart);
             checkpointButton.onClick.AddListener(AskReturnToCheckpoint);
+            settingsButton.onClick.AddListener(() => SettingsScreen.Current.Open());
             mainMenuButton.onClick.AddListener(AskMainMenu);
         }
 
