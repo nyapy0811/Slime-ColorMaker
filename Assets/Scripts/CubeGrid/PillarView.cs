@@ -34,6 +34,14 @@ namespace SlimeColorMaker
         /// <summary>켜고 끄는 모델 전부.</summary>
         public GameObject[] Models => poseModels.Concat(connectorModels).ToArray();
 
+        /// <summary>값이 <paramref name="value"/>일 때 켜지는 모델(놓인 모양 하나 + 커넥터).</summary>
+        public System.Collections.Generic.IEnumerable<GameObject> ModelsFor(PillarLayout value)
+        {
+            if (poseModels[(int)value.pose] != null) yield return poseModels[(int)value.pose];
+            for (int i = 0; i < connectorModels.Length; i++)
+                if (connectorModels[i] != null && Wanted(value, i)) yield return connectorModels[i];
+        }
+
         /// <summary>지금 값의 모델만 켜고 나머지는 끈다.</summary>
         public void ShowLayout()
         {
@@ -52,7 +60,9 @@ namespace SlimeColorMaker
         }
 
         // 커넥터 모델 i(옆면 i / 3, 종류 i % 3 + 1)를 켤지.
-        bool Wanted(int i) => (int)layout[i / 3] == i % 3 + 1;
+        bool Wanted(int i) => Wanted(layout, i);
+
+        static bool Wanted(PillarLayout value, int i) => (int)value[i / 3] == i % 3 + 1;
 
         static void SetActive(GameObject target, bool active)
         {

@@ -6,7 +6,7 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵 편집 창(메뉴 Slime~ColorMaker~/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 씬 뷰 도구를 켜고 끄고, 블록을 다시 만들고,
-    /// 붓을 드롭다운(지형·기물·이동·장식·시험 묶음)에서 고른다. 고른 붓에 필요한 설정(방향, 방벽 면, 색, 기둥 눕힘·방향, 시험 모델)만
+    /// 붓을 드롭다운(지형·기물·이동·장식·시험 묶음)에서 고른다. 고른 붓에 필요한 설정(방향, 방벽 면, 색, 기둥 눕힘·방향, 조명 방향·빛 색, 시험 모델)만
     /// 그 아래 상자에 보인다(컨베이어는 모양 직진·좌회전·우회전도). 색 원천 값과 요구 색은 놓기 전에 정한다(놓은 뒤에는 기물을 골라 인스펙터에서 고침). 붓별 규칙은 코드 흐름 문서 12.1절.
     /// </summary>
     public class CubeGridWindow : EditorWindow
@@ -17,7 +17,7 @@ namespace SlimeColorMaker
             ("지형", new[] { CubeGridEditing.Brush.Block, CubeGridEditing.Brush.Stair }),
             ("기물", new[] { CubeGridEditing.Brush.Checkpoint, CubeGridEditing.Brush.ColorSource, CubeGridEditing.Brush.Goal, CubeGridEditing.Brush.Gate, CubeGridEditing.Brush.Barrier }),
             ("이동", new[] { CubeGridEditing.Brush.ConveyorBelt }),
-            ("장식", new[] { CubeGridEditing.Brush.Pillar }),
+            ("장식", new[] { CubeGridEditing.Brush.Pillar, CubeGridEditing.Brush.Light }),
             ("칠하기", new[] { CubeGridEditing.Brush.Coating }),
             ("시험", new[] { CubeGridEditing.Brush.TestModel }),
             ("지우기", new[] { CubeGridEditing.Brush.Eraser }),
@@ -101,7 +101,7 @@ namespace SlimeColorMaker
                 "방향은 씬 카메라가 보는 쪽 기준",
                 MessageType.None);
 
-            EditorGUILayout.LabelField($"블록 {grid.Data.blocks.Count}개, 계단 {grid.Data.stairs.Count}개, 기둥 {grid.Data.pillars.Count}개");
+            EditorGUILayout.LabelField($"블록 {grid.Data.blocks.Count}개, 계단 {grid.Data.stairs.Count}개, 기둥 {grid.Data.pillars.Count}개, 조명 {grid.Data.lights.Count}개");
         }
 
         // 붓 드롭다운: 묶음 이름(고를 수 없음) 아래에 그 묶음의 붓, 묶음 사이에 구분선.
@@ -137,7 +137,7 @@ namespace SlimeColorMaker
             bool hasValue = CubeGridEditing.ValueField(brush) != null;
             bool turns = brush is CubeGridEditing.Brush.Stair || CubeGridEditing.IsConveyor(brush)
                 || (brush == CubeGridEditing.Brush.Barrier && CubeGridEditing.SelectedBarrierSide == CubeGridEditing.BarrierSide.Side);
-            bool other = brush is CubeGridEditing.Brush.Gate or CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
+            bool other = brush is CubeGridEditing.Brush.Gate or CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Light or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
             if (!hasValue && !turns && !other) return;
 
             float labelWidth = EditorGUIUtility.labelWidth;
@@ -154,8 +154,15 @@ namespace SlimeColorMaker
                     bool lying = EditorGUILayout.Toggle("눕힘", CubeGridEditing.PillarLying);
                     if (lying != CubeGridEditing.PillarLying) CubeGridEditing.PillarLying = lying;
                     // 세운 기둥은 홈(파인 면)이 보는 쪽, 눕힌 기둥은 옆 칸으로 들보 방향을 정하지 못할 때(옆 칸 없음, L자 모서리, 십자 가운데) 쓰는 방향.
-                    int axis = LabeledToolbar(lying ? "기본 방향" : "홈 방향", (int)CubeGridEditing.PillarAxis, PillarAxisNames);
-                    if (axis != (int)CubeGridEditing.PillarAxis) CubeGridEditing.PillarAxis = (PillarAxis)axis;
+                    int axis = LabeledToolbar(lying ? "기본 방향" : "홈 방향", (int)CubeGridEditing.PillarAxis, AxisNames);
+                    if (axis != (int)CubeGridEditing.PillarAxis) CubeGridEditing.PillarAxis = (CellAxis)axis;
+                }
+                if (brush == CubeGridEditing.Brush.Light)
+                {
+                    int axis = LabeledToolbar("방향", (int)CubeGridEditing.LightAxis, AxisNames);
+                    if (axis != (int)CubeGridEditing.LightAxis) CubeGridEditing.LightAxis = (CellAxis)axis;
+                    var color = EditorGUILayout.ColorField(new GUIContent("빛 색"), CubeGridEditing.LightColor, true, false, false);
+                    if (color != CubeGridEditing.LightColor) CubeGridEditing.LightColor = color;
                 }
                 if (brush == CubeGridEditing.Brush.Coating)
                 {
@@ -187,7 +194,7 @@ namespace SlimeColorMaker
         }
 
         static readonly string[] GateFaceNames = { "북", "동", "남", "서", "위", "아래" };
-        static readonly string[] PillarAxisNames = { "남북", "동서" };
+        static readonly string[] AxisNames = { "남북", "동서" };
 
         // 게이트의 열리는 면: 여섯 면을 켜고 끄는 단추 줄(여럿 가능, 세계 방향).
         static void DrawGateFaces()

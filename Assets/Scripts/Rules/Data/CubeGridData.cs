@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록, 블록 윗면 코팅 목록(규칙은 <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
+    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록, 천장 조명 목록, 블록 윗면 코팅 목록(규칙은 <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
     /// 씬의 큐브 격자와 나중의 UGC 맵 파일이 같은 클래스를 쓴다(JsonUtility).
     /// </summary>
     [Serializable]
@@ -14,6 +14,7 @@ namespace SlimeColorMaker
         public List<Vector3Int> blocks = new();
         public List<CubeStair> stairs = new();
         public List<CubePillar> pillars = new();
+        public List<CubeLight> lights = new();
         public List<CubeCoating> coatings = new();
     }
 
@@ -48,9 +49,9 @@ namespace SlimeColorMaker
         public bool lying;
 
         /// <summary>세운 기둥은 홈이 보는 쪽, 눕힌 기둥은 옆 칸으로 정하지 못할 때의 들보 방향.</summary>
-        public PillarAxis axis;
+        public CellAxis axis;
 
-        public CubePillar(Vector3Int cell, bool lying, PillarAxis axis)
+        public CubePillar(Vector3Int cell, bool lying, CellAxis axis)
         {
             this.cell = cell;
             this.lying = lying;
@@ -58,8 +59,32 @@ namespace SlimeColorMaker
         }
     }
 
-    /// <summary>기둥 방향: 남북(±z) 또는 동서(±x).</summary>
-    public enum PillarAxis { NorthSouth, EastWest }
+    /// <summary>
+    /// 천장 조명 하나(장식): 위 칸 지형의 아랫면에 붙는 막대(2 × 1 × 8픽셀). 조명 윗면 전부가 위 칸 아랫면에 닿을 때만 놓이고(아랫면 높이는 0이 아니어도 되고
+    /// 조명이 그 높이까지 올라감, 높이는 저장하지 않고 지을 때 계산), 지형과 픽셀이 겹치면 놓지 않는다(<see cref="CubeGridRules.FitLight"/>).
+    /// 칸을 차지하지 않아 같은 칸에 기물을 둘 수 있다. 천장에서 떨어지면 편집 도구가 지운다.
+    /// </summary>
+    [Serializable]
+    public struct CubeLight
+    {
+        public Vector3Int cell;
+
+        /// <summary>막대 길이 방향.</summary>
+        public CellAxis axis;
+
+        /// <summary>빛 색(발광 부분과 광원의 색).</summary>
+        public Color color;
+
+        public CubeLight(Vector3Int cell, CellAxis axis, Color color)
+        {
+            this.cell = cell;
+            this.axis = axis;
+            this.color = color;
+        }
+    }
+
+    /// <summary>칸 방향: 남북(±z) 또는 동서(±x). 기둥과 천장 조명이 쓴다.</summary>
+    public enum CellAxis { NorthSouth, EastWest }
 
     /// <summary>기둥 한 칸의 놓인 모양: 세움(홈이 남북·동서)·눕힘(들보가 남북·동서).</summary>
     public enum PillarPose { UprightNorthSouth, UprightEastWest, LyingNorthSouth, LyingEastWest }

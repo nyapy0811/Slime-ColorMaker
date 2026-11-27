@@ -7,7 +7,7 @@ using UnityEditor;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 기둥 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
+    /// 큐브 격자 빌더: 데이터의 블록 칸마다 블록 프리팹을, 계단마다 계단 프리팹을, 기둥마다 기둥 프리팹을, 천장 조명마다 조명 프리팹을 큐브 격자 아래 '만든 부분'의 종류별 묶음에 놓는다.
     /// 기둥의 놓인 모양·커넥터는 지을 때마다 옆 칸으로 계산해(<see cref="CubeGridRules.PillarLayouts"/>) 칸마다 <see cref="PillarView.Layout"/>로 맞춘다(값이 바뀌어도 다시 만들지 않음).
     /// 묶음은 '만든 부분' 바로 아래 한 단계다(지형 면 숨기기 <see cref="CubeFaceCuller"/>가 묶음 아래 오브젝트를 칸 하나로 본다).
     /// 블록 윗면 코팅은 '코팅' 오브젝트의 <see cref="SlipperyCoatingView"/>가 데이터에서 다시 그린다.
@@ -32,6 +32,7 @@ namespace SlimeColorMaker
             BuildKind(Child(parts, "계단"), stairs, config.stairPrefab, "Stair");
 
             BuildPillars(Child(parts, "기둥"), CubeGridRules.PillarLayouts(grid.Data), config.pillarPrefab);
+            BuildLights(Child(parts, "조명"), grid.Data, config);
 
             var coating = Child(parts, "코팅");
             if (!coating.TryGetComponent(out SlipperyCoatingView view)) view = coating.gameObject.AddComponent<SlipperyCoatingView>();
@@ -67,6 +68,42 @@ namespace SlimeColorMaker
             view.Layout = layout;
         }
 
+        // 천장 조명: 칸마다 방향대로 돌려 놓고, 위 칸 아랫면 높이까지 모델을 올리고(CubeGridVoxels, 맞지 않으면 칸 맨 위), 빛 색(VoxPaint 칠하는 색)을 맞춘다.
+        static void BuildLights(Transform parent, CubeGridData data, CubeGridConfig config)
+        {
+            var wanted = new Dictionary<Vector3Int, Quaternion>();
+            var found = new Dictionary<Vector3Int, CubeLight>();
+            foreach (var light in data.lights)
+                if (wanted.TryAdd(light.cell, CubeGridRules.LightRotation(light.axis))) found[light.cell] = light;
+            BuildKind(parent, wanted, config.lightPrefab, "Light");
+            var voxels = new CubeGridVoxels(config, data, CubeGridVoxels.PlacedObjects(parent.gameObject.scene));
+            foreach (Transform part in parent)
+            {
+                var paint = part.GetComponentInChildren<VoxPaint>(true);
+                if (paint == null || !found.TryGetValue(CubeGridRules.CellAt(part.position), out var light)) continue;
+                int height = voxels.FitLight(light.cell, light.axis, out int fit) ? fit : 0;
+                var position = new Vector3(0f, -0.5f + height / (float)CubeGridRules.CellPixels, 0f); // 모델 원점은 칸 바닥 가운데
+                bool move = (paint.transform.localPosition - position).sqrMagnitude > 1e-8f;
+                if (!move && paint.Color == light.color) continue;
+#if UNITY_EDITOR
+                if (Recording)
+                {
+                    Undo.RecordObject(paint, UndoName);
+                    Undo.RecordObject(paint.transform, UndoName);
+                }
+#endif
+                paint.Color = light.color;
+                paint.transform.localPosition = position;
+#if UNITY_EDITOR
+                if (Recording)
+                {
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(paint);
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(paint.transform);
+                }
+#endif
+            }
+        }
+
         // 한 종류: 칸 중심에 놓고, 자리와 방향이 데이터와 같은 것만 남긴다.
         static void BuildKind(Transform parent, Dictionary<Vector3Int, Quaternion> wanted, GameObject prefab, string namePrefix)
         {
@@ -100,7 +137,7 @@ namespace SlimeColorMaker
             return child;
         }
 
-        /// <summary>블록과 계단, 기둥, 코팅을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
+        /// <summary>블록과 계단, 기둥, 조명, 코팅을 모두 지우고 다시 만든다(프리팹을 바꾼 뒤).</summary>
         public static void Rebuild(CubeGrid grid, CubeGridConfig config)
         {
             var parts = grid.transform.Find(GeneratedPartsName);

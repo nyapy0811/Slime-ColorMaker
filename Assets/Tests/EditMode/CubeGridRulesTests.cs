@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -175,9 +176,9 @@ namespace SlimeColorMaker
         {
             var data = new CubeGridData();
             var cell = new Vector3Int(0, 0, 0);
-            Assert.IsTrue(CubeGridRules.AddPillar(data, cell, false, PillarAxis.NorthSouth));
+            Assert.IsTrue(CubeGridRules.AddPillar(data, cell, false, CellAxis.NorthSouth));
             Assert.IsFalse(CubeGridRules.AddBlock(data, cell));
-            Assert.IsFalse(CubeGridRules.AddPillar(data, cell, true, PillarAxis.EastWest));
+            Assert.IsFalse(CubeGridRules.AddPillar(data, cell, true, CellAxis.EastWest));
             Assert.IsTrue(CubeGridRules.IsOccupied(data, cell));
             Assert.IsTrue(CubeGridRules.TryLowestY(data, out int lowest));
             Assert.AreEqual(0, lowest);
@@ -191,9 +192,9 @@ namespace SlimeColorMaker
         public void PillarLayouts_UprightKeepsChosenAxis()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, C(0, 0, 0), false, PillarAxis.NorthSouth);
-            CubeGridRules.AddPillar(data, C(0, 1, 0), false, PillarAxis.EastWest);
-            CubeGridRules.AddPillar(data, C(1, 0, 0), false, PillarAxis.NorthSouth); // 세운 기둥끼리 옆: 커넥터 없음
+            CubeGridRules.AddPillar(data, C(0, 0, 0), false, CellAxis.NorthSouth);
+            CubeGridRules.AddPillar(data, C(0, 1, 0), false, CellAxis.EastWest);
+            CubeGridRules.AddPillar(data, C(1, 0, 0), false, CellAxis.NorthSouth); // 세운 기둥끼리 옆: 커넥터 없음
             var layouts = CubeGridRules.PillarLayouts(data);
             Assert.AreEqual(PillarPose.UprightNorthSouth, layouts[C(0, 0, 0)].pose);
             Assert.AreEqual(PillarPose.UprightEastWest, layouts[C(0, 1, 0)].pose);
@@ -204,10 +205,10 @@ namespace SlimeColorMaker
         public void PillarLayouts_LyingFollowsNeighborsThenChosenAxis()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, C(0, 0, 0), true, PillarAxis.EastWest);   // 혼자: 고른 방향
-            CubeGridRules.AddPillar(data, C(10, 0, 0), true, PillarAxis.EastWest);  // 남쪽에 기둥: 남북
-            CubeGridRules.AddPillar(data, C(10, 0, -1), false, PillarAxis.NorthSouth);
-            CubeGridRules.AddPillar(data, C(10, 1, 1), false, PillarAxis.NorthSouth); // 다른 높이는 보지 않음
+            CubeGridRules.AddPillar(data, C(0, 0, 0), true, CellAxis.EastWest);   // 혼자: 고른 방향
+            CubeGridRules.AddPillar(data, C(10, 0, 0), true, CellAxis.EastWest);  // 남쪽에 기둥: 남북
+            CubeGridRules.AddPillar(data, C(10, 0, -1), false, CellAxis.NorthSouth);
+            CubeGridRules.AddPillar(data, C(10, 1, 1), false, CellAxis.NorthSouth); // 다른 높이는 보지 않음
             var layouts = CubeGridRules.PillarLayouts(data);
             Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(0, 0, 0)].pose);
             Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(10, 0, 0)].pose);
@@ -217,10 +218,10 @@ namespace SlimeColorMaker
         public void PillarLayouts_ConnectorsOnUprightFaces()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, C(0, 0, 0), false, PillarAxis.NorthSouth); // 홈이 남·북, 평평한 면이 동·서
-            CubeGridRules.AddPillar(data, C(1, 0, 0), true, PillarAxis.NorthSouth);  // 동쪽 들보(옆 칸으로 동서)
-            CubeGridRules.AddPillar(data, C(2, 0, 0), false, PillarAxis.EastWest);   // 홈이 동·서
-            CubeGridRules.AddPillar(data, C(0, 0, 1), true, PillarAxis.NorthSouth);  // 북쪽 들보(남북)
+            CubeGridRules.AddPillar(data, C(0, 0, 0), false, CellAxis.NorthSouth); // 홈이 남·북, 평평한 면이 동·서
+            CubeGridRules.AddPillar(data, C(1, 0, 0), true, CellAxis.NorthSouth);  // 동쪽 들보(옆 칸으로 동서)
+            CubeGridRules.AddPillar(data, C(2, 0, 0), false, CellAxis.EastWest);   // 홈이 동·서
+            CubeGridRules.AddPillar(data, C(0, 0, 1), true, CellAxis.NorthSouth);  // 북쪽 들보(남북)
             var layouts = CubeGridRules.PillarLayouts(data);
             var post = layouts[C(0, 0, 0)];
             Assert.AreEqual(PillarConnector.Flat, post.east);
@@ -235,8 +236,8 @@ namespace SlimeColorMaker
         public void PillarLayouts_BeamToBeamOnlyAtSide()
         {
             var data = new CubeGridData();
-            for (int x = 0; x < 3; x++) CubeGridRules.AddPillar(data, C(x, 0, 0), true, PillarAxis.NorthSouth); // 동서 일직선
-            CubeGridRules.AddPillar(data, C(1, 0, 1), true, PillarAxis.EastWest); // T자 줄기(남북)
+            for (int x = 0; x < 3; x++) CubeGridRules.AddPillar(data, C(x, 0, 0), true, CellAxis.NorthSouth); // 동서 일직선
+            CubeGridRules.AddPillar(data, C(1, 0, 1), true, CellAxis.EastWest); // T자 줄기(남북)
             var layouts = CubeGridRules.PillarLayouts(data);
             Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(1, 0, 0)].pose);
             Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(1, 0, 1)].pose);
@@ -250,14 +251,56 @@ namespace SlimeColorMaker
         public void PillarLayouts_CornerUsesChosenAxis()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, C(0, 0, 0), true, PillarAxis.EastWest);   // L자 모서리: 고른 방향(동서)
-            CubeGridRules.AddPillar(data, C(1, 0, 0), true, PillarAxis.EastWest);
-            CubeGridRules.AddPillar(data, C(0, 0, 1), true, PillarAxis.EastWest);   // 북쪽 칸은 모서리 하나뿐이라 남북
+            CubeGridRules.AddPillar(data, C(0, 0, 0), true, CellAxis.EastWest);   // L자 모서리: 고른 방향(동서)
+            CubeGridRules.AddPillar(data, C(1, 0, 0), true, CellAxis.EastWest);
+            CubeGridRules.AddPillar(data, C(0, 0, 1), true, CellAxis.EastWest);   // 북쪽 칸은 모서리 하나뿐이라 남북
             var layouts = CubeGridRules.PillarLayouts(data);
             Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(0, 0, 0)].pose);
             Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(0, 0, 1)].pose);
             Assert.AreEqual(PillarConnector.Beam, layouts[C(0, 0, 0)].north);
             Assert.AreEqual(PillarConnector.None, layouts[C(0, 0, 0)].east);
+        }
+
+        // 남북 조명 막대(x 7~8, y 15, z 4~11): 칸 맨 위에 붙은 모양.
+        static List<Vector3Int> Bar()
+        {
+            var bar = new List<Vector3Int>();
+            for (int z = 4; z < 12; z++)
+            for (int x = 7; x < 9; x++)
+                bar.Add(C(x, 15, z));
+            return bar;
+        }
+
+        [Test]
+        public void FitLight_TouchesCeilingAtAnyHeight()
+        {
+            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => false, p => true, out int height)); // 위 칸이 블록
+            Assert.AreEqual(0, height);
+            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => false, p => p.y >= 4, out height)); // 위 칸 아랫면이 높이 4(눕힌 기둥)
+            Assert.AreEqual(4, height);
+            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => false, p => false, out _));       // 위 칸 비었음
+            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => false, p => p.y >= (p.z < 8 ? 0 : 4), out _)); // 아랫면 높이가 고르지 않음
+        }
+
+        [Test]
+        public void FitLight_RejectsPixelOverlap()
+        {
+            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => p.y >= 4 && p.y < 12, p => true, out _));  // 조명 칸 아래쪽 들보(4~12)는 겹치지 않음
+            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => p.x >= 6 && p.x < 10, p => true, out _)); // 조명 칸 세운 기둥 웨브와 겹침
+        }
+
+        [Test]
+        public void Light_OnePerCellAndRemovedWithCell()
+        {
+            var data = new CubeGridData();
+            Assert.IsTrue(CubeGridRules.AddLight(data, C(0, 0, 0), CellAxis.NorthSouth, Color.white));
+            Assert.IsFalse(CubeGridRules.AddLight(data, C(0, 0, 0), CellAxis.EastWest, Color.red));
+            Assert.IsFalse(CubeGridRules.IsOccupied(data, C(0, 0, 0))); // 칸을 차지하지 않음(기물과 같이)
+            Assert.IsTrue(CubeGridRules.AddPillar(data, C(0, 0, 0), true, CellAxis.NorthSouth)); // 겹침은 픽셀로 따로 봄
+            CubeGridRules.RemoveTerrain(data, C(0, 0, 0));
+            Assert.IsTrue(CubeGridRules.HasLight(data, C(0, 0, 0)));   // 지형만 지움
+            Assert.IsTrue(CubeGridRules.Remove(data, C(0, 0, 0)));
+            Assert.AreEqual(0, data.lights.Count);
         }
 
         [Test]

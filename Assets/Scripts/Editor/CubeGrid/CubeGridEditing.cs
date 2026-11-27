@@ -16,14 +16,14 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel, Eraser }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel, Eraser, Light }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델", "지우개" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델", "지우개", "조명" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -141,12 +141,34 @@ namespace SlimeColorMaker
         }
 
         /// <summary>놓을 기둥의 방향: 세운 기둥은 홈이 보는 쪽, 눕힌 기둥은 옆 칸으로 정하지 못할 때의 들보 방향(기본 남북).</summary>
-        public static PillarAxis PillarAxis
+        public static CellAxis PillarAxis
         {
-            get => (PillarAxis)SessionState.GetInt("SlimeColorMaker.CubeGrid.PillarAxis", (int)PillarAxis.NorthSouth);
+            get => (CellAxis)SessionState.GetInt("SlimeColorMaker.CubeGrid.PillarAxis", (int)CellAxis.NorthSouth);
             set
             {
                 SessionState.SetInt("SlimeColorMaker.CubeGrid.PillarAxis", (int)value);
+                BrushChanged?.Invoke();
+            }
+        }
+
+        /// <summary>놓을 천장 조명의 방향(막대 길이 방향, 기본 남북).</summary>
+        public static CellAxis LightAxis
+        {
+            get => (CellAxis)SessionState.GetInt("SlimeColorMaker.CubeGrid.LightAxis", (int)CellAxis.NorthSouth);
+            set
+            {
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.LightAxis", (int)value);
+                BrushChanged?.Invoke();
+            }
+        }
+
+        /// <summary>놓을 천장 조명의 빛 색(칠하는 색, 기본 흰색).</summary>
+        public static Color LightColor
+        {
+            get => ColorUtility.TryParseHtmlString("#" + SessionState.GetString("SlimeColorMaker.CubeGrid.LightColor", "FFFFFF"), out var color) ? color : Color.white;
+            set
+            {
+                SessionState.SetString("SlimeColorMaker.CubeGrid.LightColor", ColorUtility.ToHtmlStringRGB(value));
                 BrushChanged?.Invoke();
             }
         }
@@ -293,7 +315,7 @@ namespace SlimeColorMaker
         /// <summary>범위의 빈 칸에 블록을 놓는다(범위 놓기는 블록만).</summary>
         public static void PlaceBlocks(CubeGrid grid, IEnumerable<Vector3Int> cells) => PlaceAll(grid, cells, "블록 범위 놓기", blocksOnly: true);
 
-        /// <summary>칸의 블록·계단·기물·시험 모델을 지운다(칸에 방벽이 여럿이면 모두). 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
+        /// <summary>칸의 블록·계단·기둥·천장 조명·기물·시험 모델을 지운다(칸에 방벽이 여럿이면 모두, 천장에서 떨어진 조명도). 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
         public static void Remove(CubeGrid grid, IEnumerable<Vector3Int> cells)
         {
             var config = RequireConfig();
@@ -336,13 +358,31 @@ namespace SlimeColorMaker
             {
                 foreach (var cell in cells)
                 {
+                    if (brush == Brush.Light)
+                    {
+                        // 기물과 같은 칸에 둘 수 있고, 윗면 전부가 위 칸 아랫면에 닿고 지형과 픽셀이 겹치지 않을 때만
+                        if (!CubeGridRules.HasLight(grid.Data, cell) && Voxels(grid, config).FitLight(cell, LightAxis, out _))
+                            CubeGridRules.AddLight(grid.Data, cell, LightAxis, LightColor);
+                        continue;
+                    }
                     if (brush == Brush.Barrier ? !CanAddBarrier(grid, objects, cell, BarrierFace(stairTurn)) : IsFilled(grid, objects, cell)) continue;
-                    if (brush == Brush.Block) CubeGridRules.AddBlock(grid.Data, cell);
-                    else if (brush == Brush.Stair) CubeGridRules.AddStair(grid.Data, cell, stairTurn);
-                    else if (brush == Brush.Pillar) CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis);
+                    if (brush is Brush.Block or Brush.Stair or Brush.Pillar)
+                    {
+                        bool added = brush == Brush.Block ? CubeGridRules.AddBlock(grid.Data, cell)
+                            : brush == Brush.Stair ? CubeGridRules.AddStair(grid.Data, cell, stairTurn)
+                            : CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis);
+                        // 먼저 놓인 조명이 우선: 새 지형(기둥이면 옆 칸 커넥터까지)이 조명과 겹치거나 조명을 천장에서 떼면 놓지 않는다.
+                        if (added && !LightsFitNear(grid, config, cell)) CubeGridRules.RemoveTerrain(grid.Data, cell);
+                    }
                     else
                     {
                         var placed = brush == Brush.TestModel ? PlaceTestModel(grid, prefab, cell) : PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
+                        // 먼저 놓인 조명이 우선: 조명과 픽셀이 겹치거나 조명을 천장에서 떼면 놓지 않는다.
+                        if (!LightsFitNear(grid, config, cell))
+                        {
+                            Undo.DestroyObjectImmediate(placed);
+                            continue;
+                        }
                         if (!objects.TryGetValue(cell, out var list)) objects[cell] = list = new List<GameObject>();
                         list.Add(placed);
                     }
@@ -420,7 +460,7 @@ namespace SlimeColorMaker
             return folder.transform;
         }
 
-        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel or Brush.Eraser);
+        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel or Brush.Eraser or Brush.Light);
 
         static GameObject PrefabFor(CubeGridConfig config, Brush brush) => brush switch
         {
@@ -433,6 +473,7 @@ namespace SlimeColorMaker
             Brush.Barrier => config.barrierPrefab,
             Brush.ConveyorBelt => config.conveyorBeltPrefab,
             Brush.Pillar => config.pillarPrefab,
+            Brush.Light => config.lightPrefab,
             _ => config.blockPrefab,
         };
 
@@ -443,6 +484,31 @@ namespace SlimeColorMaker
             return config;
         }
 
+        /// <summary>격자의 픽셀 모양(지형 + 씬에 놓인 기물·시험 모델).</summary>
+        public static CubeGridVoxels Voxels(CubeGrid grid, CubeGridConfig config) =>
+            new(config, grid.Data, CubeGridVoxels.PlacedObjects(grid.gameObject.scene));
+
+        // 칸 둘레(옆 칸 커넥터가 바뀔 수 있음)의 조명이 모두 아직 맞는가. 조명은 자기 칸과 위 칸을 보므로 높이 cell.y − 1, cell.y만 본다.
+        static bool LightsFitNear(CubeGrid grid, CubeGridConfig config, Vector3Int cell)
+        {
+            var data = grid.Data;
+            var voxels = Voxels(grid, config);
+            foreach (var light in data.lights)
+            {
+                var d = light.cell - cell;
+                if (Mathf.Abs(d.x) + Mathf.Abs(d.z) > 1 || d.y < -1 || d.y > 0) continue;
+                if (!voxels.FitLight(light.cell, light.axis, out _)) return false;
+            }
+            return true;
+        }
+
+        // 천장에서 떨어졌거나 지형과 겹치게 된 조명을 지운다(천장을 지웠을 때 등).
+        static void PruneLights(CubeGrid grid, CubeGridConfig config)
+        {
+            var voxels = Voxels(grid, config);
+            grid.Data.lights.RemoveAll(light => !voxels.FitLight(light.cell, light.axis, out _));
+        }
+
         static void Edit(CubeGrid grid, string undoName, Action change, CubeGridConfig config, bool fullRebuild = false)
         {
             Undo.IncrementCurrentGroup();
@@ -450,6 +516,7 @@ namespace SlimeColorMaker
             Undo.SetCurrentGroupName(undoName);
             Undo.RecordObject(grid, undoName);
             change();
+            PruneLights(grid, config);
             if (fullRebuild) CubeGridBuilder.Rebuild(grid, config);
             else CubeGridBuilder.Build(grid, config);
             Undo.CollapseUndoOperations(group);

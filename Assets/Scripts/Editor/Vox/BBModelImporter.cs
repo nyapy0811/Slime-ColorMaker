@@ -16,7 +16,7 @@ namespace SlimeColorMaker
     /// Glass = GlassValueColor, GrayGlass = Glass, Light = Light. 큐브끼리 맞닿아 완전히 덮인 면은 버린다(반투명은 바깥 껍질만).
     /// 좌표는 Blockbench (X, Y, Z) → Unity (X, Y, −Z)이고 그룹·큐브 회전은 꼭짓점에 굽는다(자식 오브젝트는 회전 없음).
     /// </summary>
-    [ScriptedImporter(4, "bbmodel")]
+    [ScriptedImporter(5, "bbmodel")]
     public class BBModelImporter : ScriptedImporter
     {
         const float PixelSize = 1f / 16f;
@@ -195,6 +195,23 @@ namespace SlimeColorMaker
             if (rotated > 0) ctx.LogImportWarning($"[BBModelImporter] 회전한 큐브 {rotated}개: 지형 면 숨기기·면 덮기·상자 콜라이더에서 빠진다(규칙 5절).");
             if (atlas.untexturedFaces > 0) ctx.LogImportWarning($"[BBModelImporter] 텍스처가 없는 면 {atlas.untexturedFaces}개는 흰색(휘도 1)으로 그린다.");
             foreach (string missing in atlas.missing) ctx.LogImportWarning($"[BBModelImporter] 텍스처를 읽지 못했다: {missing} (흰색으로 그림). 텍스처를 파일 안에 넣어 저장하면 된다(규칙 1절).");
+
+            // 큐브 상자(맨 위 오브젝트 기준, 유닛): 큐브 맵이 칸의 픽셀 모양을 셀 때 쓴다. 회전한 큐브는 돌린 꼭짓점을 감싼 상자.
+            var boxes = new List<Bounds>();
+            foreach (var cube in cubes)
+            {
+                Vector3 f = cube.from - Vector3.one * cube.inflate, t = cube.to + Vector3.one * cube.inflate;
+                var box = new Bounds();
+                for (int i = 0; i < 8; i++)
+                {
+                    var corner = new Vector3((i & 1) == 0 ? f.x : t.x, (i & 2) == 0 ? f.y : t.y, (i & 4) == 0 ? f.z : t.z);
+                    var p = (ToUnity(Place(cube, corner, false)) - pivotPoint) * PixelSize;
+                    if (i == 0) box = new Bounds(p, Vector3.zero);
+                    else box.Encapsulate(p);
+                }
+                if (box.size.x > Epsilon && box.size.y > Epsilon && box.size.z > Epsilon) boxes.Add(box);
+            }
+            root.AddComponent<VoxelBoxes>().Set(boxes);
 
             root.AddComponent<VoxPaint>();
             ctx.AddObjectToAsset("root", root);

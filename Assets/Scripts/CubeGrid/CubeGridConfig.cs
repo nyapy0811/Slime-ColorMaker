@@ -36,6 +36,10 @@ namespace SlimeColorMaker
         [Tooltip("기둥(PillarView, H빔 한 칸). 한 프리팹이 놓인 모양 넷(세움·눕힘 × 남북·동서)과 옆면 커넥터를 모두 갖고, 빌더가 칸마다 값을 정한다.")]
         public GameObject pillarPrefab;
 
+        [Header("천장 조명 (피벗은 칸 가운데, 충돌 없음, static)")]
+        [Tooltip("천장 조명(칸 맨 위 1픽셀의 막대, 모델은 남북으로 긺). 빌더가 방향대로 돌리고 VoxPaint 칠하는 색을 빛 색으로 맞춘다.")]
+        public GameObject lightPrefab;
+
         [Header("블록 윗면 코팅")]
         [Tooltip("미끄러운 코팅 설정(기름·얼음의 관성 시간과 재질). 빌더가 '만든 부분/코팅'의 겉모습에 넘긴다.")]
         public SlipperyCoatingSettings coatingSettings;

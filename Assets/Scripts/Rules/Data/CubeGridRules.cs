@@ -34,7 +34,9 @@ namespace SlimeColorMaker
 
         public static bool HasPillar(CubeGridData data, Vector3Int cell) => data.pillars.Exists(pillar => pillar.cell == cell);
 
-        /// <summary>블록이나 계단, 기둥이 칸을 차지하는가.</summary>
+        public static bool HasLight(CubeGridData data, Vector3Int cell) => data.lights.Exists(light => light.cell == cell);
+
+        /// <summary>블록이나 계단, 기둥이 칸을 차지하는가(천장 조명은 차지하지 않음, 조명과의 겹침은 픽셀로 봄).</summary>
         public static bool IsOccupied(CubeGridData data, Vector3Int cell) => HasBlock(data, cell) || HasStair(data, cell) || HasPillar(data, cell);
 
         /// <summary>블록을 놓는다. 칸이 차 있으면 false.</summary>
@@ -54,18 +56,73 @@ namespace SlimeColorMaker
         }
 
         /// <summary>기둥을 놓는다(눕힐지, 방향). 칸이 차 있으면 false.</summary>
-        public static bool AddPillar(CubeGridData data, Vector3Int cell, bool lying, PillarAxis axis)
+        public static bool AddPillar(CubeGridData data, Vector3Int cell, bool lying, CellAxis axis)
         {
             if (IsOccupied(data, cell)) return false;
             data.pillars.Add(new CubePillar(cell, lying, axis));
             return true;
         }
 
-        /// <summary>칸의 블록이나 계단, 기둥을 지운다(블록의 코팅도 함께). 없었으면 false.</summary>
+        /// <summary>천장 조명을 놓는다(방향, 빛 색). 칸에 이미 조명이 있으면 false. 천장에 닿는지·지형과 겹치는지는 픽셀로 따로 본다(<see cref="FitLight"/>).</summary>
+        public static bool AddLight(CubeGridData data, Vector3Int cell, CellAxis axis, Color color)
+        {
+            if (HasLight(data, cell)) return false;
+            data.lights.Add(new CubeLight(cell, axis, color));
+            return true;
+        }
+
+        /// <summary>한 칸 한 변의 픽셀 수.</summary>
+        public const int CellPixels = 16;
+
+        /// <summary>
+        /// 천장 조명이 올라갈 높이(픽셀). <paramref name="light"/>는 조명 칸 기준 조명 픽셀(칸 맨 위에 붙은 모양, 0~15),
+        /// <paramref name="ownSolid"/>·<paramref name="aboveSolid"/>는 조명 칸·위 칸의 지형 픽셀(칸 기준 0~15)이다.
+        /// 조명 윗면의 모든 열에서 바로 위 칸 지형의 가장 낮은 픽셀까지 올리는 양이 같으면(윗면 전부가 위 칸 아랫면에 닿음, 아랫면 높이는 0이 아니어도 됨)
+        /// 그만큼 올리고, 올린 조명 픽셀이 두 칸의 지형 픽셀과 겹치지 않으면 true.
+        /// </summary>
+        public static bool FitLight(IEnumerable<Vector3Int> light, Func<Vector3Int, bool> ownSolid, Func<Vector3Int, bool> aboveSolid, out int height)
+        {
+            height = -1;
+            var pixels = new List<Vector3Int>(light);
+            var tops = new Dictionary<Vector2Int, int>();
+            foreach (var p in pixels)
+            {
+                var column = new Vector2Int(p.x, p.z);
+                if (!tops.TryGetValue(column, out int top) || p.y > top) tops[column] = p.y;
+            }
+            if (tops.Count == 0) return false;
+            foreach (var (column, top) in tops)
+            {
+                int lowest = -1;
+                for (int y = 0; y < CellPixels && lowest < 0; y++)
+                    if (aboveSolid(new Vector3Int(column.x, y, column.y))) lowest = y;
+                if (lowest < 0) return false;
+                int lift = CellPixels + lowest - (top + 1); // 조명 윗면(top + 1)을 위 칸 아랫면(16 + lowest)에 닿게
+                if (height >= 0 && height != lift) return false;
+                height = lift;
+            }
+            foreach (var p in pixels)
+            {
+                int y = p.y + height;
+                if (y < CellPixels ? ownSolid(new Vector3Int(p.x, y, p.z)) : aboveSolid(new Vector3Int(p.x, y - CellPixels, p.z))) return false;
+            }
+            return true;
+        }
+
+        /// <summary>칸의 블록이나 계단, 기둥, 천장 조명을 지운다(블록의 코팅도 함께). 없었으면 false. 천장에서 떨어진 조명은 편집 도구가 따로 지운다.</summary>
         public static bool Remove(CubeGridData data, Vector3Int cell)
         {
             data.coatings.RemoveAll(coating => coating.cell == cell);
-            return data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0;
+            return data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0
+                | data.lights.RemoveAll(light => light.cell == cell) > 0;
+        }
+
+        /// <summary>칸의 블록이나 계단, 기둥만 지운다(코팅·조명은 그대로). 편집 도구가 막 놓은 지형을 되돌릴 때 쓴다.</summary>
+        public static void RemoveTerrain(CubeGridData data, Vector3Int cell)
+        {
+            data.blocks.Remove(cell);
+            data.stairs.RemoveAll(stair => stair.cell == cell);
+            data.pillars.RemoveAll(pillar => pillar.cell == cell);
         }
 
         /// <summary>블록 윗면 한 변의 코팅 픽셀 수(1픽셀 = 1/16칸).</summary>
@@ -149,7 +206,7 @@ namespace SlimeColorMaker
             var byCell = new Dictionary<Vector3Int, CubePillar>();
             foreach (var pillar in data.pillars) byCell.TryAdd(pillar.cell, pillar);
 
-            var axes = new Dictionary<Vector3Int, PillarAxis>();
+            var axes = new Dictionary<Vector3Int, CellAxis>();
             foreach (var (cell, pillar) in byCell)
             {
                 if (!pillar.lying)
@@ -159,7 +216,7 @@ namespace SlimeColorMaker
                 }
                 int x = Count(cell + Vector3Int.right) + Count(cell + Vector3Int.left);
                 int z = Count(cell + new Vector3Int(0, 0, 1)) + Count(cell + new Vector3Int(0, 0, -1));
-                axes[cell] = x > z ? PillarAxis.EastWest : z > x ? PillarAxis.NorthSouth : pillar.axis;
+                axes[cell] = x > z ? CellAxis.EastWest : z > x ? CellAxis.NorthSouth : pillar.axis;
             }
             int Count(Vector3Int cell) => byCell.ContainsKey(cell) ? 1 : 0;
 
@@ -170,12 +227,12 @@ namespace SlimeColorMaker
                 var layout = new PillarLayout
                 {
                     pose = pillar.lying
-                        ? axis == PillarAxis.NorthSouth ? PillarPose.LyingNorthSouth : PillarPose.LyingEastWest
-                        : axis == PillarAxis.NorthSouth ? PillarPose.UprightNorthSouth : PillarPose.UprightEastWest,
+                        ? axis == CellAxis.NorthSouth ? PillarPose.LyingNorthSouth : PillarPose.LyingEastWest
+                        : axis == CellAxis.NorthSouth ? PillarPose.UprightNorthSouth : PillarPose.UprightEastWest,
                 };
                 for (int side = 0; side < SideSteps.Length; side++)
                 {
-                    var sideAxis = side % 2 == 0 ? PillarAxis.NorthSouth : PillarAxis.EastWest;
+                    var sideAxis = side % 2 == 0 ? CellAxis.NorthSouth : CellAxis.EastWest;
                     var next = cell + SideSteps[side];
                     if (!byCell.TryGetValue(next, out var neighbor) || !neighbor.lying || axes[next] != sideAxis) continue; // 옆 칸 들보의 끝이 이 칸을 보지 않음
                     if (pillar.lying && axis == sideAxis) continue; // 일직선으로 이어진 들보
@@ -258,6 +315,9 @@ namespace SlimeColorMaker
 
         /// <summary>계단의 회전(모델은 +z로 오름).</summary>
         public static Quaternion StairRotation(int turn) => Quaternion.Euler(0f, 90f * Turn(turn), 0f);
+
+        /// <summary>천장 조명의 회전(모델은 남북으로 긺).</summary>
+        public static Quaternion LightRotation(CellAxis axis) => Quaternion.Euler(0f, axis == CellAxis.EastWest ? 90f : 0f, 0f);
 
         /// <summary>수평 방향에 가장 가까운 계단 방향(그쪽으로 오름). 편집 도구가 카메라가 보는 쪽으로 놓을 때 쓴다.</summary>
         public static int TurnFacing(Vector3 direction) =>

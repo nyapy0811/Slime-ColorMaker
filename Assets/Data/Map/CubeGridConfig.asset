@@ -22,4 +22,5 @@ MonoBehaviour:
   barrierPrefab: {fileID: 538709850565625351, guid: edae89a2554acb940a1a2885921ba99d, type: 3}
   conveyorBeltPrefab: {fileID: 3017853490229241096, guid: 0cf325026f599384c8296866a4b6bcfa, type: 3}
   pillarPrefab: {fileID: 1787815124256400881, guid: 9a67a53c01a762e4bb302507128860a2, type: 3}
+  lightPrefab: {fileID: 2513487792905083326, guid: c4cc677e9fb91a4418ebf75c8a251533, type: 3}
   coatingSettings: {fileID: 11400000, guid: cdf389c80cba99a4ca0c5f5e50102367, type: 2}
