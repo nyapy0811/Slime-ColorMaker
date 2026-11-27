@@ -6,7 +6,7 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵 편집 창(메뉴 Slime~ColorMaker~/큐브 맵 편집). 지금 맵의 큐브 격자를 찾아 씬 뷰 도구를 켜고 끄고, 블록을 다시 만들고,
-    /// 붓을 드롭다운(지형·기물·이동·장식·시험 묶음)에서 고른다. 고른 붓에 필요한 설정(방향, 방벽 면, 색, 기둥 머리·받침, 시험 모델)만
+    /// 붓을 드롭다운(지형·기물·이동·장식·시험 묶음)에서 고른다. 고른 붓에 필요한 설정(방향, 방벽 면, 색, 기둥 눕힘·방향, 시험 모델)만
     /// 그 아래 상자에 보인다(컨베이어는 모양 직진·좌회전·우회전도). 색 원천 값과 요구 색은 놓기 전에 정한다(놓은 뒤에는 기물을 골라 인스펙터에서 고침). 붓별 규칙은 코드 흐름 문서 12.1절.
     /// </summary>
     public class CubeGridWindow : EditorWindow
@@ -20,6 +20,7 @@ namespace SlimeColorMaker
             ("장식", new[] { CubeGridEditing.Brush.Pillar }),
             ("칠하기", new[] { CubeGridEditing.Brush.Coating }),
             ("시험", new[] { CubeGridEditing.Brush.TestModel }),
+            ("지우기", new[] { CubeGridEditing.Brush.Eraser }),
         };
 
         static readonly string[] TurnNames = { "0°", "90°", "180°", "270°" };
@@ -96,6 +97,7 @@ namespace SlimeColorMaker
                 "클릭: 놓기   Ctrl+클릭: 지우기\n" +
                 "Shift+드래그: 범위에 블록 놓기   Shift+Ctrl+드래그: 범위 지우기\n" +
                 "코팅: 블록 윗면을 드래그로 칠하기   Ctrl+드래그: 코팅 지우기\n" +
+                "지우개: 클릭 = Ctrl+클릭, Shift+드래그 = Shift+Ctrl+드래그\n" +
                 "방향은 씬 카메라가 보는 쪽 기준",
                 MessageType.None);
 
@@ -149,10 +151,11 @@ namespace SlimeColorMaker
                 }
                 if (brush == CubeGridEditing.Brush.Pillar)
                 {
-                    bool top = EditorGUILayout.Toggle("머리 두기", CubeGridEditing.PillarHasTop);
-                    if (top != CubeGridEditing.PillarHasTop) CubeGridEditing.PillarHasTop = top;
-                    bool bottom = EditorGUILayout.Toggle("받침 두기", CubeGridEditing.PillarHasBase);
-                    if (bottom != CubeGridEditing.PillarHasBase) CubeGridEditing.PillarHasBase = bottom;
+                    bool lying = EditorGUILayout.Toggle("눕힘", CubeGridEditing.PillarLying);
+                    if (lying != CubeGridEditing.PillarLying) CubeGridEditing.PillarLying = lying;
+                    // 세운 기둥은 홈(파인 면)이 보는 쪽, 눕힌 기둥은 옆 칸으로 들보 방향을 정하지 못할 때(옆 칸 없음, L자 모서리, 십자 가운데) 쓰는 방향.
+                    int axis = LabeledToolbar(lying ? "기본 방향" : "홈 방향", (int)CubeGridEditing.PillarAxis, PillarAxisNames);
+                    if (axis != (int)CubeGridEditing.PillarAxis) CubeGridEditing.PillarAxis = (PillarAxis)axis;
                 }
                 if (brush == CubeGridEditing.Brush.Coating)
                 {
@@ -184,6 +187,7 @@ namespace SlimeColorMaker
         }
 
         static readonly string[] GateFaceNames = { "북", "동", "남", "서", "위", "아래" };
+        static readonly string[] PillarAxisNames = { "남북", "동서" };
 
         // 게이트의 열리는 면: 여섯 면을 켜고 끄는 단추 줄(여럿 가능, 세계 방향).
         static void DrawGateFaces()

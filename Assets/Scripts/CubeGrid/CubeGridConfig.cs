@@ -33,7 +33,7 @@ namespace SlimeColorMaker
         public GameObject conveyorBeltPrefab;
 
         [Header("장식 기둥 (피벗은 칸 가운데, 콜라이더는 모델 형태, static)")]
-        [Tooltip("기둥(PillarView). 한 프리팹이 모양 넷(몸통만·받침·머리·받침 + 머리)의 모델을 모두 갖고, 빌더가 칸마다 모양을 정한다.")]
+        [Tooltip("기둥(PillarView, H빔 한 칸). 한 프리팹이 놓인 모양 넷(세움·눕힘 × 남북·동서)과 옆면 커넥터를 모두 갖고, 빌더가 칸마다 값을 정한다.")]
         public GameObject pillarPrefab;
 
         [Header("블록 윗면 코팅")]

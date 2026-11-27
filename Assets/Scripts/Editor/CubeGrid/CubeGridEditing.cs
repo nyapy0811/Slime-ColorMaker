@@ -16,14 +16,14 @@ namespace SlimeColorMaker
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel, Eraser }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델", "지우개" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -129,24 +129,24 @@ namespace SlimeColorMaker
             EditorSceneManager.MarkSceneDirty(grid.gameObject.scene);
         }
 
-        /// <summary>놓을 기둥의 설정: 그룹 맨 위 칸에 머리를 둘지(기본 둠).</summary>
-        public static bool PillarHasTop
+        /// <summary>놓을 기둥을 눕힐지(가로 들보, 기본 세움).</summary>
+        public static bool PillarLying
         {
-            get => SessionState.GetBool("SlimeColorMaker.CubeGrid.PillarTop", true);
+            get => SessionState.GetBool("SlimeColorMaker.CubeGrid.PillarLying", false);
             set
             {
-                SessionState.SetBool("SlimeColorMaker.CubeGrid.PillarTop", value);
+                SessionState.SetBool("SlimeColorMaker.CubeGrid.PillarLying", value);
                 BrushChanged?.Invoke();
             }
         }
 
-        /// <summary>놓을 기둥의 설정: 그룹 맨 아래 칸에 받침을 둘지(기본 둠).</summary>
-        public static bool PillarHasBase
+        /// <summary>놓을 기둥의 방향: 세운 기둥은 홈이 보는 쪽, 눕힌 기둥은 옆 칸으로 정하지 못할 때의 들보 방향(기본 남북).</summary>
+        public static PillarAxis PillarAxis
         {
-            get => SessionState.GetBool("SlimeColorMaker.CubeGrid.PillarBase", true);
+            get => (PillarAxis)SessionState.GetInt("SlimeColorMaker.CubeGrid.PillarAxis", (int)PillarAxis.NorthSouth);
             set
             {
-                SessionState.SetBool("SlimeColorMaker.CubeGrid.PillarBase", value);
+                SessionState.SetInt("SlimeColorMaker.CubeGrid.PillarAxis", (int)value);
                 BrushChanged?.Invoke();
             }
         }
@@ -339,7 +339,7 @@ namespace SlimeColorMaker
                     if (brush == Brush.Barrier ? !CanAddBarrier(grid, objects, cell, BarrierFace(stairTurn)) : IsFilled(grid, objects, cell)) continue;
                     if (brush == Brush.Block) CubeGridRules.AddBlock(grid.Data, cell);
                     else if (brush == Brush.Stair) CubeGridRules.AddStair(grid.Data, cell, stairTurn);
-                    else if (brush == Brush.Pillar) CubeGridRules.AddPillar(grid.Data, cell, PillarHasTop, PillarHasBase);
+                    else if (brush == Brush.Pillar) CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis);
                     else
                     {
                         var placed = brush == Brush.TestModel ? PlaceTestModel(grid, prefab, cell) : PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
@@ -420,7 +420,7 @@ namespace SlimeColorMaker
             return folder.transform;
         }
 
-        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel);
+        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel or Brush.Eraser);
 
         static GameObject PrefabFor(CubeGridConfig config, Brush brush) => brush switch
         {

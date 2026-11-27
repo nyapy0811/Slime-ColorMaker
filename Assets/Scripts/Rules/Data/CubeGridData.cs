@@ -35,30 +35,64 @@ namespace SlimeColorMaker
     }
 
     /// <summary>
-    /// 장식 기둥 하나: 한 칸을 차지하고, 놓을 때 정한 설정(그룹에 머리·받침을 둘지)을 든다. 칸별 모양은 저장하지 않고
-    /// <see cref="CubeGridRules.PillarShapes"/>가 위아래로 붙은 같은 설정의 기둥(그룹)을 보고 정한다.
+    /// 장식 기둥 하나(H빔 한 칸): 한 칸을 차지하고, 세울지 눕힐지와 방향을 든다. 쌓아서 높이를 나타낸다.
+    /// 세운 기둥은 <see cref="axis"/>가 홈(파인 면)이 보는 쪽이고, 눕힌 기둥(가로 들보)은 <see cref="axis"/>가 들보 방향이다.
+    /// 눕힌 기둥의 방향은 옆 칸으로 정하고 정하지 못할 때만 이 값을 쓴다(<see cref="CubeGridRules.PillarLayouts"/>).
     /// </summary>
     [Serializable]
     public struct CubePillar
     {
         public Vector3Int cell;
 
-        /// <summary>그룹 맨 위 칸에 머리를 둘지.</summary>
-        public bool hasTop;
+        /// <summary>눕혔는가(가로 들보).</summary>
+        public bool lying;
 
-        /// <summary>그룹 맨 아래 칸에 받침을 둘지.</summary>
-        public bool hasBase;
+        /// <summary>세운 기둥은 홈이 보는 쪽, 눕힌 기둥은 옆 칸으로 정하지 못할 때의 들보 방향.</summary>
+        public PillarAxis axis;
 
-        public CubePillar(Vector3Int cell, bool hasTop, bool hasBase)
+        public CubePillar(Vector3Int cell, bool lying, PillarAxis axis)
         {
             this.cell = cell;
-            this.hasTop = hasTop;
-            this.hasBase = hasBase;
+            this.lying = lying;
+            this.axis = axis;
         }
     }
 
-    /// <summary>기둥 한 칸의 모양: 몸통만, 받침 + 몸통, 몸통 + 머리, 받침 + 몸통 + 머리.</summary>
-    public enum PillarShape { Shaft, Base, Top, Full }
+    /// <summary>기둥 방향: 남북(±z) 또는 동서(±x).</summary>
+    public enum PillarAxis { NorthSouth, EastWest }
+
+    /// <summary>기둥 한 칸의 놓인 모양: 세움(홈이 남북·동서)·눕힘(들보가 남북·동서).</summary>
+    public enum PillarPose { UprightNorthSouth, UprightEastWest, LyingNorthSouth, LyingEastWest }
+
+    /// <summary>기둥 칸 옆면의 커넥터: 없음, 1 = 세운 기둥의 평평한 면, 2 = 세운 기둥의 홈, 3 = 눕힌 기둥의 옆 홈.</summary>
+    public enum PillarConnector { None, Flat, Groove, Beam }
+
+    /// <summary>
+    /// 기둥 한 칸의 겉모습 값(<see cref="CubeGridRules.PillarLayouts"/>가 계산): 놓인 모양과 동서남북 옆면마다 커넥터.
+    /// 커넥터는 옆 칸의 들보 끝이 이 칸에 닿는 면에 놓여, 기둥 면(칸 가운데에서 4픽셀)과 칸 경계 사이 4픽셀 틈을 메운다.
+    /// </summary>
+    [Serializable]
+    public struct PillarLayout
+    {
+        public PillarPose pose;
+        public PillarConnector north, east, south, west;
+
+        /// <summary>옆면의 커넥터. 옆면 번호는 0 = 북(+z), 1 = 동(+x), 2 = 남(−z), 3 = 서(−x)(CellFace 차례).</summary>
+        public PillarConnector this[int side]
+        {
+            readonly get => side switch { 0 => north, 1 => east, 2 => south, _ => west };
+            set
+            {
+                switch (side)
+                {
+                    case 0: north = value; break;
+                    case 1: east = value; break;
+                    case 2: south = value; break;
+                    default: west = value; break;
+                }
+            }
+        }
+    }
 
     /// <summary>덮인 빈 칸 덩어리(<see cref="CubeGridRules.CoveredRegions"/>): 칸 범위, 가운데에 가장 가까운 칸, 칸 수.</summary>
     public readonly struct CoveredRegion

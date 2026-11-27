@@ -175,9 +175,9 @@ namespace SlimeColorMaker
         {
             var data = new CubeGridData();
             var cell = new Vector3Int(0, 0, 0);
-            Assert.IsTrue(CubeGridRules.AddPillar(data, cell, true, true));
+            Assert.IsTrue(CubeGridRules.AddPillar(data, cell, false, PillarAxis.NorthSouth));
             Assert.IsFalse(CubeGridRules.AddBlock(data, cell));
-            Assert.IsFalse(CubeGridRules.AddPillar(data, cell, false, false));
+            Assert.IsFalse(CubeGridRules.AddPillar(data, cell, true, PillarAxis.EastWest));
             Assert.IsTrue(CubeGridRules.IsOccupied(data, cell));
             Assert.IsTrue(CubeGridRules.TryLowestY(data, out int lowest));
             Assert.AreEqual(0, lowest);
@@ -185,62 +185,79 @@ namespace SlimeColorMaker
             Assert.IsFalse(CubeGridRules.IsOccupied(data, cell));
         }
 
+        static Vector3Int C(int x, int y, int z) => new(x, y, z);
+
         [Test]
-        public void PillarShapes_SingleCellFollowsSetting()
+        public void PillarLayouts_UprightKeepsChosenAxis()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, new Vector3Int(0, 0, 0), true, true);
-            CubeGridRules.AddPillar(data, new Vector3Int(2, 0, 0), false, true);
-            CubeGridRules.AddPillar(data, new Vector3Int(4, 0, 0), true, false);
-            CubeGridRules.AddPillar(data, new Vector3Int(6, 0, 0), false, false);
-            var shapes = CubeGridRules.PillarShapes(data);
-            Assert.AreEqual(PillarShape.Full, shapes[new Vector3Int(0, 0, 0)]);
-            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(2, 0, 0)]);
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(4, 0, 0)]);
-            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(6, 0, 0)]);
+            CubeGridRules.AddPillar(data, C(0, 0, 0), false, PillarAxis.NorthSouth);
+            CubeGridRules.AddPillar(data, C(0, 1, 0), false, PillarAxis.EastWest);
+            CubeGridRules.AddPillar(data, C(1, 0, 0), false, PillarAxis.NorthSouth); // 세운 기둥끼리 옆: 커넥터 없음
+            var layouts = CubeGridRules.PillarLayouts(data);
+            Assert.AreEqual(PillarPose.UprightNorthSouth, layouts[C(0, 0, 0)].pose);
+            Assert.AreEqual(PillarPose.UprightEastWest, layouts[C(0, 1, 0)].pose);
+            Assert.AreEqual(new PillarLayout { pose = PillarPose.UprightNorthSouth }, layouts[C(1, 0, 0)]);
         }
 
         [Test]
-        public void PillarShapes_GroupPutsBaseBottomAndTopTop()
+        public void PillarLayouts_LyingFollowsNeighborsThenChosenAxis()
         {
             var data = new CubeGridData();
-            for (int y = 0; y < 4; y++) CubeGridRules.AddPillar(data, new Vector3Int(0, y, 0), true, true);
-            CubeGridRules.AddPillar(data, new Vector3Int(1, 0, 0), true, true); // 옆 칸은 다른 그룹
-            var shapes = CubeGridRules.PillarShapes(data);
-            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
-            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 1, 0)]);
-            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 2, 0)]);
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 3, 0)]);
-            Assert.AreEqual(PillarShape.Full, shapes[new Vector3Int(1, 0, 0)]);
+            CubeGridRules.AddPillar(data, C(0, 0, 0), true, PillarAxis.EastWest);   // 혼자: 고른 방향
+            CubeGridRules.AddPillar(data, C(10, 0, 0), true, PillarAxis.EastWest);  // 남쪽에 기둥: 남북
+            CubeGridRules.AddPillar(data, C(10, 0, -1), false, PillarAxis.NorthSouth);
+            CubeGridRules.AddPillar(data, C(10, 1, 1), false, PillarAxis.NorthSouth); // 다른 높이는 보지 않음
+            var layouts = CubeGridRules.PillarLayouts(data);
+            Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(0, 0, 0)].pose);
+            Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(10, 0, 0)].pose);
         }
 
         [Test]
-        public void PillarShapes_DifferentSettingsAreDifferentGroups()
+        public void PillarLayouts_ConnectorsOnUprightFaces()
         {
             var data = new CubeGridData();
-            CubeGridRules.AddPillar(data, new Vector3Int(0, 0, 0), true, true);
-            CubeGridRules.AddPillar(data, new Vector3Int(0, 1, 0), true, true);
-            CubeGridRules.AddPillar(data, new Vector3Int(0, 2, 0), true, false);
-            CubeGridRules.AddPillar(data, new Vector3Int(0, 3, 0), true, false);
-            var shapes = CubeGridRules.PillarShapes(data);
-            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 1, 0)]);   // 아래 그룹의 맨 위
-            Assert.AreEqual(PillarShape.Shaft, shapes[new Vector3Int(0, 2, 0)]); // 위 그룹은 받침 없음
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 3, 0)]);
+            CubeGridRules.AddPillar(data, C(0, 0, 0), false, PillarAxis.NorthSouth); // 홈이 남·북, 평평한 면이 동·서
+            CubeGridRules.AddPillar(data, C(1, 0, 0), true, PillarAxis.NorthSouth);  // 동쪽 들보(옆 칸으로 동서)
+            CubeGridRules.AddPillar(data, C(2, 0, 0), false, PillarAxis.EastWest);   // 홈이 동·서
+            CubeGridRules.AddPillar(data, C(0, 0, 1), true, PillarAxis.NorthSouth);  // 북쪽 들보(남북)
+            var layouts = CubeGridRules.PillarLayouts(data);
+            var post = layouts[C(0, 0, 0)];
+            Assert.AreEqual(PillarConnector.Flat, post.east);
+            Assert.AreEqual(PillarConnector.Groove, post.north);
+            Assert.AreEqual(PillarConnector.None, post.south);
+            Assert.AreEqual(PillarConnector.None, post.west);
+            Assert.AreEqual(PillarConnector.Groove, layouts[C(2, 0, 0)].west);
+            Assert.AreEqual(PillarConnector.None, layouts[C(1, 0, 0)].east); // 들보 칸에는 없음
         }
 
         [Test]
-        public void PillarShapes_RemovingMiddleSplitsGroup()
+        public void PillarLayouts_BeamToBeamOnlyAtSide()
         {
             var data = new CubeGridData();
-            for (int y = 0; y < 5; y++) CubeGridRules.AddPillar(data, new Vector3Int(0, y, 0), true, true);
-            CubeGridRules.Remove(data, new Vector3Int(0, 2, 0));
-            var shapes = CubeGridRules.PillarShapes(data);
-            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 0, 0)]);
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 1, 0)]);
-            Assert.AreEqual(PillarShape.Base, shapes[new Vector3Int(0, 3, 0)]);
-            Assert.AreEqual(PillarShape.Top, shapes[new Vector3Int(0, 4, 0)]);
-            Assert.IsFalse(shapes.ContainsKey(new Vector3Int(0, 2, 0)));
+            for (int x = 0; x < 3; x++) CubeGridRules.AddPillar(data, C(x, 0, 0), true, PillarAxis.NorthSouth); // 동서 일직선
+            CubeGridRules.AddPillar(data, C(1, 0, 1), true, PillarAxis.EastWest); // T자 줄기(남북)
+            var layouts = CubeGridRules.PillarLayouts(data);
+            Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(1, 0, 0)].pose);
+            Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(1, 0, 1)].pose);
+            Assert.AreEqual(PillarConnector.Beam, layouts[C(1, 0, 0)].north);
+            Assert.AreEqual(PillarConnector.None, layouts[C(1, 0, 0)].east); // 일직선
+            Assert.AreEqual(PillarConnector.None, layouts[C(0, 0, 0)].east);
+            Assert.AreEqual(PillarConnector.None, layouts[C(1, 0, 1)].south); // 줄기 끝 칸에는 없음
+        }
+
+        [Test]
+        public void PillarLayouts_CornerUsesChosenAxis()
+        {
+            var data = new CubeGridData();
+            CubeGridRules.AddPillar(data, C(0, 0, 0), true, PillarAxis.EastWest);   // L자 모서리: 고른 방향(동서)
+            CubeGridRules.AddPillar(data, C(1, 0, 0), true, PillarAxis.EastWest);
+            CubeGridRules.AddPillar(data, C(0, 0, 1), true, PillarAxis.EastWest);   // 북쪽 칸은 모서리 하나뿐이라 남북
+            var layouts = CubeGridRules.PillarLayouts(data);
+            Assert.AreEqual(PillarPose.LyingEastWest, layouts[C(0, 0, 0)].pose);
+            Assert.AreEqual(PillarPose.LyingNorthSouth, layouts[C(0, 0, 1)].pose);
+            Assert.AreEqual(PillarConnector.Beam, layouts[C(0, 0, 0)].north);
+            Assert.AreEqual(PillarConnector.None, layouts[C(0, 0, 0)].east);
         }
 
         [Test]

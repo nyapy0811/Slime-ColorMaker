@@ -53,11 +53,11 @@ namespace SlimeColorMaker
             return true;
         }
 
-        /// <summary>기둥을 놓는다(그룹에 머리·받침을 둘지). 칸이 차 있으면 false.</summary>
-        public static bool AddPillar(CubeGridData data, Vector3Int cell, bool hasTop, bool hasBase)
+        /// <summary>기둥을 놓는다(눕힐지, 방향). 칸이 차 있으면 false.</summary>
+        public static bool AddPillar(CubeGridData data, Vector3Int cell, bool lying, PillarAxis axis)
         {
             if (IsOccupied(data, cell)) return false;
-            data.pillars.Add(new CubePillar(cell, hasTop, hasBase));
+            data.pillars.Add(new CubePillar(cell, lying, axis));
             return true;
         }
 
@@ -138,27 +138,56 @@ namespace SlimeColorMaker
         static int FloorDiv(int a, int b) => a >= 0 ? a / b : -((-a + b - 1) / b);
 
         /// <summary>
-        /// 기둥마다 칸 모양. 바로 위·아래 칸에 설정(머리·받침)이 같은 기둥이 있으면 한 그룹이다(동서남북은 보지 않음, 설정이 다르면 붙어 있어도 다른 그룹).
-        /// 그룹 맨 아래 칸은 받침 설정이면 받침을, 맨 위 칸은 머리 설정이면 머리를 두고, 나머지는 몸통이다(한 칸 그룹은 둘 다 그 칸에).
-        /// 저장하지 않고 지을 때마다 계산하므로, 그룹 일부를 지우면 남은 기둥이 다시 묶여 모양이 바뀐다.
+        /// 기둥마다 칸의 겉모습 값(놓인 모양, 동서남북 커넥터). 저장하지 않고 지을 때마다 계산한다.
+        /// 세운 기둥은 놓을 때 고른 방향(홈이 보는 쪽) 그대로다. 눕힌 기둥(들보)은 같은 높이 옆 칸의 기둥(세운 것·눕힌 것)이
+        /// 더 많은 축으로 눕고, 두 축이 같으면(옆 칸이 없음, L자 모서리, 십자 가운데) 놓을 때 고른 방향을 쓴다.
+        /// 커넥터는 옆 칸 들보의 끝이 이 칸에 닿는 면에 둔다: 세운 기둥의 평평한 면이면 1, 홈이면 2, 눕힌 기둥의 옆면이면 3.
+        /// 일직선으로 이어진 들보끼리와 위·아래로 닿는 기둥에는 두지 않는다.
         /// </summary>
-        public static Dictionary<Vector3Int, PillarShape> PillarShapes(CubeGridData data)
+        public static Dictionary<Vector3Int, PillarLayout> PillarLayouts(CubeGridData data)
         {
             var byCell = new Dictionary<Vector3Int, CubePillar>();
             foreach (var pillar in data.pillars) byCell.TryAdd(pillar.cell, pillar);
-            var shapes = new Dictionary<Vector3Int, PillarShape>();
+
+            var axes = new Dictionary<Vector3Int, PillarAxis>();
             foreach (var (cell, pillar) in byCell)
             {
-                bool groupBelow = byCell.TryGetValue(cell + Vector3Int.down, out var below) && SameGroup(pillar, below);
-                bool groupAbove = byCell.TryGetValue(cell + Vector3Int.up, out var above) && SameGroup(pillar, above);
-                bool baseHere = pillar.hasBase && !groupBelow;
-                bool topHere = pillar.hasTop && !groupAbove;
-                shapes[cell] = baseHere ? (topHere ? PillarShape.Full : PillarShape.Base) : topHere ? PillarShape.Top : PillarShape.Shaft;
+                if (!pillar.lying)
+                {
+                    axes[cell] = pillar.axis;
+                    continue;
+                }
+                int x = Count(cell + Vector3Int.right) + Count(cell + Vector3Int.left);
+                int z = Count(cell + new Vector3Int(0, 0, 1)) + Count(cell + new Vector3Int(0, 0, -1));
+                axes[cell] = x > z ? PillarAxis.EastWest : z > x ? PillarAxis.NorthSouth : pillar.axis;
             }
-            return shapes;
+            int Count(Vector3Int cell) => byCell.ContainsKey(cell) ? 1 : 0;
+
+            var layouts = new Dictionary<Vector3Int, PillarLayout>();
+            foreach (var (cell, pillar) in byCell)
+            {
+                var axis = axes[cell];
+                var layout = new PillarLayout
+                {
+                    pose = pillar.lying
+                        ? axis == PillarAxis.NorthSouth ? PillarPose.LyingNorthSouth : PillarPose.LyingEastWest
+                        : axis == PillarAxis.NorthSouth ? PillarPose.UprightNorthSouth : PillarPose.UprightEastWest,
+                };
+                for (int side = 0; side < SideSteps.Length; side++)
+                {
+                    var sideAxis = side % 2 == 0 ? PillarAxis.NorthSouth : PillarAxis.EastWest;
+                    var next = cell + SideSteps[side];
+                    if (!byCell.TryGetValue(next, out var neighbor) || !neighbor.lying || axes[next] != sideAxis) continue; // 옆 칸 들보의 끝이 이 칸을 보지 않음
+                    if (pillar.lying && axis == sideAxis) continue; // 일직선으로 이어진 들보
+                    layout[side] = pillar.lying ? PillarConnector.Beam : axis == sideAxis ? PillarConnector.Groove : PillarConnector.Flat;
+                }
+                layouts[cell] = layout;
+            }
+            return layouts;
         }
 
-        static bool SameGroup(CubePillar a, CubePillar b) => a.hasTop == b.hasTop && a.hasBase == b.hasBase;
+        // 옆면 0~3(북·동·남·서, CellFace 차례)의 이웃 칸 방향.
+        static readonly Vector3Int[] SideSteps = { new(0, 0, 1), Vector3Int.right, new(0, 0, -1), Vector3Int.left };
 
         /// <summary>
         /// 덮인 빈 칸 덩어리(방·굴·처마 밑): 같은 열(x, z)의 위와 아래 둘 다에 찬 칸(블록·계단·기둥)이 있는 빈 칸을, 면으로 이어진 덩어리로 묶는다.

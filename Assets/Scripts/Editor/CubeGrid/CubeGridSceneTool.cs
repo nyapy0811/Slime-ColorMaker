@@ -9,7 +9,7 @@ namespace SlimeColorMaker
     /// <summary>
     /// 씬 뷰의 큐브 맵 편집 도구. 큐브 격자를 고르면 씬 뷰 툴바에 나타난다(큐브 맵 편집 창으로도 켬).
     /// 클릭: 가리킨 면 쪽 칸에 고른 붓으로 놓기(계단은 카메라가 보는 쪽으로 오름) / Ctrl+클릭: 가리킨 칸 지우기 /
-    /// Shift+드래그: 직사각형 범위에 블록 놓기 / Shift+Ctrl+드래그: 범위 지우기.
+    /// Shift+드래그: 직사각형 범위에 블록 놓기 / Shift+Ctrl+드래그: 범위 지우기. 지우개 붓은 Ctrl 없이 클릭·Shift+드래그가 지우기다.
     /// 가리킨 칸은 콜라이더가 아니라 격자로 찾는다(블록·계단·기물·시험 모델이 든 칸). 아무것도 가리키지 않으면 높이 0의 바닥면을 쓴다
     /// (블록은 그 아래 y = −1 칸, 계단과 기물은 그 위 y = 0 칸). 범위는 시작한 칸을 지나고 가리킨 면에 수직인 평면에서 정한다.
     /// </summary>
@@ -102,13 +102,13 @@ namespace SlimeColorMaker
             if (e.shift)
             {
                 dragging = true;
-                dragRemove = e.control;
+                dragRemove = Erasing(e);
                 dragAxis = hit ? DominantAxis(normal) : 1;
                 dragStart = hit ? cell : GroundCell(e.mousePosition, CubeGridEditing.Brush.Block) ?? Vector3Int.zero;
                 dragEnd = dragStart;
                 GUIUtility.hotControl = control;
             }
-            else if (e.control)
+            else if (Erasing(e))
             {
                 if (hit) CubeGridEditing.Remove(grid, new[] { cell });
             }
@@ -120,6 +120,9 @@ namespace SlimeColorMaker
             }
             e.Use();
         }
+
+        // 지우는 입력인가: Ctrl을 누르고 있거나 지우개 붓(코팅 붓은 따로 처리).
+        static bool Erasing(Event e) => e.control || CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Eraser;
 
         // 가리킨 칸(블록이나 기물이 든 칸)과 들어간 면.
         static bool Pick(CubeGrid grid, Vector2 mouse, out Vector3Int cell, out Vector3Int normal)
@@ -229,7 +232,7 @@ namespace SlimeColorMaker
             }
             else
             {
-                remove = e.control;
+                remove = Erasing(e);
                 bool hit = Pick(grid, e.mousePosition, out var cell, out var normal);
                 if (hit) cells.Add(remove ? cell : CubeGridEditing.PlaceTarget(grid, cell, normal, CubeGridEditing.StairTurn(CameraForward())));
                 else if (!remove && GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush) is { } ground) cells.Add(ground);
