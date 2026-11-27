@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3960979769330917354}
   - component: {fileID: 8774639271744364844}
   - component: {fileID: 1142811443326525421}
-  - component: {fileID: 4294137406790753255}
+  - component: {fileID: 688568080973136220}
   m_Layer: 6
   m_Name: Barrier
   m_TagString: Untagged
@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.BarrierView
   model: {fileID: 567767698727771982}
-  duration: 0.4
   mount: {fileID: 1142811443326525421}
   sides:
   - {fileID: 2800542930513396556}
@@ -74,7 +73,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.CellFaceMount
   pivot: {fileID: 1024757127204826350}
   face: 3
---- !u!114 &4294137406790753255
+--- !u!114 &688568080973136220
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,9 +82,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 538709850565625351}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 520a225c2cb86124e8659d2671955bb4, type: 3}
+  m_Script: {fileID: 11500000, guid: f630c6e5ff45f0346b420d552cc7005e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.Door
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.LaserWall
   fixtureId: 0
   requiredColor:
     r: 6
@@ -95,8 +94,6 @@ MonoBehaviour:
   requiredColorModel: {fileID: 567767698727771982}
   blockers:
   - {fileID: 2784973909295043496}
-  view: {fileID: 8774639271744364844}
-  shake: {fileID: 0}
 --- !u!1 &1053324702470189008
 GameObject:
   m_ObjectHideFlags: 0

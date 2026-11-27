@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a18659c5e2ee35345b589104fb901740, type: 3}
-  m_Name: BoomGate
+  m_Name: Gate
   m_EditorClassIdentifier: SlimeColorMaker.Vox::SlimeColorMaker.ModelLook
   transparency: 0.5
+  edgeTransparency: 0.5
   lightIntensity: 1
+  lightRange: 3
+  lightScale: 0.5
+  lightShadows: 0
   bodyFinish: {fileID: 0}
   valueFinish: {fileID: 0}
   glassFinish: {fileID: 0}

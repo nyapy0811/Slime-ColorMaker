@@ -72,7 +72,6 @@ namespace SlimeColorMaker
         readonly HashSet<Renderer> edges = new();
         MaterialPropertyBlock block;
         bool glowing = true;
-        float fade = 1f;
 
 #if UNITY_EDITOR
         /// <summary>인스펙터에서 값이 바뀌었다(에디터가 고른 재질감대로 렌더러 재질을 끼운다).</summary>
@@ -129,17 +128,6 @@ namespace SlimeColorMaker
         /// <summary>쓰는 발광 세기(프리셋이 있으면 프리셋 값).</summary>
         public float LightIntensity => look != null ? look.lightIntensity : lightIntensity;
 
-        /// <summary>반투명 부분의 알파(1 − 투명도)에 곱하는 흐려짐(저장하지 않음, 처음은 1). 기물 연출이 바꾼다(방벽이 열리며 사라짐).</summary>
-        public float Fade
-        {
-            get => fade;
-            set
-            {
-                fade = Mathf.Clamp01(value);
-                Apply();
-            }
-        }
-
         /// <summary>발광 부분과 광원이 켜져 있는가(저장하지 않음, 처음은 켬). 기물이 상태에 따라 끈다.</summary>
         public bool Glowing
         {
@@ -180,7 +168,7 @@ namespace SlimeColorMaker
             float glow = glowing ? LightIntensity : 0f;
             foreach (var target in GetComponentsInChildren<Renderer>(true))
             {
-                float alpha = (1f - (edges.Contains(target) ? EdgeTransparency : Transparency)) * fade;
+                float alpha = (1f - (edges.Contains(target) ? EdgeTransparency : Transparency));
                 Color? value = target.name switch
                 {
                     ValuePartName or LightPartName => paint,

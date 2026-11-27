@@ -99,11 +99,11 @@ namespace SlimeColorMaker
                 var hit = hits[i];
                 if (hit.GetComponentInParent<IValueProvider>() is not { } provider || !seen.Add(provider)) continue;
                 if (!provider.TryGetDisplayValue(out var value)) continue;
-                // 이어진 방벽은 묶음에 값 하나: 묶음의 다른 문은 다시 세지 않는다.
-                if (provider is Door door && door.Group.Members.Length > 1)
+                // 이어진 방벽은 묶음에 값 하나: 묶음의 다른 방벽은 다시 세지 않는다.
+                if (provider is LaserWall wall && wall.Group.Members.Length > 1)
                 {
-                    foreach (var member in door.Group.Members) seen.Add(member);
-                    found.Add(new NearbyValue(door.Group.Boxes, value));
+                    foreach (var member in wall.Group.Members) seen.Add(member);
+                    found.Add(new NearbyValue(wall.Group.Boxes, value));
                     continue;
                 }
                 var bounds = hit.bounds;

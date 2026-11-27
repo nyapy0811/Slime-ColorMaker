@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "format_version": "5.0",
+    "model_format": "free",
+    "box_uv": false
+  },
+  "name": "GateEdge",
+  "model_identifier": "",
+  "visible_box": [
+    1,
+    1,
+    0
+  ],
+  "variable_placeholders": "",
+  "multi_file_ruleset": "",
+  "variable_placeholder_buttons": [],
+  "timeline_setups": [],
+  "unhandled_root_fields": {},
+  "resolution": {
+    "width": 64,
+    "height": 1
+  },
+  "elements": [
+    {
+      "name": "cube",
+      "box_uv": false,
+      "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
+      "allow_mirror_modeling": true,
+      "from": [
+        -8,
+        0,
+        7
+      ],
+      "to": [
+        -7,
+        1,
+        8
+      ],
+      "autouv": 0,
+      "color": 4,
+      "origin": [
+        -7,
+        0,
+        8
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "texture": 0
+        },
+        "west": {
+          "uv": [
+            1,
+            0,
+            2,
+            1
+          ],
+          "texture": 0
+        },
+        "up": {
+          "uv": [
+            2,
+            0,
+            3,
+            1
+          ],
+          "texture": 0
+        },
+        "down": {
+          "uv": [
+            3,
+            0,
+            4,
+            1
+          ],
+          "texture": 0
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            5,
+            1
+          ],
+          "texture": 0
+        },
+        "north": {
+          "uv": [
+            5,
+            0,
+            6,
+            1
+          ],
+          "texture": 0
+        }
+      },
+      "type": "cube",
+      "uuid": "d2922047-483f-46f9-a994-fb0bb6ea5791"
+    }
+  ],
+  "groups": [
+    {
+      "name": "gray",
+      "uuid": "36d78d24-4ea3-4f5a-5c4c-cc59c938b0e6",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "color": 0,
+      "children": [],
+      "reset": false,
+      "shade": true,
+      "mirror_uv": false,
+      "autouv": 0,
+      "isOpen": true,
+      "primary_selected": true
+    }
+  ],
+  "outliner": [
+    {
+      "uuid": "36d78d24-4ea3-4f5a-5c4c-cc59c938b0e6",
+      "isOpen": true,
+      "children": []
+    },
+    "d2922047-483f-46f9-a994-fb0bb6ea5791"
+  ],
+  "textures": [
+    {
+      "name": "texture",
+      "path": "",
+      "folder": "block",
+      "namespace": "",
+      "id": "0",
+      "group": "",
+      "scope": 0,
+      "width": 64,
+      "height": 1,
+      "uv_width": 64,
+      "uv_height": 1,
+      "particle": false,
+      "use_as_default": false,
+      "layers_enabled": false,
+      "sync_to_project": "",
+      "file_format": "png",
+      "render_mode": "default",
+      "render_sides": "auto",
+      "wrap_mode": "limited",
+      "pbr_channel": "color",
+      "fps": 7,
+      "force_translucent": false,
+      "frame_time": 1,
+      "frame_order_type": "loop",
+      "frame_order": "",
+      "frame_interpolate": false,
+      "visible": true,
+      "internal": true,
+      "saved": false,
+      "uuid": "ccc1244c-0c52-501e-5e3a-3661346757a6",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAEklEQVR42mOoqqr6jw0zjBAAAOO2Do9QOBdoAAAAAElFTkSuQmCC"
+    }
+  ]
+}

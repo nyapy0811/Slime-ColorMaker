@@ -18,22 +18,22 @@ namespace SlimeColorMaker
         public CubeGridData Data => data;
 
         // Play 중에만(에디터 편집 화면은 모든 면 그대로, 만든 메시가 씬에 저장되지 않게): 맞닿은 면에서 이웃이 덮는 부분을 그리지 않는다.
-        // 같은 맵의 방벽 판도 함께 넣고, 방벽이 사라지거나 다시 생기면 그 칸 둘레를 다시 맞춘다.
+        // 같은 맵의 방벽 판도 함께 넣고, 방벽 모양(켜진 띠·모서리)이 바뀌면 그 칸 둘레를 다시 맞춘다.
         void Awake()
         {
             culler = new CubeFaceCuller();
             var barriers = FindObjectsByType<BarrierView>(FindObjectsInactive.Include);
             culler.Apply(this, barriers.Where(barrier => barrier.gameObject.scene == gameObject.scene).Select(barrier => barrier.transform));
-            BarrierView.ShownChanged += OnBarrierShownChanged;
+            BarrierView.ShapeChanged += OnBarrierShapeChanged;
         }
 
         void OnDestroy()
         {
-            BarrierView.ShownChanged -= OnBarrierShownChanged;
+            BarrierView.ShapeChanged -= OnBarrierShapeChanged;
             culler?.Dispose();
         }
 
-        void OnBarrierShownChanged(BarrierView barrier)
+        void OnBarrierShapeChanged(BarrierView barrier)
         {
             if (barrier.gameObject.scene == gameObject.scene) culler.Refresh(CubeGridRules.CellAt(barrier.transform.position));
         }

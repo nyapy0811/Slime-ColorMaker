@@ -256,13 +256,17 @@ namespace SlimeColorMaker
                 for (int i = 0; i < 4; i++) Handles.DrawLine(center + rotation * corners[i], center + rotation * corners[(i + 1) % 4]);
                 Handles.DrawLine(center + rotation * corners[0], center + rotation * corners[2]);
             }
-            // 차단기 붓이면 칸 뒤쪽(카메라 쪽) 가장자리에 막대 자리를 보인다.
-            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.BoomGate && cells.Count == 1)
+            // 게이트 붓이면 열리는 면마다 X를 그린다.
+            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Gate && cells.Count == 1)
             {
-                var rotation = CubeGridRules.StairRotation(CubeGridEditing.StairTurn(CameraForward()));
                 var center = CubeGridRules.CellCenter(cells[0]);
-                foreach (float height in new[] { -0.3f, -0.25f })
-                    Handles.DrawLine(center + rotation * new Vector3(-0.5f, height, -0.45f), center + rotation * new Vector3(0.5f, height, -0.45f));
+                for (int i = 0; i < 6; i++)
+                {
+                    if ((CubeGridEditing.GateOpenFaces & (CellFaces)(1 << i)) == 0) continue;
+                    var rotation = GateFaces.Rotation((CellFace)i);
+                    Handles.DrawLine(center + rotation * new Vector3(-0.45f, -0.5f, -0.45f), center + rotation * new Vector3(0.45f, -0.5f, 0.45f));
+                    Handles.DrawLine(center + rotation * new Vector3(-0.45f, -0.5f, 0.45f), center + rotation * new Vector3(0.45f, -0.5f, -0.45f));
+                }
             }
             // 컨베이어 붓이면 윗면에 흐르는 방향 화살표를 그린다.
             if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.ConveyorBelt && CubeGridEditing.SelectedConveyorShape == ConveyorShape.Straight && cells.Count == 1)

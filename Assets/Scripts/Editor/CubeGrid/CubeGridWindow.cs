@@ -15,7 +15,7 @@ namespace SlimeColorMaker
         static readonly (string name, CubeGridEditing.Brush[] brushes)[] BrushGroups =
         {
             ("지형", new[] { CubeGridEditing.Brush.Block, CubeGridEditing.Brush.Stair }),
-            ("기물", new[] { CubeGridEditing.Brush.Checkpoint, CubeGridEditing.Brush.ColorSource, CubeGridEditing.Brush.Goal, CubeGridEditing.Brush.BoomGate, CubeGridEditing.Brush.Barrier }),
+            ("기물", new[] { CubeGridEditing.Brush.Checkpoint, CubeGridEditing.Brush.ColorSource, CubeGridEditing.Brush.Goal, CubeGridEditing.Brush.Gate, CubeGridEditing.Brush.Barrier }),
             ("이동", new[] { CubeGridEditing.Brush.ConveyorBelt }),
             ("장식", new[] { CubeGridEditing.Brush.Pillar }),
             ("칠하기", new[] { CubeGridEditing.Brush.Coating }),
@@ -133,9 +133,9 @@ namespace SlimeColorMaker
         static void DrawSettings(CubeGridEditing.Brush brush)
         {
             bool hasValue = CubeGridEditing.ValueField(brush) != null;
-            bool turns = brush is CubeGridEditing.Brush.Stair or CubeGridEditing.Brush.BoomGate || CubeGridEditing.IsConveyor(brush)
+            bool turns = brush is CubeGridEditing.Brush.Stair || CubeGridEditing.IsConveyor(brush)
                 || (brush == CubeGridEditing.Brush.Barrier && CubeGridEditing.SelectedBarrierSide == CubeGridEditing.BarrierSide.Side);
-            bool other = brush is CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
+            bool other = brush is CubeGridEditing.Brush.Gate or CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
             if (!hasValue && !turns && !other) return;
 
             float labelWidth = EditorGUIUtility.labelWidth;
@@ -161,6 +161,7 @@ namespace SlimeColorMaker
                     int size = EditorGUILayout.IntSlider("붓 지름", CubeGridEditing.CoatingBrushSize, 1, CubeGridRules.CoatingPixels);
                     if (size != CubeGridEditing.CoatingBrushSize) CubeGridEditing.CoatingBrushSize = size;
                 }
+                if (brush == CubeGridEditing.Brush.Gate) DrawGateFaces();
                 if (brush == CubeGridEditing.Brush.Barrier)
                 {
                     int side = LabeledToolbar("면", (int)CubeGridEditing.SelectedBarrierSide, CubeGridEditing.BarrierSideNames);
@@ -180,6 +181,23 @@ namespace SlimeColorMaker
                 if (hasValue) DrawBrushValue(brush);
             }
             EditorGUIUtility.labelWidth = labelWidth;
+        }
+
+        static readonly string[] GateFaceNames = { "북", "동", "남", "서", "위", "아래" };
+
+        // 게이트의 열리는 면: 여섯 면을 켜고 끄는 단추 줄(여럿 가능, 세계 방향).
+        static void DrawGateFaces()
+        {
+            var rect = EditorGUI.PrefixLabel(EditorGUILayout.GetControlRect(), new GUIContent("열리는 면", "켠 면이 열리고 나머지는 막힌 판이다(세계 방향)."));
+            var open = CubeGridEditing.GateOpenFaces;
+            float width = rect.width / GateFaceNames.Length;
+            for (int i = 0; i < GateFaceNames.Length; i++)
+            {
+                var bit = (CellFaces)(1 << i);
+                bool on = (open & bit) != 0;
+                bool now = GUI.Toggle(new Rect(rect.x + i * width, rect.y, width, rect.height), on, GateFaceNames[i], EditorStyles.miniButton);
+                if (now != on) CubeGridEditing.GateOpenFaces = now ? open | bit : open & ~bit;
+            }
         }
 
         static int LabeledToolbar(string label, int selected, string[] names)

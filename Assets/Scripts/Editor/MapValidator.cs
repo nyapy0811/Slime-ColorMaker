@@ -110,7 +110,10 @@ namespace SlimeColorMaker
             return problems;
         }
 
-        /// <summary>상호작용하거나 값을 보이는 기물의 콜라이더는 기물 레이어에 있어야 캐릭터가 닿고 값을 본다.</summary>
+        /// <summary>
+        /// 상호작용하거나 값을 보이는 기물의 콜라이더는 기물 레이어에 있어야 캐릭터가 닿고 값을 본다.
+        /// 게이트의 안 열리는 판(<see cref="GateFaces.IsWallBlocker"/>)은 닿아도 열리지 않게 일부러 지형 레이어라 뺀다.
+        /// </summary>
         static int CheckFixtureLayers(Scene scene)
         {
             int layer = LayerMask.NameToLayer(FixtureBase.LayerName);
@@ -122,7 +125,7 @@ namespace SlimeColorMaker
             int problems = 0;
             foreach (var fixture in FixtureIdAssigner.FixturesIn(scene).Where(f => f is IInteractable or IValueProvider))
             {
-                foreach (var collider in fixture.GetComponentsInChildren<Collider>(true).Where(c => c.gameObject.layer != layer))
+                foreach (var collider in fixture.GetComponentsInChildren<Collider>(true).Where(c => c.gameObject.layer != layer && !(fixture.TryGetComponent(out GateFaces gate) && gate.IsWallBlocker(c.gameObject))))
                 {
                     Debug.LogError($"[맵 검사] '{fixture.name}'의 콜라이더 '{collider.name}'가 '{FixtureBase.LayerName}' 레이어가 아니다(캐릭터가 닿지 못하고 값도 안 보임). 프리팹의 레이어를 고친다.", collider);
                     problems++;

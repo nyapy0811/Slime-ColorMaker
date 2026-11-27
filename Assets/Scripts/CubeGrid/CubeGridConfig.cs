@@ -23,10 +23,10 @@ namespace SlimeColorMaker
         public GameObject colorSourcePrefab;
         public GameObject goalPrefab;
 
-        [Tooltip("차단기(레이저 벽 역할, 칸 뒤쪽 가장자리에 섬, 앞(+z)으로 지나감)")]
-        public GameObject boomGatePrefab;
+        [Tooltip("게이트(문 역할, 한 칸 큐브, 열리는 면은 GateFaces로 고름)")]
+        public GameObject gatePrefab;
 
-        [Tooltip("방벽(문 역할, 칸의 한 면을 덮는 반투명 판, 면은 CellFaceMount로 고름)")]
+        [Tooltip("방벽(레이저 벽 역할, 칸의 한 면을 덮는 반투명 판, 면은 CellFaceMount로 고름)")]
         public GameObject barrierPrefab;
 
         [Tooltip("컨베이어 벨트(이동 계열, 블록 자리에 깔림, 모델 기준 −z로 흐름). 한 프리팹이 직진·우회전·좌회전 무늬를 모두 갖고, 놓을 때 모양을 정한다.")]

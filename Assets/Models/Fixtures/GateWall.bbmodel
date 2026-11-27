@@ -4,7 +4,7 @@
     "model_format": "free",
     "box_uv": false
   },
-  "name": "BoomGateStick",
+  "name": "GateWall",
   "model_identifier": "",
   "visible_box": [
     1,
@@ -12,166 +12,165 @@
     0
   ],
   "variable_placeholders": "",
+  "multi_file_ruleset": "",
   "variable_placeholder_buttons": [],
   "timeline_setups": [],
   "unhandled_root_fields": {},
   "resolution": {
     "width": 64,
-    "height": 1
+    "height": 16
   },
   "elements": [
     {
-      "name": "color",
+      "name": "cube",
       "box_uv": false,
-      "rescale": false,
-      "locked": false,
       "render_order": "default",
+      "locked": false,
+      "export": true,
+      "scope": 0,
       "allow_mirror_modeling": true,
       "from": [
-        -5.5,
-        0.0,
-        -0.5
+        -7,
+        0,
+        -7
       ],
       "to": [
-        5.5,
-        1.0,
-        0.5
+        7,
+        1,
+        7
       ],
       "autouv": 0,
-      "color": 1,
+      "color": 3,
       "origin": [
-        0.0,
-        0.0,
-        0.0
+        -6,
+        0,
+        -6
       ],
-      "type": "cube",
-      "uuid": "1bc17d3c-015b-47a8-b00a-cce54af28d3b",
       "faces": {
         "east": {
           "uv": [
+            28,
             0,
-            0,
-            1,
+            42,
             1
           ],
           "texture": 0
         },
         "west": {
           "uv": [
-            1,
+            42,
             0,
-            2,
+            56,
             1
           ],
           "texture": 0
         },
         "up": {
           "uv": [
-            2,
             0,
-            13,
-            1
+            0,
+            14,
+            14
           ],
           "texture": 0
         },
         "down": {
           "uv": [
-            13,
+            14,
             0,
-            24,
-            1
+            28,
+            14
           ],
           "texture": 0
         },
         "south": {
           "uv": [
-            24,
             0,
-            35,
-            1
+            14,
+            14,
+            15
           ],
           "texture": 0
         },
         "north": {
           "uv": [
-            35,
-            0,
-            46,
-            1
+            14,
+            14,
+            28,
+            15
           ],
           "texture": 0
         }
-      }
+      },
+      "type": "cube",
+      "uuid": "b29a0591-6471-41d1-9cb2-8a03f34e331b"
     }
   ],
   "groups": [
     {
-      "name": "Object 1",
+      "name": "gray",
+      "uuid": "36d78d24-4ea3-4f5a-5c4c-cc59c938b0e6",
+      "export": true,
+      "locked": false,
+      "scope": 0,
+      "selected": false,
+      "visibility": true,
+      "_static": {
+        "properties": {},
+        "temp_data": {}
+      },
       "origin": [
-        0.0,
-        0.0,
-        0.0
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
       ],
       "color": 0,
-      "uuid": "db47a719-4734-4163-a900-aceb7c7d3ac3",
-      "export": true,
+      "children": [],
+      "reset": false,
+      "shade": true,
       "mirror_uv": false,
+      "autouv": 0,
       "isOpen": true,
-      "locked": false,
-      "visibility": true,
-      "autouv": 0
-    },
-    {
-      "name": "color",
-      "origin": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "color": 0,
-      "uuid": "54a31111-15fd-40ac-ac9e-6b8090d147f5",
-      "export": true,
-      "mirror_uv": false,
-      "isOpen": true,
-      "locked": false,
-      "visibility": true,
-      "autouv": 0
+      "primary_selected": false
     }
   ],
   "outliner": [
     {
-      "uuid": "db47a719-4734-4163-a900-aceb7c7d3ac3",
+      "uuid": "36d78d24-4ea3-4f5a-5c4c-cc59c938b0e6",
       "isOpen": true,
-      "children": [
-        {
-          "uuid": "54a31111-15fd-40ac-ac9e-6b8090d147f5",
-          "isOpen": true,
-          "children": [
-            "1bc17d3c-015b-47a8-b00a-cce54af28d3b"
-          ]
-        }
-      ]
-    }
+      "children": []
+    },
+    "b29a0591-6471-41d1-9cb2-8a03f34e331b"
   ],
   "textures": [
     {
+      "name": "texture",
       "path": "",
-      "name": "BoomGateStick.png",
-      "folder": "",
+      "folder": "block",
       "namespace": "",
-      "id": "0",
+      "id": "1",
       "group": "",
+      "scope": 0,
       "width": 64,
-      "height": 1,
+      "height": 16,
       "uv_width": 64,
-      "uv_height": 1,
+      "uv_height": 16,
       "particle": false,
       "use_as_default": false,
       "layers_enabled": false,
       "sync_to_project": "",
+      "file_format": "png",
       "render_mode": "default",
       "render_sides": "auto",
+      "wrap_mode": "limited",
       "pbr_channel": "color",
+      "fps": 7,
+      "force_translucent": false,
       "frame_time": 1,
       "frame_order_type": "loop",
       "frame_order": "",
@@ -179,8 +178,8 @@
       "visible": true,
       "internal": true,
       "saved": false,
-      "uuid": "d5c6c154-3796-46ee-878f-aa6457f71270",
-      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAABCAYAAABubagXAAAAFElEQVQYGWP8DwQMQxAwAgE1nA0A+U8EAh+BB04AAAAASUVORK5CYII="
+      "uuid": "7d10179a-b3f5-a876-71c6-cf4675150f06",
+      "source": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAQCAYAAACm53kpAAAANklEQVR42u3QwQkAMAwDsczt5dsR8gul0YH/RpXk/Lzqeu7QdAAAAAAAAAAAAAAAAACwEmB7F7IJPv3Ac89uAAAAAElFTkSuQmCC"
     }
   ]
 }
