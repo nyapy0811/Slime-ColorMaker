@@ -10,20 +10,21 @@ namespace SlimeColorMaker
 {
     /// <summary>
     /// 큐브 맵 편집 창과 씬 뷰 도구가 함께 쓰는 편집 동작.
-    /// 고른 붓으로 칸에 블록·계단·기둥·기물·시험 모델을 놓고 지운다. 한 칸에는 하나만 두며(방벽끼리만 면이 다르면 한 칸에 여럿), 블록과 계단, 기둥은 큐브 격자 데이터에, 기물과 시험 모델은
+    /// 고른 붓으로 칸에 블록·계단·기둥·장식·기물·시험 모델을 놓고 지운다. 한 칸에는 한 종류만 두며(<see cref="Alone"/>), 프리팹의 설치 규칙
+    /// (<see cref="PlacementRules"/>)에 맞을 때만 놓고, 편집마다 규칙에 맞지 않게 된 것은 이어서 지운다. 블록과 계단, 기둥, 장식은 큐브 격자 데이터에, 기물과 시험 모델은
     /// 씬의 오브젝트로 칸 바닥 가운데에 놓는다(맵 안 id는 기물을 놓을 때 고침). 계단은 씬 카메라가 보는 쪽으로 오르게 놓고,
     /// '돌리기'로 90°씩 더 돌린다. 편집 한 번이 Undo 하나다.
     /// </summary>
     public static class CubeGridEditing
     {
-        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel, Eraser, Light }
+        public enum Brush { Block, Stair, Checkpoint, ColorSource, Goal, Gate, Barrier, ConveyorBelt, Pillar, Coating, TestModel, Eraser, Light, Crate, Railing, Panel }
 
         /// <summary>방벽을 놓을 면: 옆(카메라 쪽 옆면, 돌리기로 90°씩), 위(칸 윗면), 아래(칸 바닥면).</summary>
         public enum BarrierSide { Side, Up, Down }
 
         public static readonly string[] BarrierSideNames = { "옆", "위", "아래" };
 
-        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델", "지우개", "조명" };
+        public static readonly string[] BrushNames = { "블록", "계단", "체크포인트", "색 원천", "목적지", "게이트", "방벽", "컨베이어", "기둥", "코팅", "시험 모델", "지우개", "조명", "상자", "난간", "계기판" };
 
         const string TestModelsFolder = "TestModels";
 
@@ -289,10 +290,9 @@ namespace SlimeColorMaker
         public static bool IsFilled(CubeGrid grid, Dictionary<Vector3Int, List<GameObject>> objects, Vector3Int cell) =>
             CubeGridRules.IsOccupied(grid.Data, cell) || objects.ContainsKey(cell);
 
-        /// <summary>칸의 <paramref name="face"/> 면에 방벽을 놓을 수 있나: 블록·계단·기둥이 없고, 든 것이 모두 방벽이며 그 면은 비었다.</summary>
+        /// <summary>칸의 <paramref name="face"/> 면에 방벽을 놓을 수 있나: 칸에 방벽만 있거나 비었고(한 칸 한 종류), 그 면은 비었다.</summary>
         public static bool CanAddBarrier(CubeGrid grid, Dictionary<Vector3Int, List<GameObject>> objects, Vector3Int cell, CellFace face) =>
-            !CubeGridRules.IsOccupied(grid.Data, cell)
-            && (!objects.TryGetValue(cell, out var placed) || placed.All(go => BarrierFaceOf(go) is { } other && other != face));
+            Alone(grid, objects, cell, Brush.Barrier) && (!objects.TryGetValue(cell, out var placed) || placed.All(go => BarrierFaceOf(go) != face));
 
         /// <summary>방벽이면 그 면, 아니면 null.</summary>
         public static CellFace? BarrierFaceOf(GameObject go) =>
@@ -310,12 +310,74 @@ namespace SlimeColorMaker
         }
 
         /// <summary>빈 칸이면 고른 붓으로 놓는다. 계단은 <paramref name="stairTurn"/> 방향으로 오른다.</summary>
-        public static void Place(CubeGrid grid, Vector3Int cell, int stairTurn) => PlaceAll(grid, new[] { cell }, "칸에 놓기", stairTurn: stairTurn);
+        public static void Place(CubeGrid grid, Vector3Int cell, int stairTurn, int panelSide = -1) =>
+            PlaceAll(grid, new[] { cell }, "칸에 놓기", stairTurn: stairTurn, panelSide: panelSide);
+
+        /// <summary>난간이 붙을 옆면(방벽 옆면처럼 카메라 쪽, 돌리기로 90°씩): 0 = 북, 1 = 동, 2 = 남, 3 = 서.</summary>
+        public static int RailingSide(int turn) => CubeGridRules.Turn(turn + 2);
+
+        /// <summary>
+        /// 칸에 붓의 것을 둘 수 있나(한 칸 한 종류): 칸이 비었거나, 든 것이 모두 같은 종류이고 그 종류를 한 칸에 여럿 둘 수 있다
+        /// (상자는 반 칸마다, 난간·계기판·방벽은 면마다). 지형(블록·계단·기둥)·천장 조명·그 밖의 기물·시험 모델은 칸에 하나뿐이다.
+        /// </summary>
+        public static bool Alone(CubeGrid grid, Dictionary<Vector3Int, List<GameObject>> objects, Vector3Int cell, Brush brush)
+        {
+            var data = grid.Data;
+            bool barriers = objects.TryGetValue(cell, out var placed);
+            if (CubeGridRules.IsOccupied(data, cell) || CubeGridRules.HasLight(data, cell) || (barriers && !placed.All(go => BarrierFaceOf(go) != null))) return false;
+            bool crate = CubeGridRules.HasCrate(data, cell), railing = CubeGridRules.HasRailing(data, cell), panel = CubeGridRules.HasPanel(data, cell);
+            return brush switch
+            {
+                Brush.Crate => !railing && !panel && !barriers,
+                Brush.Railing => !crate && !panel && !barriers,
+                Brush.Panel => !crate && !railing && !barriers,
+                Brush.Barrier => !crate && !railing && !panel,
+                _ => !crate && !railing && !panel && !barriers,
+            };
+        }
+
+        /// <summary>고른 붓으로 칸에 놓을 수 있나(한 칸 한 종류, 설치 규칙). 씬 뷰 미리보기가 쓴다.</summary>
+        public static bool CanPlace(CubeGrid grid, Vector3Int cell, int turn, int panelSide)
+        {
+            var config = FindConfig();
+            var prefab = config != null ? PrefabFor(config, SelectedBrush) : null;
+            return prefab != null && Placeable(grid, config, ObjectCells(grid), SelectedBrush, prefab, cell, turn, panelSide);
+        }
+
+        /// <summary>반 칸에 상자를 놓을 수 있나: 그 반 칸이 비었고, 한 칸 한 종류, 상자 프리팹의 설치 규칙(반 칸 단위)에 맞는다.</summary>
+        public static bool CanPlaceCrate(CubeGrid grid, Vector3Int half)
+        {
+            var config = FindConfig();
+            return config != null && config.cratePrefab != null && !grid.Data.crates.Contains(half)
+                && Alone(grid, ObjectCells(grid), CubeGridRules.CrateCell(half), Brush.Crate) && CrateSupported(grid, config, half);
+        }
+
+        /// <summary>반 칸에 상자를 놓는다(그 칸에 다른 종류가 없을 때만, 반 칸 2 × 2 × 2개까지).</summary>
+        public static void PlaceCrate(CubeGrid grid, Vector3Int half)
+        {
+            var config = RequireConfig();
+            if (config == null) return;
+            if (config.cratePrefab == null)
+            {
+                Debug.LogError("[큐브 맵 편집] 큐브 맵 설정에 '상자' 프리팹이 없다.", config);
+                return;
+            }
+            if (!CanPlaceCrate(grid, half)) return;
+            Edit(grid, "상자 놓기", () => CubeGridRules.AddCrate(grid.Data, half), config);
+        }
+
+        /// <summary>반 칸의 상자 하나를 지운다.</summary>
+        public static void RemoveCrate(CubeGrid grid, Vector3Int half)
+        {
+            var config = RequireConfig();
+            if (config == null) return;
+            Edit(grid, "상자 지우기", () => CubeGridRules.RemoveCrate(grid.Data, half), config);
+        }
 
         /// <summary>범위의 빈 칸에 블록을 놓는다(범위 놓기는 블록만).</summary>
         public static void PlaceBlocks(CubeGrid grid, IEnumerable<Vector3Int> cells) => PlaceAll(grid, cells, "블록 범위 놓기", blocksOnly: true);
 
-        /// <summary>칸의 블록·계단·기둥·천장 조명·기물·시험 모델을 지운다(칸에 방벽이 여럿이면 모두, 천장에서 떨어진 조명도). 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
+        /// <summary>칸의 블록·계단·기둥·장식·기물·시험 모델을 지운다(칸에 방벽·상자·난간·계기판이 여럿이면 모두, 받침이 사라진 것도 이어서). 시작 지점(MapRoot 안, 원점)은 지우지 않는다.</summary>
         public static void Remove(CubeGrid grid, IEnumerable<Vector3Int> cells)
         {
             var config = RequireConfig();
@@ -340,7 +402,7 @@ namespace SlimeColorMaker
             Edit(grid, "블록 다시 만들기", () => { }, config, fullRebuild: true);
         }
 
-        static void PlaceAll(CubeGrid grid, IEnumerable<Vector3Int> cells, string undoName, bool blocksOnly = false, int stairTurn = 0)
+        static void PlaceAll(CubeGrid grid, IEnumerable<Vector3Int> cells, string undoName, bool blocksOnly = false, int stairTurn = 0, int panelSide = -1)
         {
             var config = RequireConfig();
             if (config == null) return;
@@ -358,38 +420,105 @@ namespace SlimeColorMaker
             {
                 foreach (var cell in cells)
                 {
-                    if (brush == Brush.Light)
+                    if (!Placeable(grid, config, objects, brush, prefab, cell, stairTurn, panelSide)) continue;
+                    switch (brush)
                     {
-                        // 기물과 같은 칸에 둘 수 있고, 윗면 전부가 위 칸 아랫면에 닿고 지형과 픽셀이 겹치지 않을 때만
-                        if (!CubeGridRules.HasLight(grid.Data, cell) && Voxels(grid, config).FitLight(cell, LightAxis, out _))
-                            CubeGridRules.AddLight(grid.Data, cell, LightAxis, LightColor);
-                        continue;
+                        case Brush.Railing: CubeGridRules.AddSidePiece(grid.Data.railings, cell, RailingSide(stairTurn)); continue;
+                        case Brush.Panel: CubeGridRules.AddSidePiece(grid.Data.panels, cell, panelSide); continue;
+                        case Brush.Light: CubeGridRules.AddLight(grid.Data, cell, LightAxis, LightColor); continue;
+                        case Brush.Block: CubeGridRules.AddBlock(grid.Data, cell); continue;
+                        case Brush.Stair: CubeGridRules.AddStair(grid.Data, cell, stairTurn); continue;
+                        case Brush.Pillar: CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis); continue;
                     }
-                    if (brush == Brush.Barrier ? !CanAddBarrier(grid, objects, cell, BarrierFace(stairTurn)) : IsFilled(grid, objects, cell)) continue;
-                    if (brush is Brush.Block or Brush.Stair or Brush.Pillar)
-                    {
-                        bool added = brush == Brush.Block ? CubeGridRules.AddBlock(grid.Data, cell)
-                            : brush == Brush.Stair ? CubeGridRules.AddStair(grid.Data, cell, stairTurn)
-                            : CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis);
-                        // 먼저 놓인 조명이 우선: 새 지형(기둥이면 옆 칸 커넥터까지)이 조명과 겹치거나 조명을 천장에서 떼면 놓지 않는다.
-                        if (added && !LightsFitNear(grid, config, cell)) CubeGridRules.RemoveTerrain(grid.Data, cell);
-                    }
-                    else
-                    {
-                        var placed = brush == Brush.TestModel ? PlaceTestModel(grid, prefab, cell) : PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
-                        // 먼저 놓인 조명이 우선: 조명과 픽셀이 겹치거나 조명을 천장에서 떼면 놓지 않는다.
-                        if (!LightsFitNear(grid, config, cell))
-                        {
-                            Undo.DestroyObjectImmediate(placed);
-                            continue;
-                        }
-                        if (!objects.TryGetValue(cell, out var list)) objects[cell] = list = new List<GameObject>();
-                        list.Add(placed);
-                    }
+                    var placed = brush == Brush.TestModel ? PlaceTestModel(grid, prefab, cell) : PlaceFixture(grid, prefab, brush, cell, stairTurn).gameObject;
+                    if (!objects.TryGetValue(cell, out var list)) objects[cell] = list = new List<GameObject>();
+                    list.Add(placed);
                 }
                 if (IsFixture(brush)) FixtureIdAssigner.FixIds(grid.gameObject.scene);
             }, config);
         }
+
+        // 붓의 것을 칸에 놓을 수 있나: 한 칸 한 종류(Alone), 옆면 장식은 그 면이 비었고 계기판은 같은 칸 계기판과 모서리에서 겹치지 않으며, 설치 규칙에 맞는다.
+        static bool Placeable(CubeGrid grid, CubeGridConfig config, Dictionary<Vector3Int, List<GameObject>> objects, Brush brush, GameObject prefab, Vector3Int cell, int turn, int panelSide)
+        {
+            if (!Alone(grid, objects, cell, brush)) return false;
+            switch (brush)
+            {
+                case Brush.Railing:
+                case Brush.Panel:
+                    int side = brush == Brush.Railing ? RailingSide(turn) : panelSide;
+                    var pieces = brush == Brush.Railing ? grid.Data.railings : grid.Data.panels;
+                    if (side < 0 || pieces.Exists(piece => piece.cell == cell && piece.side == side)) return false;
+                    if (brush == Brush.Panel && Voxels(grid, config).PanelOverlaps(cell, side)) return false;
+                    return Supported(grid, config, objects, prefab, prefab, cell, CubeGridRules.SideRotation(side));
+                case Brush.Light:
+                    return Supported(grid, config, objects, prefab, prefab, cell, CubeGridRules.LightRotation(LightAxis));
+                case Brush.Barrier:
+                    if (!CanAddBarrier(grid, objects, cell, BarrierFace(turn))) return false;
+                    break;
+                case Brush.Pillar:
+                    // 놓인 모양은 옆 칸으로 정해지므로 놓은 뒤의 모양으로 본다.
+                    CubeGridRules.AddPillar(grid.Data, cell, PillarLying, PillarAxis);
+                    var pose = CubeGridRules.PillarLayouts(grid.Data)[cell].pose;
+                    grid.Data.pillars.RemoveAll(pillar => pillar.cell == cell);
+                    return Supported(grid, config, objects, prefab, prefab, cell, PillarRotation(config, pose));
+            }
+            return Supported(grid, config, objects, prefab, prefab, cell, PlaceRotation(brush, turn));
+        }
+
+        // 놓을 때의 회전: 컨베이어는 turn 방향으로 들어간다. 모델(직선·꺾임)은 −z로 나가므로 나가는 방향에서 반 바퀴 더 돌린다. 나머지 기물은 돌리지 않는다.
+        static Quaternion PlaceRotation(Brush brush, int turn) =>
+            IsConveyor(brush) ? CubeGridRules.StairRotation(ConveyorExitTurn(turn) + 2) : Quaternion.identity;
+
+        // 기둥의 놓인 회전: 그 모양 모델의 회전(세움 남북·동서, 눕힘 남북·동서).
+        static Quaternion PillarRotation(CubeGridConfig config, PillarPose pose) =>
+            config.pillarPrefab != null && config.pillarPrefab.TryGetComponent(out PillarView view) ? view.PoseRotation(pose) : Quaternion.identity;
+
+        /// <summary>
+        /// <paramref name="rulesOwner"/>(프리팹이나 놓인 오브젝트)의 설치 규칙에 칸이 맞는가. 완전한 면은 옆 칸 지형의 픽셀로,
+        /// 같은 종류에 연결은 옆 칸에 <paramref name="kind"/>(종류 = 프리팹)가 있는지로 본다.
+        /// </summary>
+        static bool Supported(CubeGrid grid, CubeGridConfig config, Dictionary<Vector3Int, List<GameObject>> objects, GameObject kind, GameObject rulesOwner, Vector3Int cell, Quaternion rotation)
+        {
+            if (rulesOwner == null || !rulesOwner.TryGetComponent(out PlacementRules rules) || rules.Rules.Count == 0) return true;
+            CubeGridVoxels voxels = null;
+            return CubeGridRules.Supported(rules.Rules, rotation,
+                toward => (voxels ??= Voxels(grid, config)).FullFace(cell, toward),
+                toward => HasKind(grid, config, objects, kind, cell + toward));
+        }
+
+        // 상자의 설치 규칙(반 칸 단위): 완전한 면은 상자의 그 면이 칸 경계에 있을 때만, 같은 종류에 연결은 그쪽 반 칸의 상자.
+        static bool CrateSupported(CubeGrid grid, CubeGridConfig config, Vector3Int half)
+        {
+            if (config.cratePrefab == null || !config.cratePrefab.TryGetComponent(out PlacementRules rules) || rules.Rules.Count == 0) return true;
+            CubeGridVoxels voxels = null;
+            var cell = CubeGridRules.CrateCell(half);
+            return CubeGridRules.Supported(rules.Rules, Quaternion.identity,
+                toward => CubeGridRules.CrateFaceOnBoundary(half, toward) && (voxels ??= Voxels(grid, config)).FullFace(cell, toward),
+                toward => grid.Data.crates.Contains(half + toward));
+        }
+
+        // 칸에 그 종류(프리팹)가 있나: 지형·장식은 데이터로, 기물·시험 모델은 놓인 오브젝트의 원본 프리팹(모델)으로.
+        static bool HasKind(CubeGrid grid, CubeGridConfig config, Dictionary<Vector3Int, List<GameObject>> objects, GameObject kind, Vector3Int cell)
+        {
+            var data = grid.Data;
+            if (kind == null) return false;
+            if (kind == config.blockPrefab) return CubeGridRules.HasBlock(data, cell);
+            if (kind == config.stairPrefab) return data.stairs.Exists(stair => stair.cell == cell);
+            if (kind == config.pillarPrefab) return data.pillars.Exists(pillar => pillar.cell == cell);
+            if (kind == config.lightPrefab) return CubeGridRules.HasLight(data, cell);
+            if (kind == config.cratePrefab) return CubeGridRules.HasCrate(data, cell);
+            if (kind == config.railingPrefab) return CubeGridRules.HasRailing(data, cell);
+            if (kind == config.panelPrefab) return CubeGridRules.HasPanel(data, cell);
+            return objects.TryGetValue(cell, out var placed) && placed.Exists(go => go != null && SourceOf(go) == kind);
+        }
+
+        // 놓인 기물의 원본 프리팹, 시험 모델이면 그 모델.
+        static GameObject SourceOf(GameObject go) => PrefabUtility.GetCorrespondingObjectFromSource(ModelOf(go));
+
+        // 설치 규칙을 든 오브젝트: 기물은 그 자신, 시험 모델은 안의 모델.
+        static GameObject ModelOf(GameObject go) =>
+            go.TryGetComponent<CubeTestModel>(out _) ? (go.transform.childCount > 0 ? go.transform.GetChild(0).gameObject : go) : go;
 
         static FixtureBase PlaceFixture(CubeGrid grid, GameObject prefab, Brush brush, Vector3Int cell, int turn)
         {
@@ -397,9 +526,7 @@ namespace SlimeColorMaker
             var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, grid.gameObject.scene);
             Undo.RegisterCreatedObjectUndo(go, "기물 놓기");
             if (parent != null) Undo.SetTransformParent(go.transform, parent, "기물 놓기");
-            // 컨베이어는 turn 방향으로 들어간다. 모델(직선·꺾임)은 −z로 나가므로 나가는 방향에서 반 바퀴 더 돌린다.
-            var rotation = IsConveyor(brush) ? CubeGridRules.StairRotation(ConveyorExitTurn(turn) + 2) : Quaternion.identity;
-            go.transform.SetPositionAndRotation(CubeGridRules.CellBottom(cell), rotation);
+            go.transform.SetPositionAndRotation(CubeGridRules.CellBottom(cell), PlaceRotation(brush, turn));
             if (brush == Brush.Barrier && go.TryGetComponent(out CellFaceMount mount))
             {
                 mount.Face = BarrierFace(turn);
@@ -460,9 +587,9 @@ namespace SlimeColorMaker
             return folder.transform;
         }
 
-        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel or Brush.Eraser or Brush.Light);
+        static bool IsFixture(Brush brush) => brush is not (Brush.Block or Brush.Stair or Brush.Pillar or Brush.Coating or Brush.TestModel or Brush.Eraser or Brush.Light or Brush.Crate or Brush.Railing or Brush.Panel);
 
-        static GameObject PrefabFor(CubeGridConfig config, Brush brush) => brush switch
+        internal static GameObject PrefabFor(CubeGridConfig config, Brush brush) => brush switch
         {
             Brush.Stair => config.stairPrefab,
             Brush.TestModel => TestModelAsset,
@@ -474,6 +601,9 @@ namespace SlimeColorMaker
             Brush.ConveyorBelt => config.conveyorBeltPrefab,
             Brush.Pillar => config.pillarPrefab,
             Brush.Light => config.lightPrefab,
+            Brush.Crate => config.cratePrefab,
+            Brush.Railing => config.railingPrefab,
+            Brush.Panel => config.panelPrefab,
             _ => config.blockPrefab,
         };
 
@@ -484,29 +614,87 @@ namespace SlimeColorMaker
             return config;
         }
 
-        /// <summary>격자의 픽셀 모양(지형 + 씬에 놓인 기물·시험 모델).</summary>
-        public static CubeGridVoxels Voxels(CubeGrid grid, CubeGridConfig config) =>
-            new(config, grid.Data, CubeGridVoxels.PlacedObjects(grid.gameObject.scene));
+        /// <summary>격자의 픽셀 모양(지형·상자).</summary>
+        public static CubeGridVoxels Voxels(CubeGrid grid, CubeGridConfig config) => new(config, grid.Data);
 
-        // 칸 둘레(옆 칸 커넥터가 바뀔 수 있음)의 조명이 모두 아직 맞는가. 조명은 자기 칸과 위 칸을 보므로 높이 cell.y − 1, cell.y만 본다.
-        static bool LightsFitNear(CubeGrid grid, CubeGridConfig config, Vector3Int cell)
+        // 받침 검사의 한 항목: 종류(프리팹), 설치 규칙, 칸(상자는 반 칸), 놓인 회전, 지우는 동작.
+        sealed class Piece
         {
-            var data = grid.Data;
-            var voxels = Voxels(grid, config);
-            foreach (var light in data.lights)
-            {
-                var d = light.cell - cell;
-                if (Mathf.Abs(d.x) + Mathf.Abs(d.z) > 1 || d.y < -1 || d.y > 0) continue;
-                if (!voxels.FitLight(light.cell, light.axis, out _)) return false;
-            }
-            return true;
+            public GameObject kind;
+            public IReadOnlyList<PlacementRule> rules;
+            public Vector3Int key;
+            public bool crate;
+            public Quaternion rotation;
+            public Action remove;
         }
 
-        // 천장에서 떨어졌거나 지형과 겹치게 된 조명을 지운다(천장을 지웠을 때 등).
-        static void PruneLights(CubeGrid grid, CubeGridConfig config)
+        /// <summary>
+        /// 설치 규칙에 맞지 않게 된 것(받침이 사라짐)을 지운다. 완전한 면에 붙은 것(규칙이 없는 것 포함)에서 '같은 종류에 연결'로 이어진 것만 남기므로,
+        /// 서로만 받치고 떠 있는 묶음(위 기둥과 옆 들보 등)도 지운다. 지운 것이 지형(기둥)이면 면이 바뀌므로 다시 본다. 시작 지점은 두고, 블록·계단은 규칙이 없다.
+        /// </summary>
+        static void PruneUnsupported(CubeGrid grid, CubeGridConfig config)
         {
-            var voxels = Voxels(grid, config);
-            grid.Data.lights.RemoveAll(light => !voxels.FitLight(light.cell, light.axis, out _));
+            while (true)
+            {
+                var voxels = Voxels(grid, config);
+                var supported = new HashSet<(GameObject, Vector3Int)>();
+                var pending = new List<Piece>();
+                foreach (var piece in Pieces(grid, config))
+                {
+                    if (Rests(piece, voxels, _ => false)) supported.Add((piece.kind, piece.key));
+                    else pending.Add(piece);
+                }
+                for (bool grew = true; grew && pending.Count > 0;)
+                {
+                    grew = false;
+                    for (int i = pending.Count - 1; i >= 0; i--)
+                    {
+                        var piece = pending[i];
+                        if (!Rests(piece, voxels, key => supported.Contains((piece.kind, key)))) continue;
+                        supported.Add((piece.kind, piece.key));
+                        pending.RemoveAt(i);
+                        grew = true;
+                    }
+                }
+                if (pending.Count == 0) return;
+                foreach (var piece in pending) piece.remove();
+            }
+        }
+
+        // 칸의 설치 규칙에 맞나: 완전한 면은 지형 픽셀로(상자는 그 면이 칸 경계에 있을 때만), 같은 종류에 연결은 sameKindAt(옆 칸이나 반 칸 열쇠)으로.
+        static bool Rests(Piece piece, CubeGridVoxels voxels, Func<Vector3Int, bool> sameKindAt) =>
+            piece.rules == null || CubeGridRules.Supported(piece.rules, piece.rotation,
+                toward => piece.crate
+                    ? CubeGridRules.CrateFaceOnBoundary(piece.key, toward) && voxels.FullFace(CubeGridRules.CrateCell(piece.key), toward)
+                    : voxels.FullFace(piece.key, toward),
+                toward => sameKindAt(piece.key + toward));
+
+        // 설치 규칙이 있을 수 있는 모든 것: 데이터의 조명·난간·계기판·기둥·상자, 씬의 기물·시험 모델(시작 지점 빼고).
+        static List<Piece> Pieces(CubeGrid grid, CubeGridConfig config)
+        {
+            var data = grid.Data;
+            var pieces = new List<Piece>();
+            void Add(GameObject kind, GameObject rulesOwner, Vector3Int key, Quaternion rotation, Action remove, bool crate = false) => pieces.Add(new Piece
+            {
+                kind = kind,
+                rules = rulesOwner != null && rulesOwner.TryGetComponent(out PlacementRules rules) ? rules.Rules : null,
+                key = key,
+                crate = crate,
+                rotation = rotation,
+                remove = remove,
+            });
+            foreach (var light in data.lights) Add(config.lightPrefab, config.lightPrefab, light.cell, CubeGridRules.LightRotation(light.axis), () => data.lights.Remove(light));
+            foreach (var piece in data.railings) Add(config.railingPrefab, config.railingPrefab, piece.cell, CubeGridRules.SideRotation(piece.side), () => data.railings.Remove(piece));
+            foreach (var piece in data.panels) Add(config.panelPrefab, config.panelPrefab, piece.cell, CubeGridRules.SideRotation(piece.side), () => data.panels.Remove(piece));
+            var layouts = CubeGridRules.PillarLayouts(data);
+            foreach (var pillar in data.pillars)
+                Add(config.pillarPrefab, config.pillarPrefab, pillar.cell, PillarRotation(config, layouts.TryGetValue(pillar.cell, out var layout) ? layout.pose : PillarPose.UprightNorthSouth), () => data.pillars.Remove(pillar));
+            foreach (var half in data.crates) Add(config.cratePrefab, config.cratePrefab, half, Quaternion.identity, () => data.crates.Remove(half), crate: true);
+            foreach (var (cell, placed) in ObjectCells(grid))
+                foreach (var go in placed)
+                    if (!go.TryGetComponent<StartPoint>(out _))
+                        Add(SourceOf(go), ModelOf(go), cell, go.transform.rotation, () => Undo.DestroyObjectImmediate(go));
+            return pieces;
         }
 
         static void Edit(CubeGrid grid, string undoName, Action change, CubeGridConfig config, bool fullRebuild = false)
@@ -516,7 +704,7 @@ namespace SlimeColorMaker
             Undo.SetCurrentGroupName(undoName);
             Undo.RecordObject(grid, undoName);
             change();
-            PruneLights(grid, config);
+            PruneUnsupported(grid, config);
             if (fullRebuild) CubeGridBuilder.Rebuild(grid, config);
             else CubeGridBuilder.Build(grid, config);
             Undo.CollapseUndoOperations(group);

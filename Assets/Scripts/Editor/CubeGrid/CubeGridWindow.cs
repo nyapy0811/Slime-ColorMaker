@@ -17,7 +17,7 @@ namespace SlimeColorMaker
             ("지형", new[] { CubeGridEditing.Brush.Block, CubeGridEditing.Brush.Stair }),
             ("기물", new[] { CubeGridEditing.Brush.Checkpoint, CubeGridEditing.Brush.ColorSource, CubeGridEditing.Brush.Goal, CubeGridEditing.Brush.Gate, CubeGridEditing.Brush.Barrier }),
             ("이동", new[] { CubeGridEditing.Brush.ConveyorBelt }),
-            ("장식", new[] { CubeGridEditing.Brush.Pillar, CubeGridEditing.Brush.Light }),
+            ("장식", new[] { CubeGridEditing.Brush.Pillar, CubeGridEditing.Brush.Light, CubeGridEditing.Brush.Crate, CubeGridEditing.Brush.Railing, CubeGridEditing.Brush.Panel }),
             ("칠하기", new[] { CubeGridEditing.Brush.Coating }),
             ("시험", new[] { CubeGridEditing.Brush.TestModel }),
             ("지우기", new[] { CubeGridEditing.Brush.Eraser }),
@@ -98,6 +98,8 @@ namespace SlimeColorMaker
                 "Shift+드래그: 범위에 블록 놓기   Shift+Ctrl+드래그: 범위 지우기\n" +
                 "코팅: 블록 윗면을 드래그로 칠하기   Ctrl+드래그: 코팅 지우기\n" +
                 "지우개: 클릭 = Ctrl+클릭, Shift+드래그 = Shift+Ctrl+드래그\n" +
+                "상자: 가리킨 면 앞 반 칸에 놓기   Ctrl+클릭: 가리킨 상자 하나 지우기\n" +
+                "난간: 블록 윗면(카메라 쪽 옆면)   계기판: 블록 옆면을 클릭\n" +
                 "방향은 씬 카메라가 보는 쪽 기준",
                 MessageType.None);
 
@@ -135,7 +137,7 @@ namespace SlimeColorMaker
         static void DrawSettings(CubeGridEditing.Brush brush)
         {
             bool hasValue = CubeGridEditing.ValueField(brush) != null;
-            bool turns = brush is CubeGridEditing.Brush.Stair || CubeGridEditing.IsConveyor(brush)
+            bool turns = brush is CubeGridEditing.Brush.Stair or CubeGridEditing.Brush.Railing || CubeGridEditing.IsConveyor(brush)
                 || (brush == CubeGridEditing.Brush.Barrier && CubeGridEditing.SelectedBarrierSide == CubeGridEditing.BarrierSide.Side);
             bool other = brush is CubeGridEditing.Brush.Gate or CubeGridEditing.Brush.Barrier or CubeGridEditing.Brush.Pillar or CubeGridEditing.Brush.Light or CubeGridEditing.Brush.Coating or CubeGridEditing.Brush.TestModel;
             if (!hasValue && !turns && !other) return;

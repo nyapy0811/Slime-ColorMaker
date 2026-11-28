@@ -98,6 +98,17 @@ namespace SlimeColorMaker
                 e.Use();
                 return;
             }
+            // 상자 붓: 픽셀로 가리킨 면 앞의 반 칸에 놓기, Ctrl이면 가리킨 상자 하나 지우기.
+            if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Crate && !e.shift)
+            {
+                if (CrateTarget(grid, e.mousePosition, e.control, out var half))
+                {
+                    if (e.control) CubeGridEditing.RemoveCrate(grid, half);
+                    else CubeGridEditing.PlaceCrate(grid, half);
+                }
+                e.Use();
+                return;
+            }
             bool hit = Pick(grid, e.mousePosition, Erasing(e), out var cell, out var normal);
             if (e.shift)
             {
@@ -116,21 +127,56 @@ namespace SlimeColorMaker
             {
                 int turn = CubeGridEditing.StairTurn(CameraForward());
                 var placeAt = hit ? CubeGridEditing.PlaceTarget(grid, cell, normal, turn) : GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush);
-                if (placeAt.HasValue) CubeGridEditing.Place(grid, placeAt.Value, turn);
+                if (placeAt.HasValue) CubeGridEditing.Place(grid, placeAt.Value, turn, hit ? PanelSide(normal) : -1);
             }
             e.Use();
+        }
+
+        // 계기판이 붙을 옆면: 가리킨 면 앞 칸에서 가리킨 칸 쪽(벽). 윗면·아랫면이면 없음(-1).
+        static int PanelSide(Vector3Int normal)
+        {
+            for (int side = 0; side < 4; side++)
+                if (CubeGridRules.SideStep(side) == -normal) return side;
+            return -1;
+        }
+
+        // 상자 붓이 가리킨 반 칸: 지우기면 가리킨 픽셀의 반 칸(상자가 있을 때만), 놓기면 가리킨 면 앞 픽셀의 반 칸. 아무것도 가리키지 않으면 높이 0 바닥의 반 칸.
+        static bool CrateTarget(CubeGrid grid, Vector2 mouse, bool erasing, out Vector3Int half)
+        {
+            half = default;
+            var config = CubeGridEditing.FindConfig();
+            if (config == null) return false;
+            var ray = HandleUtility.GUIPointToWorldRay(mouse);
+            if (CubeGridEditing.Voxels(grid, config).Raycast(ray.origin, ray.direction, MaxDistance, out var pixel, out var normal))
+            {
+                if (erasing)
+                {
+                    half = CubeGridVoxels.HalfOf(pixel);
+                    return grid.Data.crates.Contains(half);
+                }
+                if (normal == Vector3Int.zero) return false;
+                half = CubeGridVoxels.HalfOf(pixel + normal);
+                return true;
+            }
+            if (erasing || Mathf.Abs(ray.direction.y) < 1e-5f) return false;
+            float distance = -ray.origin.y / ray.direction.y;
+            if (distance <= 0f) return false;
+            var ground = Vector3Int.FloorToInt(CubeGridVoxels.ToPixels(ray.GetPoint(distance)));
+            ground.y = 0;
+            half = CubeGridVoxels.HalfOf(ground);
+            return true;
         }
 
         // 지우는 입력인가: Ctrl을 누르고 있거나 지우개 붓(코팅 붓은 따로 처리).
         static bool Erasing(Event e) => e.control || CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Eraser;
 
-        // 가리킨 칸(블록이나 기물이 든 칸)과 들어간 면. 지울 때는 천장 조명 칸도 가리킨다(놓을 때는 지나쳐 천장 블록 아랫면을 가리킴).
+        // 가리킨 칸(블록이나 기물이 든 칸)과 들어간 면. 지울 때는 천장 조명·상자·난간·계기판 칸도 가리킨다(놓을 때는 지나쳐 뒤의 블록을 가리킴).
         static bool Pick(CubeGrid grid, Vector2 mouse, bool erasing, out Vector3Int cell, out Vector3Int normal)
         {
             var objects = CubeGridEditing.ObjectCells(grid);
             var ray = HandleUtility.GUIPointToWorldRay(mouse);
             return CubeGridRules.Raycast(ray.origin, ray.direction, MaxDistance,
-                c => CubeGridEditing.IsFilled(grid, objects, c) || (erasing && CubeGridRules.HasLight(grid.Data, c)), out cell, out normal);
+                c => CubeGridEditing.IsFilled(grid, objects, c) || (erasing && (CubeGridRules.HasLight(grid.Data, c) || CubeGridRules.HasDecoration(grid.Data, c))), out cell, out normal);
         }
 
         // 마우스가 가리킨 블록 윗면의 점(블록 윗면이 아니면 false). 블록만 막는 것으로 본다: 기물·기둥·계단 칸은 한 칸 상자로 잡혀
@@ -224,8 +270,19 @@ namespace SlimeColorMaker
                 Handles.zTest = zTestBefore;
                 return;
             }
+            if (CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Crate && !dragging)
+            {
+                if (!CrateTarget(grid, e.mousePosition, e.control, out var half)) return;
+                var zTestCrate = Handles.zTest;
+                Handles.zTest = CompareFunction.LessEqual;
+                Handles.color = e.control || !CubeGridEditing.CanPlaceCrate(grid, half) ? RemoveColor : PlaceColor;
+                Handles.DrawWireCube(CubeGridRules.CrateBottom(half) + Vector3.up * 0.25f, Vector3.one * 0.501f);
+                Handles.zTest = zTestCrate;
+                return;
+            }
             var cells = new List<Vector3Int>();
             bool remove;
+            int panelSide = -1;
             if (dragging)
             {
                 cells.AddRange(CubeGridRules.Box(dragStart, dragEnd));
@@ -236,6 +293,7 @@ namespace SlimeColorMaker
                 remove = Erasing(e);
                 bool hit = Pick(grid, e.mousePosition, remove, out var cell, out var normal);
                 if (hit) cells.Add(remove ? cell : CubeGridEditing.PlaceTarget(grid, cell, normal, CubeGridEditing.StairTurn(CameraForward())));
+                if (hit) panelSide = PanelSide(normal);
                 else if (!remove && GroundCell(e.mousePosition, CubeGridEditing.SelectedBrush) is { } ground) cells.Add(ground);
             }
 
@@ -251,15 +309,16 @@ namespace SlimeColorMaker
                 foreach (float side in new[] { -0.4f, 0f, 0.4f })
                     Handles.DrawLine(center + rotation * new Vector3(side, -0.5f, -0.5f), center + rotation * new Vector3(side, 0.5f, 0.5f));
             }
-            // 조명 붓이면 붙을 막대를 그린다(위 칸 아랫면 높이까지 올림). 놓을 수 없으면 빨강.
-            if (!dragging && !remove && CubeGridEditing.SelectedBrush == CubeGridEditing.Brush.Light && cells.Count == 1 && CubeGridEditing.FindConfig() is { } config)
+            // 조명·난간·계기판 붓이면 놓일 모양을 감싼 상자로 그린다. 놓을 수 없으면(한 칸 한 종류, 설치 규칙) 빨강.
+            var shaped = CubeGridEditing.SelectedBrush;
+            if (!dragging && !remove && cells.Count == 1 && (shaped is CubeGridEditing.Brush.Light or CubeGridEditing.Brush.Railing or CubeGridEditing.Brush.Panel) && CubeGridEditing.FindConfig() is { } config)
             {
+                int turn = CubeGridEditing.StairTurn(CameraForward());
                 var voxels = CubeGridEditing.Voxels(grid, config);
-                int height = 0;
-                bool fits = !CubeGridRules.HasLight(grid.Data, cells[0]) && voxels.FitLight(cells[0], CubeGridEditing.LightAxis, out height);
-                if (!fits) height = 0;
-                var pixels = voxels.LightPixels(CubeGridEditing.LightAxis);
-                if (pixels.Count > 0)
+                var pixels = shaped == CubeGridEditing.Brush.Light ? voxels.LightPixels(CubeGridEditing.LightAxis)
+                    : shaped == CubeGridEditing.Brush.Railing ? voxels.SidePiecePixels(config.railingPrefab, CubeGridEditing.RailingSide(turn))
+                    : panelSide >= 0 ? voxels.SidePiecePixels(config.panelPrefab, panelSide) : null;
+                if (pixels is { Count: > 0 })
                 {
                     Vector3 min = pixels[0], max = pixels[0];
                     foreach (var p in pixels)
@@ -268,9 +327,8 @@ namespace SlimeColorMaker
                         max = Vector3.Max(max, p);
                     }
                     var corner = CubeGridRules.CellBottom(cells[0]) - new Vector3(0.5f, 0f, 0.5f);
-                    var center = corner + ((min + max + Vector3.one) / 2f + Vector3.up * height) / CubeGridRules.CellPixels;
-                    Handles.color = fits ? PlaceColor : RemoveColor;
-                    Handles.DrawWireCube(center, (max - min + Vector3.one) / CubeGridRules.CellPixels);
+                    Handles.color = CubeGridEditing.CanPlace(grid, cells[0], turn, panelSide) ? PlaceColor : RemoveColor;
+                    Handles.DrawWireCube(corner + (min + max + Vector3.one) / 2f / CubeGridRules.CellPixels, (max - min + Vector3.one) / CubeGridRules.CellPixels);
                 }
             }
             // 방벽 붓이면 판이 놓일 면에 사각형을 그린다.

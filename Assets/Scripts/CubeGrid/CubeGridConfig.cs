@@ -40,6 +40,16 @@ namespace SlimeColorMaker
         [Tooltip("천장 조명(칸 맨 위 1픽셀의 막대, 모델은 남북으로 긺). 빌더가 방향대로 돌리고 VoxPaint 칠하는 색을 빛 색으로 맞춘다.")]
         public GameObject lightPrefab;
 
+        [Header("공장 장식 (한 칸 한 종류, 놓는 곳은 프리팹의 설치 규칙, static)")]
+        [Tooltip("상자(반 칸 8³, 루트 = 상자 바닥 가운데, 충돌은 모델 모양). 한 칸에 반 칸 2 × 2 × 2개까지.")]
+        public GameObject cratePrefab;
+
+        [Tooltip("철망 난간(RailingView, 칸 남쪽 면 기준 모델, 루트 = 칸 가운데, 충돌은 판 한 장).")]
+        public GameObject railingPrefab;
+
+        [Tooltip("계기판(칸 남쪽 면 기준 모델, 뒤가 남쪽, 루트 = 칸 가운데, 충돌은 모델 모양).")]
+        public GameObject panelPrefab;
+
         [Header("블록 윗면 코팅")]
         [Tooltip("미끄러운 코팅 설정(기름·얼음의 관성 시간과 재질). 빌더가 '만든 부분/코팅'의 겉모습에 넘긴다.")]
         public SlipperyCoatingSettings coatingSettings;

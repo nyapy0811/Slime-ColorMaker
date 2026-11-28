@@ -1,0 +1,502 @@
+<title>Slime~ColorMaker~ 공장 기물·장식 후보</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Silkscreen&display=swap">
+<style>
+/* 'UI 추가 후보'와 같은 틀. 모의 그림은 1칸 = 16복셀로 캔버스에 직접 그린 등각 복셀(대략의 모양). */
+:root {
+  --bg: #eef0f3; --surface: #ffffff; --fg: #1d2026; --muted: #5e6572; --line: #d5d9e0;
+  --accent: #2f8f86; --accent-ink: #ffffff; --warn: #a3622a; --stage: #e3e6ea;
+  --body: "Noto Sans KR", system-ui, sans-serif; --pixel: "Silkscreen", ui-monospace, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --stage: #262a32; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #15171c; --surface: #1e2128; --fg: #e8eaee; --muted: #9aa1ad; --line: #30343d;
+  --accent: #4fb8ad; --accent-ink: #0d1716; --warn: #d79a5f; --stage: #262a32; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); margin: 0; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 32px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 44px; }
+h1 { font-size: clamp(24px, 4vw, 34px); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-size: 20px; margin: 0 0 4px; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 72ch; margin-top: 10px; }
+.eyebrow { font: 11px var(--pixel); letter-spacing: .08em; color: var(--accent); text-transform: uppercase; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; color: var(--muted); font-size: 13px; }
+.facts b { color: var(--fg); font-weight: 500; }
+.file { font: 12px ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); overflow-wrap: anywhere; }
+
+.hero { display: grid; gap: 10px; }
+.hero canvas { width: 100%; height: auto; aspect-ratio: 16 / 8; background: var(--stage); border-radius: 8px; display: block; }
+.cap { font-size: 13px; color: var(--muted); }
+.keys { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.keys span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 2px; display: inline-block; border: 1px solid var(--line); }
+
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 680px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+td.n { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--muted); }
+td a { color: inherit; }
+.rec { font: 11px var(--pixel); background: var(--accent); color: var(--accent-ink); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+.code { font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; white-space: nowrap; color: var(--muted); }
+.code.new { color: var(--warn); border-color: currentColor; }
+
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 20px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 10px; align-content: start; min-width: 0; scroll-margin-top: 16px; }
+.item canvas { width: 100%; height: auto; aspect-ratio: 3 / 2; background: var(--stage); border-radius: 6px; display: block; }
+.item-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.num { font: 12px var(--pixel); color: var(--muted); }
+.kv { display: grid; grid-template-columns: 64px 1fr; gap: 3px 10px; font-size: 13px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+.group-head { display: grid; gap: 4px; margin-bottom: 14px; }
+.group-head p { color: var(--muted); font-size: 14px; max-width: 72ch; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Slime~ColorMaker~ · art</div>
+    <h1>공장 기물·장식 후보</h1>
+    <p class="lede">모든 맵이 공장이라는 컨셉에 맞춰 더할 만한 기물과 장식을 모았습니다. 월드는 무채색이고 색은 상호작용에만 쓰므로, 장식은 모두 회색이고 기물만 값 색 부분을 가집니다. 그림 속 색은 예시입니다. 모의 그림은 1칸 = 16복셀로 그린 대략의 모양이고, 므엥은 크기 비교용입니다.</p>
+    <div class="facts">
+      <span><b>20개</b> 후보</span>
+      <span>색 원천 <b>4</b> · 새 기물 <b>6</b> · 장식 <b>10</b></span>
+      <span>추천 <b>6</b></span>
+      <span>작성 2026-11-28</span>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="공장 한 구석 예시">
+    <canvas id="hero" width="1600" height="800" role="img" aria-label="공장 한 구석: 벽 환풍기와 배관, 컨베이어 위 들보와 기둥, 크레인 고리, 상자 더미, 드럼통, 므엥"></canvas>
+    <p class="cap">공장 한 구석 예시: 벽 환풍기·배관(11·12), 컨베이어 위 눕힌 기둥과 커넥터(지금 있는 것), 크레인 고리(18), 상자 더미(13), 염료 드럼통(2).</p>
+    <div class="keys">
+      <span><i class="sw" style="background:#959aa1"></i>회색(장식·지형)</span>
+      <span><i class="sw" style="background:#ff5f5f"></i>값 색 부분(예시)</span>
+      <span><i class="sw" style="background:#fff4d6"></i>빛나는 부분(Light)</span>
+      <span><i class="sw" style="background:rgba(185,215,230,.6)"></i>유리(Glass)</span>
+      <span><i class="sw" style="background:#8fd0ff"></i>므엥(크기 비교)</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>한눈에 보기</h2>
+    <p class="cap" style="margin-bottom:12px">코드: <span class="code">프리팹만</span> 모델과 프리팹만 만들면 됨 · <span class="code">있는 방식</span> 지금 코드의 배치 방식을 다시 씀 · <span class="code new">새 규칙</span> 동작 규칙을 새로 정해야 함</p>
+    <div class="table-wrap"><table id="summary">
+      <thead><tr><th>#</th><th>이름</th><th>분류</th><th>붙는 곳</th><th>코드</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section id="groups"></section>
+
+  <footer class="file">Docs/아트/공장 기물·장식 후보.html · 근거: Docs/v2 설계 문서.md(1·5절, 12절 예정·미정), Docs/v2 기물 분류.md</footer>
+</div>
+
+<script>
+// ───────── 복셀 장면 ─────────
+const COL = {
+  G0:'#3b3e44', G1:'#565a61', G2:'#747980', G3:'#959aa1', G4:'#b5b9bf', G5:'#d6d9dd',
+  F:'#7d8289', F2:'#868b92', FE:'#6c7178',
+  R:'#ff5f5f', B:'#58a6ff', Gr:'#5fd27a', Y:'#ffcf48', K:'#16181b', W:'#eef1f4',
+  M:'#8fd0ff', MS:'#aeb6bf', L:'#fff4d6', LR:'#ff9a86'
+};
+const LIGHTS = new Set(['L', 'LR']);
+const GLASS = 'GL';
+// 반투명 부위: [r, g, b, 불투명도]. MG = 므엥 모서리(지금 색 Glass), MF = 므엥 면(어두운 GrayGlass), ME = 눈·입, GG = 회색 슬라임 모서리
+const GLASSES = { GL: [200, 228, 240, .32], MG: [143, 208, 255, .78], MF: [28, 30, 34, .5], ME: [238, 241, 245, .9], GG: [205, 210, 216, .6] };
+const isGlass = c => c in GLASSES;
+
+function scene() {
+  const m = new Map();
+  return {
+    m,
+    set(x, y, z, c) { const k = x + ',' + y + ',' + z; if (c == null) m.delete(k); else m.set(k, c); },
+    get(x, y, z) { return m.get(x + ',' + y + ',' + z); }
+  };
+}
+function box(S, x0, y0, z0, x1, y1, z1, c) {
+  for (let x = x0; x < x1; x++) for (let y = y0; y < y1; y++) for (let z = z0; z < z1; z++) S.set(x, y, z, c);
+}
+function inR(d, r, rin) { return d <= r * r && (rin == null || d > rin * rin); }
+function cylY(S, cx, cz, r, y0, y1, c, rin) {
+  for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) for (let z = Math.floor(cz - r); z <= Math.ceil(cz + r); z++) {
+    const d = (x + .5 - cx) ** 2 + (z + .5 - cz) ** 2;
+    if (inR(d, r, rin)) for (let y = y0; y < y1; y++) S.set(x, y, z, c);
+  }
+}
+function cylX(S, cy, cz, r, x0, x1, c, rin) {
+  for (let y = Math.floor(cy - r); y <= Math.ceil(cy + r); y++) for (let z = Math.floor(cz - r); z <= Math.ceil(cz + r); z++) {
+    const d = (y + .5 - cy) ** 2 + (z + .5 - cz) ** 2;
+    if (inR(d, r, rin)) for (let x = x0; x < x1; x++) S.set(x, y, z, c);
+  }
+}
+function cylZ(S, cx, cy, r, z0, z1, c, rin) {
+  for (let x = Math.floor(cx - r); x <= Math.ceil(cx + r); x++) for (let y = Math.floor(cy - r); y <= Math.ceil(cy + r); y++) {
+    const d = (x + .5 - cx) ** 2 + (y + .5 - cy) ** 2;
+    if (inR(d, r, rin)) for (let z = z0; z < z1; z++) S.set(x, y, z, c);
+  }
+}
+function floor(S, nx, nz) {
+  for (let x = 0; x < nx * 16; x++) for (let z = 0; z < nz * 16; z++) {
+    const edge = x % 16 === 0 || z % 16 === 0;
+    S.set(x, -1, z, edge ? 'FE' : (((x >> 4) + (z >> 4)) % 2 ? 'F' : 'F2'));
+  }
+}
+function block(S, i, j, k) {
+  const x0 = i * 16, y0 = j * 16, z0 = k * 16;
+  for (let x = x0; x < x0 + 16; x++) for (let y = y0; y < y0 + 16; y++) for (let z = z0; z < z0 + 16; z++) {
+    const e = (x === x0 || x === x0 + 15) + (y === y0 || y === y0 + 15) + (z === z0 || z === z0 + 15);
+    S.set(x, y, z, e >= 2 ? 'G2' : 'G3');
+  }
+}
+function crate(S, x0, y0, z0, sx, sy, sz) {
+  for (let x = x0; x < x0 + sx; x++) for (let y = y0; y < y0 + sy; y++) for (let z = z0; z < z0 + sz; z++) {
+    const e = (x === x0 || x === x0 + sx - 1) + (y === y0 || y === y0 + sy - 1) + (z === z0 || z === z0 + sz - 1);
+    const mid = y === y0 + (sy >> 1);
+    S.set(x, y, z, e >= 2 ? 'G2' : (mid && e >= 1 ? 'G3' : 'G4'));
+  }
+}
+// 므엥(Meueng.bbmodel 그대로): 8³ 정육면체, 모서리 = 지금 색 Glass, 면 = 어두운 GrayGlass, 가운데 2³ 핵 = 지금 색, 앞면(+z)에 눈·입.
+// 'MS'를 주면 회색 슬라임(배양 탱크 속).
+function meueng(S, cx, cz, y0, c) {
+  const gray = c === 'MS';
+  const FACE = { '2,2': 1, '2,5': 1, '4,3': 1, '4,4': 1 };
+  for (let lx = 0; lx < 8; lx++) for (let ly = 0; ly < 8; ly++) for (let lz = 0; lz < 8; lz++) {
+    const e = (lx === 0 || lx === 7) + (ly === 0 || ly === 7) + (lz === 0 || lz === 7);
+    let v = e >= 2 ? (gray ? 'GG' : 'MG') : 'MF';
+    if (lx >= 3 && lx <= 4 && ly >= 4 && ly <= 5 && lz >= 3 && lz <= 4) v = gray ? 'G4' : 'M';
+    if (lz === 7 && FACE[(7 - ly) + ',' + lx]) v = 'ME';
+    S.set(cx - 4 + lx, y0 + ly, cz - 4 + lz, v);
+  }
+}
+// 세운 H빔(칸 i,k, 높이 j부터 n칸): 플랜지가 x쪽(평평한 면 = 동·서)
+function pillar(S, i, k, j, n) {
+  const cx = i * 16 + 8, cz = k * 16 + 8, y0 = j * 16, y1 = (j + n) * 16;
+  box(S, cx - 4, y0, cz - 4, cx - 2, y1, cz + 4, 'G3');
+  box(S, cx + 2, y0, cz - 4, cx + 4, y1, cz + 4, 'G3');
+  box(S, cx - 2, y0, cz - 1, cx + 2, y1, cz + 1, 'G3');
+}
+// 눕힌 H빔(x 방향, 칸 높이 j, 줄 k): 평평한 면이 위
+function beamX(S, x0, x1, j, k, c) {
+  const yb = j * 16, cz = k * 16 + 8;
+  box(S, x0, yb + 4, cz - 4, x1, yb + 6, cz + 4, c);
+  box(S, x0, yb + 10, cz - 4, x1, yb + 12, cz + 4, c);
+  box(S, x0, yb + 6, cz - 1, x1, yb + 10, cz + 1, c);
+}
+function conveyor(S, x0, x1, k) {
+  const z0 = k * 16;
+  box(S, x0, 0, z0 + 1, x1, 13, z0 + 15, 'G2');
+  for (let x = x0; x < x1; x++) box(S, x, 13, z0 + 2, x + 1, 15, z0 + 14, (x % 4 === 0) ? 'G1' : 'G0');
+  box(S, x0, 0, z0, x1, 16, z0 + 2, 'G3');
+  box(S, x0, 0, z0 + 14, x1, 16, z0 + 16, 'G3');
+}
+function drum(S, cx, cz, c) {
+  cylY(S, cx, cz, 6, 0, 14, 'G2');
+  cylY(S, cx, cz, 6.4, 2, 3, 'G4'); cylY(S, cx, cz, 6.4, 11, 12, 'G4');
+  cylY(S, cx, cz, 6, 5, 9, c);
+  cylY(S, cx, cz, 5.2, 14, 15, 'G3');
+  box(S, cx + 2, 15, cz + 1, cx + 4, 16, cz + 3, 'G1');
+}
+function fan(S, cx, cy, zf, r) {
+  box(S, cx - r - 1, cy - r - 1, zf, cx + r + 1, cy + r + 1, zf + 2, 'G1');
+  cylZ(S, cx, cy, r, zf, zf + 1, 'G0'); cylZ(S, cx, cy, r, zf + 1, zf + 2, null);
+  for (let x = cx - r; x <= cx + r; x++) for (let y = cy - r; y <= cy + r; y++) {
+    const dx = x + .5 - cx, dy = y + .5 - cy, d = Math.hypot(dx, dy);
+    if (d > r - .6 || d < 1.8) continue;
+    const a = ((Math.atan2(dy, dx) * 180 / Math.PI) % 90 + 90) % 90;
+    if (a > 8 && a < 42) S.set(x, y, zf + 1, 'G4');
+  }
+  cylZ(S, cx, cy, 2, zf + 1, zf + 3, 'G2');
+}
+function chain(S, x, z, yTop, yBot) {
+  for (let y = yBot; y < yTop; y++) {
+    if ((y >> 1) % 2) { S.set(x - 1, y, z, 'G2'); S.set(x, y, z, 'G2'); }
+    else { S.set(x, y, z - 1, 'G2'); S.set(x, y, z, 'G2'); }
+  }
+}
+function hook(S, cx, z, yTop) {
+  box(S, cx - 1, yTop - 4, z - 1, cx + 1, yTop, z + 1, 'G4');
+  const ox = cx - 3, oy = yTop - 6.5;
+  for (let t = 0; t <= 200; t += 6) {
+    const a = t * Math.PI / 180;
+    const x = Math.round(ox + 2.5 * Math.cos(a)), y = Math.round(oy - 2.5 * Math.sin(a));
+    box(S, x, y, z - 1, x + 1, y + 1, z + 1, 'G4');
+  }
+}
+
+// ───────── 등각 그리기 ─────────
+const C30 = Math.cos(Math.PI / 6);
+function shade(hex, f) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n >> 16) & 255) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
+  return `rgb(${r},${g},${b})`;
+}
+const fillCache = new Map();
+function faceFill(c, face) {
+  const key = c + face;
+  if (fillCache.has(key)) return fillCache.get(key);
+  let v;
+  if (isGlass(c)) { const [r, g, b, al] = GLASSES[c], f = [1, .86, .72][face]; v = `rgba(${Math.round(r * f)},${Math.round(g * f)},${Math.round(b * f)},${al})`; }
+  else if (LIGHTS.has(c)) v = shade(COL[c], [1, .96, .92][face]);
+  else v = shade(COL[c], [1, .84, .68][face]);
+  fillCache.set(key, v);
+  return v;
+}
+function render(canvas, S) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const vox = [];
+  let mnx = 1e9, mny = 1e9, mnz = 1e9, mxx = -1e9, mxy = -1e9, mxz = -1e9;
+  for (const [k, c] of S.m) {
+    const p = k.split(','); const x = +p[0], y = +p[1], z = +p[2];
+    vox.push([x, y, z, c]);
+    if (x < mnx) mnx = x; if (y < mny) mny = y; if (z < mnz) mnz = z;
+    if (x > mxx) mxx = x; if (y > mxy) mxy = y; if (z > mxz) mxz = z;
+  }
+  const P = (x, y, z) => [(x - z) * C30, (x + z) * .5 - y];
+  let a = 1e9, b = 1e9, c2 = -1e9, d = -1e9;
+  for (const x of [mnx, mxx + 1]) for (const y of [mny, mxy + 1]) for (const z of [mnz, mxz + 1]) {
+    const [u, v] = P(x, y, z);
+    a = Math.min(a, u); b = Math.min(b, v); c2 = Math.max(c2, u); d = Math.max(d, v);
+  }
+  const s = Math.min(W * .9 / (c2 - a), H * .88 / (d - b));
+  const ox = W / 2 - (a + c2) / 2 * s, oy = H / 2 - (b + d) / 2 * s;
+  const Q = (x, y, z) => { const [u, v] = P(x, y, z); return [ox + u * s, oy + v * s]; };
+  vox.sort((p, q) => (p[0] + p[1] + p[2]) - (q[0] + q[1] + q[2]));
+  const hides = (c, n) => n !== undefined && (!isGlass(n) || isGlass(c));
+  ctx.lineJoin = 'round';
+  const quad = (pts, fill, glass) => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < 4; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+    ctx.closePath();
+    ctx.fillStyle = fill; ctx.fill();
+    if (!glass) { ctx.strokeStyle = fill; ctx.lineWidth = .8; ctx.stroke(); }
+  };
+  for (const [x, y, z, c] of vox) {
+    const g = isGlass(c);
+    if (!hides(c, S.get(x, y + 1, z))) quad([Q(x, y + 1, z), Q(x + 1, y + 1, z), Q(x + 1, y + 1, z + 1), Q(x, y + 1, z + 1)], faceFill(c, 0), g);
+    if (!hides(c, S.get(x + 1, y, z))) quad([Q(x + 1, y, z), Q(x + 1, y + 1, z), Q(x + 1, y + 1, z + 1), Q(x + 1, y, z + 1)], faceFill(c, 1), g);
+    if (!hides(c, S.get(x, y, z + 1))) quad([Q(x, y, z + 1), Q(x + 1, y, z + 1), Q(x + 1, y + 1, z + 1), Q(x, y + 1, z + 1)], faceFill(c, 2), g);
+  }
+}
+
+// ───────── 후보 ─────────
+const GROUPS = [
+  { id: 'sources', title: '색 원천', note: '동작은 지금 색 원천과 같고 모양만 공장 사물입니다. 흡수하면 흑백이 됩니다. 컴포넌트는 그대로 두고 프리팹만 사물 이름으로 만듭니다.' },
+  { id: 'fixtures', title: '새 기물', note: '공장 장치 모양의 새 퍼즐 요소입니다. 동작 규칙을 메인 세션과 사용자가 정해야 합니다.' },
+  { id: 'decor', title: '장식', note: '게임 규칙에는 들어가지 않는 회색 소품입니다. 지금 있는 배치 방식(기둥 자동 연결, 방벽 면 붙이기, 천장 조명 판정, 코팅 칠하기)을 다시 쓸 수 있는 것이 많습니다.' }
+];
+
+const ITEMS = [
+  { n: 1, g: 'sources', name: '페인트 통', rec: true, kind: '색 원천', mount: '칸 바닥 가운데', code: '프리팹만',
+    does: '닿으면 통 안의 페인트 색을 흡수하고, 통은 흑백이 됩니다.',
+    model: '지름 9 · 높이 9. 회색 통, 값 색은 페인트 면과 띠.',
+    decide: '손잡이를 둘지.',
+    draw(S) { floor(S, 2, 1); cylY(S, 8, 8, 4.5, 0, 8, 'G4'); cylY(S, 8, 8, 4.5, 3, 6, 'R'); cylY(S, 8, 8, 4.5, 8, 9, 'G4', 3.5); cylY(S, 8, 8, 3.5, 7, 8, 'R');
+      box(S, 3, 8, 8, 4, 12, 9, 'G1'); box(S, 12, 8, 8, 13, 12, 9, 'G1'); box(S, 4, 11, 8, 12, 12, 9, 'G1'); meueng(S, 24, 8, 0, 'M'); } },
+  { n: 2, g: 'sources', name: '염료 드럼통', kind: '색 원천', mount: '칸 바닥 가운데', code: '프리팹만',
+    does: '공장 염료가 든 큰 통. 닿으면 흡수합니다.',
+    model: '지름 12 · 높이 15. 테두리 띠 둘, 값 색 띠 하나, 마개.',
+    decide: '큰 통도 오브처럼 지나갈 수 있게 둘지(트리거), 막을지.',
+    draw(S) { floor(S, 2, 1); drum(S, 8, 8, 'B'); meueng(S, 24, 8, 0, 'M'); } },
+  { n: 3, g: 'sources', name: '시약 플라스크', kind: '색 원천', mount: '칸 바닥 가운데', code: '프리팹만',
+    does: '실험실 구역용. 유리병 속 색 액체를 흡수합니다.',
+    model: '지름 9 · 높이 13. Glass 병 안에 Color 액체, 회색 마개.',
+    decide: '반투명 유리 너머의 값 색이 잘 보이는지(Unity에서 확인).',
+    draw(S) { floor(S, 2, 1); cylY(S, 8, 8, 4.5, 0, 6, GLASS); cylY(S, 8, 8, 3.5, 6, 7, GLASS); cylY(S, 8, 8, 1.6, 7, 12, GLASS);
+      cylY(S, 8, 8, 3.4, 1, 5, 'Gr'); cylY(S, 8, 8, 1.6, 12, 13, 'G1'); meueng(S, 24, 8, 0, 'M'); } },
+  { n: 4, g: 'sources', name: '가스 실린더', kind: '색 원천', mount: '칸 바닥 가운데', code: '프리팹만',
+    does: '거치대에 묶인 고압 통. 닿으면 색 가스를 흡수합니다.',
+    model: '지름 6 · 높이 16. 회색 통과 밸브, 값 색 띠, 거치대 끈.',
+    decide: '거치대 없이 통만 둘지.',
+    draw(S) { floor(S, 2, 1); box(S, 2, 0, 2, 3, 12, 3, 'G1'); box(S, 13, 0, 2, 14, 12, 3, 'G1'); box(S, 2, 10, 2, 14, 11, 3, 'G1');
+      cylY(S, 8, 8, 3.2, 0, 12, 'G4'); cylY(S, 8, 8, 3.2, 8, 11, 'Y'); cylY(S, 8, 8, 2.3, 12, 13, 'G4'); cylY(S, 8, 8, 1, 13, 15, 'G1');
+      box(S, 6, 15, 7, 11, 16, 9, 'G1'); cylY(S, 8, 8, 3.7, 5, 6, 'G1', 3.2); meueng(S, 24, 8, 0, 'M'); } },
+
+  { n: 5, g: 'fixtures', name: '슬라임 이동관', rec: true, kind: '새 기물 · 이동 계열', mount: '입구·출구는 칸 바닥, 관은 칸을 이어 놓음', code: '새 규칙',
+    does: '입구 깔때기에 닿으면 관을 지나 출구로 나옵니다. 슬라임인 므엥이 공장 배관을 지나다니는 그림이라 컨셉에 가장 잘 맞습니다.',
+    model: '깔때기 12×11, 관 지름 6. 직선·꺾임 관 조각을 기둥처럼 이웃을 보고 잇습니다.',
+    decide: '한 방향만인지 양쪽인지, 관 속이 보일지(유리 관), 지나는 동안 연출.',
+    draw(S) { floor(S, 3, 2);
+      for (const x0 of [0, 32]) { box(S, x0 + 3, 0, 3, x0 + 13, 9, 13, 'G2'); box(S, x0 + 2, 9, 2, x0 + 14, 11, 14, 'G3'); box(S, x0 + 4, 10, 4, x0 + 12, 11, 12, 'K'); }
+      cylX(S, 5, 8, 3, 13, 35, 'G3'); cylX(S, 5, 8, 3.7, 18, 19, 'G4'); cylX(S, 5, 8, 3.7, 29, 30, 'G4');
+      meueng(S, 24, 26, 0, 'M'); } },
+  { n: 6, g: 'fixtures', name: '스윙 플랩', kind: '새 기물 · 문 계열 (일방통행)', mount: '칸의 한 면(옆)', code: '새 규칙',
+    does: '한쪽에서만 밀고 지나갈 수 있고 반대쪽에서는 벽입니다. 기물 분류의 일방통행 성질에 처음 들어갈 종류입니다.',
+    model: '틀 + 위에 경첩이 달린 판. 바닥 화살표는 칠하기(20번)로.',
+    decide: '색 조건 없이 늘 일방통행인지, 색이 맞을 때만 열리는지.',
+    draw(S) { floor(S, 2, 1);
+      for (const ox of [6, 22]) for (let z = 4; z < 13; z++) { const x = ox + Math.abs(z - 8) * -1 + 4; S.set(x, -1, z, 'G5'); S.set(x + 1, -1, z, 'G5'); }
+      box(S, 15, 0, 0, 17, 16, 2, 'G1'); box(S, 15, 0, 14, 17, 16, 16, 'G1'); box(S, 15, 14, 0, 17, 16, 16, 'G1');
+      for (let y = 1; y < 14; y++) { const off = Math.round((13 - y) * .55); box(S, 16 + off, y, 2, 17 + off, y + 1, 14, y < 3 ? 'G2' : 'G3'); } } },
+  { n: 7, g: 'fixtures', name: '롤 셔터', rec: true, kind: '새 기물 · 문 계열', mount: '칸 하나(벽 사이)', code: '새 규칙',
+    does: '요구 색으로 열리고, 지나가면 다시 내려와 닫힙니다. 설계 문서 미정 항목인 저절로 닫히는 문을 공장 셔터로 만든 것입니다.',
+    model: '위 감개 상자 + 양옆 레일 + 1픽셀 띠 판. 값 색은 상자 앞 띠.',
+    decide: '닫힌 뒤 색을 다시 맞추면 또 열리는지, 되돌아갈 수 없게 둘지.',
+    draw(S) { floor(S, 3, 2); block(S, 0, 0, 0); block(S, 2, 0, 0);
+      box(S, 16, 13, 5, 32, 16, 11, 'G2'); box(S, 18, 14, 10, 30, 15, 11, 'R');
+      box(S, 16, 0, 6, 17, 13, 10, 'G1'); box(S, 31, 0, 6, 32, 13, 10, 'G1');
+      for (let y = 5; y < 13; y++) box(S, 17, y, 7, 31, y + 1, 9, y % 2 ? 'G3' : 'G4');
+      box(S, 17, 4, 6, 31, 5, 10, 'G1'); meueng(S, 24, 24, 0, 'M'); } },
+  { n: 8, g: 'fixtures', name: '색 검사대', kind: '새 기물 · 문 계열 (새 성질: 색상 검사)', mount: '칸 하나', code: '새 규칙',
+    does: '지금 색이 기준 이상이면 지나가고, 색은 빼지 않습니다. 레이저 벽과 달리 줄지 않아서 이만큼 모아 오라는 관문이 됩니다.',
+    model: '아치 + 위 표시판(값 색) + 값 색으로 빛나는 줄 넷(Light).',
+    decide: '기준 이상인지 정확히 같은지.',
+    draw(S) { floor(S, 1, 2); box(S, 1, 0, 5, 15, 1, 11, 'G1');
+      box(S, 1, 0, 6, 3, 15, 10, 'G2'); box(S, 13, 0, 6, 15, 15, 10, 'G2'); box(S, 1, 13, 6, 15, 16, 10, 'G2');
+      box(S, 4, 16, 7, 12, 19, 9, 'G1'); box(S, 5, 17, 8, 11, 18, 9, 'R');
+      for (const y of [3, 6, 9, 12]) box(S, 3, y, 8, 13, y + 1, 9, 'LR'); meueng(S, 8, 24, 0, 'M'); } },
+  { n: 9, g: 'fixtures', name: '승강 발판', kind: '새 기물 · 이동 계열', mount: '칸 바닥', code: '새 규칙',
+    does: '올라서면 정한 높이까지 오르내립니다. 계단 대신 높이를 바꾸는 길입니다.',
+    model: '받침 + 가위 다리 + 발판(가장자리 회색 줄무늬).',
+    decide: '맵은 한 층이라는 결정(층간 이동 없앰)과 겹치지 않는지, 몇 칸까지 오르는지.',
+    draw(S) { floor(S, 2, 1); block(S, 1, 0, 0); box(S, 1, 0, 1, 15, 1, 15, 'G1');
+      for (let t = 0; t <= 12; t++) { const y = 1 + Math.round(t * .5); for (const z of [2, 13]) { S.set(2 + t, y, z, 'G1'); S.set(14 - t, y, z, 'G1'); } }
+      box(S, 1, 7, 1, 15, 9, 15, 'G3');
+      for (let x = 1; x < 15; x++) for (let z = 1; z < 15; z++) if (x < 3 || x > 12 || z < 3 || z > 12) S.set(x, 8, z, ((x + z) >> 1) % 2 ? 'G0' : 'G5');
+      meueng(S, 8, 8, 9, 'M'); } },
+  { n: 10, g: 'fixtures', name: '피스톤 밀개', kind: '새 기물 · 이동 계열', mount: '블록 옆면', code: '새 규칙',
+    does: '정한 박자로 튀어나와 앞 칸의 캐릭터를 한 칸 밉니다. 다치지는 않습니다.',
+    model: '막대 + 머리판(가장자리 줄무늬). 블록 면에 붙습니다.',
+    decide: '박자로 움직일지, 닿으면 움직일지. 컨베이어의 밀기를 다시 쓸 수 있는지.',
+    draw(S) { floor(S, 3, 1); block(S, 0, 0, 0); cylX(S, 8, 8, 1.6, 16, 23, 'G5'); box(S, 23, 2, 2, 25, 14, 14, 'G2');
+      for (let y = 2; y < 14; y++) for (let z = 2; z < 14; z++) if (y < 4 || y > 11 || z < 4 || z > 11) S.set(24, y, z, ((y + z) >> 1) % 2 ? 'G0' : 'G5');
+      meueng(S, 36, 8, 0, 'M'); } },
+
+  { n: 11, g: 'decor', name: '벽 배관', rec: true, kind: '장식', mount: '블록 옆면, 칸을 이어 놓음', code: '있는 방식',
+    does: '벽을 따라 지나가는 관. 직선·꺾임·T·밸브 손잡이 조각이 이웃을 보고 저절로 이어집니다.',
+    model: '관 지름 5 + 이음 고리 + 벽 고정쇠. 꺾임은 모서리 조각.',
+    decide: '바닥·천장에도 놓을지.',
+    draw(S) { floor(S, 2, 2); for (const i of [0, 1]) for (const j of [0, 1]) block(S, i, j, 0);
+      cylX(S, 26, 19, 2.5, 0, 22, 'G4'); cylY(S, 22, 19, 2.5, 0, 28, 'G4'); box(S, 19, 23, 16, 25, 29, 22, 'G2');
+      cylX(S, 26, 19, 3, 8, 9, 'G2'); cylY(S, 22, 19, 3, 9, 10, 'G2'); box(S, 4, 23, 16, 6, 29, 17, 'G1');
+      box(S, 21, 14, 21, 23, 16, 22, 'G1'); cylZ(S, 22, 15, 4, 22, 23, 'G1', 3); box(S, 18, 14, 22, 26, 16, 23, 'G1'); box(S, 21, 11, 22, 23, 19, 23, 'G1'); } },
+  { n: 12, g: 'decor', name: '환풍기', kind: '장식', mount: '블록 옆면', code: '있는 방식',
+    does: '날개가 천천히 돕니다. 뒤로 빛이 새어 나오게 하면 공장 분위기가 납니다.',
+    model: '틀 18×18, 날개 넷, 가운데 축.',
+    decide: '날개 회전 속도, 뒤에 빛(Light)을 둘지.',
+    draw(S) { floor(S, 2, 2); for (const i of [0, 1]) for (const j of [0, 1]) block(S, i, j, 0); fan(S, 16, 16, 16, 8); } },
+  { n: 13, g: 'decor', name: '상자 더미', rec: true, kind: '장식 · 지형', mount: '칸 바닥', code: '있는 방식',
+    does: '팔레트 위에 쌓인 상자. 길을 막는 벽 대신 쓰는 장애물이 됩니다.',
+    model: '팔레트 14×14 + 상자 크기 셋. 모델 모양 그대로 부딪힙니다.',
+    decide: '쌓는 모양을 몇 가지로 둘지(한 프리팹 + 모양 값).',
+    draw(S) { floor(S, 2, 1); box(S, 1, 0, 1, 15, 2, 15, 'G1'); for (const z of [4, 5, 10, 11]) box(S, 1, 0, z, 15, 1, z + 1, null);
+      crate(S, 2, 2, 2, 6, 6, 6); crate(S, 8, 2, 2, 6, 6, 6); crate(S, 2, 2, 8, 6, 6, 6); crate(S, 3, 8, 3, 6, 6, 6);
+      crate(S, 19, 0, 3, 10, 10, 10); } },
+  { n: 14, g: 'decor', name: '철망 난간', rec: true, kind: '장식 · 지형', mount: '블록 윗면 가장자리(칸의 한 면)', code: '있는 방식',
+    does: '낭떠러지 쪽에 세워 떨어지지 않게 막습니다. 이어 놓으면 기둥이 겹치지 않게 정리됩니다.',
+    model: '기둥 · 위·가운데 난간대 · 1픽셀 철망 · 발판 턱.',
+    decide: '므엥이 철망 너머로 보이는 높이(지금 12).',
+    draw(S) { floor(S, 3, 2); for (const i of [0, 1, 2]) block(S, i, 0, 0);
+      box(S, 0, 16, 13, 48, 18, 15, 'G2');
+      for (let x = 0; x < 48; x++) for (let y = 18; y < 27; y++) if ((x + y) % 4 === 0 || ((x - y) % 4 + 4) % 4 === 0) S.set(x, y, 14, 'G2');
+      for (const x of [0, 16, 32, 46]) box(S, x, 16, 13, x + 2, 28, 15, 'G1');
+      box(S, 0, 27, 13, 48, 29, 15, 'G1'); box(S, 0, 21, 13, 48, 22, 15, 'G1'); meueng(S, 24, 6, 16, 'M'); } },
+  { n: 15, g: 'decor', name: '격자 바닥', kind: '지형 (블록 종류)', mount: '블록 자리', code: '있는 방식',
+    does: '밟을 수 있고 아래가 들여다보입니다. 아래로 지나가는 배관이나 컨베이어를 보여 주기 좋습니다.',
+    model: '틀 + 2픽셀 간격 살, 두께 3. 아래는 비어 있습니다.',
+    decide: '틈으로 흔적·코팅이 어떻게 보일지, 면 숨기기 예외.',
+    draw(S) { floor(S, 3, 2); for (const i of [0, 1, 2]) for (const k of [0, 1]) block(S, i, 0, k);
+      box(S, 16, 0, 0, 32, 16, 16, null); box(S, 16, 13, 0, 32, 16, 16, 'G1'); box(S, 18, 13, 2, 30, 16, 14, null);
+      for (let x = 18; x < 30; x += 2) box(S, x, 13, 2, x + 1, 16, 14, 'G1'); box(S, 18, 14, 8, 30, 15, 9, 'G1');
+      cylX(S, 5, 8, 2.5, 16, 32, 'G4'); meueng(S, 8, 24, 16, 'M'); } },
+  { n: 16, g: 'decor', name: '계기판', kind: '장식', mount: '블록 옆면', code: '있는 방식',
+    does: '압력 계기와 단추가 달린 판. 바늘이 흔들리고 단추 불이 깜빡입니다.',
+    model: '판 26×18, 계기 둘(흰 판 + 바늘), 단추 셋(일부 Light), 레버.',
+    decide: '단추 불빛 색(회색 월드라 흰·연한 빛 권장).',
+    draw(S) { floor(S, 2, 2); for (const i of [0, 1]) for (const j of [0, 1]) block(S, i, j, 0);
+      box(S, 3, 6, 16, 29, 24, 18, 'G2');
+      for (const [gx, ang] of [[10, 2.3], [22, .9]]) { cylZ(S, gx, 17, 4, 18, 19, 'G5'); cylZ(S, gx, 17, 4.7, 18, 19, 'G1', 4);
+        for (let t = 0; t < 4; t++) S.set(Math.floor(gx + Math.cos(ang) * t), Math.floor(17 + Math.sin(ang) * t), 18, 'K'); }
+      box(S, 6, 9, 18, 8, 11, 19, 'L'); box(S, 10, 9, 18, 12, 11, 19, 'LR'); box(S, 14, 9, 18, 16, 11, 19, 'G0');
+      box(S, 23, 8, 18, 24, 13, 20, 'G1'); box(S, 22, 12, 19, 25, 14, 21, 'G0'); cylY(S, 16, 17, 1.5, 24, 32, 'G3'); } },
+  { n: 17, g: 'decor', name: '경광등', kind: '장식 (조명)', mount: '블록 옆면 · 천장', code: '있는 방식',
+    does: '빙글 도는 빛을 냅니다. 구역 입구나 기물 옆에 두어 눈길을 끕니다.',
+    model: '받침 + 덮개(Light). 빛 색은 천장 조명처럼 놓을 때 고릅니다.',
+    decide: '색이 상호작용을 뜻하므로 기본은 흰색, 색 있는 빛은 기물 곁에만 쓸지.',
+    draw(S) { floor(S, 2, 2); for (const i of [0, 1]) for (const j of [0, 1]) block(S, i, j, 0);
+      box(S, 14, 21, 16, 18, 23, 20, 'G1'); cylY(S, 16, 19, 2.6, 23, 24, 'G1'); cylY(S, 16, 19, 2.3, 24, 28, 'LR'); cylY(S, 16, 19, 1.2, 28, 29, 'G1'); } },
+  { n: 18, g: 'decor', name: '크레인 고리', kind: '장식', mount: '눕힌 기둥·블록 아랫면', code: '있는 방식',
+    does: '들보에 매달린 사슬과 고리. 살짝 흔들립니다.',
+    model: '도르래 상자 + 사슬(2픽셀 고리) + 고리. 길이는 놓을 때 고름.',
+    decide: '사슬 길이를 칸 단위로 고를지, 고리에 상자를 매달지.',
+    draw(S) { floor(S, 3, 1); beamX(S, 0, 48, 2, 0, 'G3'); box(S, 20, 32, 3, 28, 36, 13, 'G1');
+      chain(S, 24, 8, 32, 14); hook(S, 24, 8, 14); } },
+  { n: 19, g: 'decor', name: '슬라임 배양 탱크', kind: '장식 (배경 이야기)', mount: '칸 바닥, 높이 2칸', code: '있는 방식',
+    does: '유리관 속에 회색 슬라임이 떠 있습니다. 므엥킹의 공장에서 슬라임을 키운다는 배경을 말없이 보여 줍니다.',
+    model: '받침·뚜껑 + 유리관(지름 11) + 회색 슬라임 + 거품.',
+    decide: '두 칸 높이(여러 칸 기물은 아직 예정)로 둘지 한 칸으로 줄일지.',
+    draw(S) { floor(S, 2, 1);
+      for (const [cx, full] of [[8, true], [24, false]]) { cylY(S, cx, 8, 6.5, 0, 3, 'G1'); cylY(S, cx, 8, 5.5, 3, 27, GLASS); cylY(S, cx, 8, 6.5, 27, 30, 'G1'); cylY(S, cx, 8, 1.5, 30, 32, 'G2');
+        if (full) { meueng(S, cx, 8, 9, 'MS'); for (const [bx, by, bz] of [[6, 19, 9], [9, 22, 7], [7, 24, 8]]) S.set(bx, by, bz, 'W'); } } } },
+  { n: 20, g: 'decor', name: '바닥 경고 줄무늬', kind: '장식 (칠하기)', mount: '블록 윗면 픽셀', code: '있는 방식',
+    does: '회색 두 단계의 사선 줄. 통로·위험 구역·기물 앞을 표시합니다. 미끄럽지 않습니다.',
+    model: '모델 없음. 코팅 붓처럼 블록 윗면 16×16 픽셀에 칠합니다.',
+    decide: '줄 간격과 회색 두 값, 화살표 같은 다른 무늬도 둘지.',
+    draw(S) { floor(S, 3, 2);
+      for (let x = 0; x < 48; x++) for (const z of [16, 17, 18, 29, 30, 31]) S.set(x, -1, z, ((x + z) >> 2) % 2 ? 'G0' : 'G5');
+      meueng(S, 24, 24, 0, 'M'); } }
+];
+
+// 대표 장면
+function heroScene(S) {
+  floor(S, 4, 3);
+  for (let i = 0; i < 4; i++) for (const j of [0, 1]) block(S, i, j, 0);
+  fan(S, 16, 23, 16, 7);
+  cylX(S, 27, 19, 2.5, 28, 64, 'G4'); cylY(S, 40, 19, 2.5, 16, 27, 'G4'); box(S, 37, 24, 16, 43, 30, 22, 'G2');
+  box(S, 39, 19, 21, 41, 21, 22, 'G1'); cylZ(S, 40, 20, 3.5, 22, 23, 'G1', 2.5);
+  conveyor(S, 0, 48, 1);
+  crate(S, 4, 16, 19, 8, 8, 10);
+  pillar(S, 3, 1, 0, 3);
+  beamX(S, 0, 48, 2, 1, 'G3'); beamX(S, 48, 52, 2, 1, 'G2');
+  box(S, 22, 32, 19, 30, 36, 29, 'G1'); chain(S, 26, 24, 32, 26); hook(S, 26, 24, 26);
+  box(S, 1, 0, 33, 15, 2, 47, 'G1'); crate(S, 2, 2, 34, 6, 6, 6); crate(S, 8, 2, 34, 6, 6, 6); crate(S, 2, 2, 40, 6, 6, 6); crate(S, 3, 8, 35, 6, 6, 6);
+  drum(S, 24, 40, 'R');
+  meueng(S, 40, 40, 0, 'M');
+  cylY(S, 56, 40, 3.2, 0, 12, 'G4'); cylY(S, 56, 40, 2.3, 12, 13, 'G4'); cylY(S, 56, 40, 1, 13, 15, 'G1');
+}
+
+// ───────── 페이지 채우기 ─────────
+const tbody = document.querySelector('#summary tbody');
+for (const it of ITEMS) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="n">${it.n}</td><td><a href="#item-${it.n}">${it.name}</a></td><td>${it.kind}</td><td>${it.mount}</td>` +
+    `<td><span class="code${it.code === '새 규칙' ? ' new' : ''}">${it.code}</span></td><td>${it.rec ? '<span class="rec">추천</span>' : ''}</td>`;
+  tbody.appendChild(tr);
+}
+const groupsEl = document.getElementById('groups');
+groupsEl.style.display = 'grid'; groupsEl.style.gap = '40px';
+const jobs = [];
+for (const g of GROUPS) {
+  const sec = document.createElement('section');
+  sec.id = g.id;
+  sec.innerHTML = `<div class="group-head"><h2>${g.title}</h2><p>${g.note}</p></div><div class="items"></div>`;
+  const list = sec.querySelector('.items');
+  for (const it of ITEMS.filter(i => i.g === g.id)) {
+    const art = document.createElement('article');
+    art.className = 'item'; art.id = 'item-' + it.n;
+    art.innerHTML = `<canvas width="720" height="480" role="img" aria-label="${it.name} 모의 그림"></canvas>
+      <div class="item-head"><span class="num">#${it.n}</span><h3>${it.name}</h3>${it.rec ? '<span class="rec">추천</span>' : ''}<span class="code${it.code === '새 규칙' ? ' new' : ''}">${it.code}</span></div>
+      <dl class="kv"><dt>분류</dt><dd>${it.kind}</dd><dt>붙는 곳</dt><dd>${it.mount}</dd><dt>하는 일</dt><dd>${it.does}</dd><dt>모델</dt><dd>${it.model}</dd><dt>정할 것</dt><dd>${it.decide}</dd></dl>`;
+    list.appendChild(art);
+    jobs.push([art.querySelector('canvas'), it.draw]);
+  }
+  groupsEl.appendChild(sec);
+}
+jobs.unshift([document.getElementById('hero'), heroScene]);
+(function next() {
+  const job = jobs.shift(); if (!job) return;
+  const S = scene(); job[1](S); render(job[0], S);
+  setTimeout(next, 0);
+})();
+</script>

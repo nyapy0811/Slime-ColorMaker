@@ -34,6 +34,10 @@ namespace SlimeColorMaker
         /// <summary>켜고 끄는 모델 전부.</summary>
         public GameObject[] Models => poseModels.Concat(connectorModels).ToArray();
 
+        /// <summary>놓인 모양 모델의 회전(프리팹 루트 기준). 설치 규칙의 기물 기준 방향이 이것을 따른다(눕힌 기둥의 아랫면 = 들보 끝 쪽).</summary>
+        public Quaternion PoseRotation(PillarPose pose) =>
+            poseModels[(int)pose] != null ? poseModels[(int)pose].transform.localRotation : Quaternion.identity;
+
         /// <summary>값이 <paramref name="value"/>일 때 켜지는 모델(놓인 모양 하나 + 커넥터).</summary>
         public System.Collections.Generic.IEnumerable<GameObject> ModelsFor(PillarLayout value)
         {

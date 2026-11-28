@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SlimeColorMaker
 {
     /// <summary>
-    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식 기둥 목록, 천장 조명 목록, 블록 윗면 코팅 목록(규칙은 <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
+    /// 큐브 맵의 지형 데이터: 블록이 있는 칸 목록, 계단 목록, 장식(기둥·천장 조명·상자·난간·계기판) 목록, 블록 윗면 코팅 목록(규칙은 <see cref="CubeGridRules"/>). 블록은 아직 한 종류다.
     /// 씬의 큐브 격자와 나중의 UGC 맵 파일이 같은 클래스를 쓴다(JsonUtility).
     /// </summary>
     [Serializable]
@@ -15,6 +15,12 @@ namespace SlimeColorMaker
         public List<CubeStair> stairs = new();
         public List<CubePillar> pillars = new();
         public List<CubeLight> lights = new();
+
+        /// <summary>상자(반 칸 8³)의 반 칸 좌표(칸 × 2 + 0·1, <see cref="CubeGridRules.CrateCell"/>).</summary>
+        public List<Vector3Int> crates = new();
+
+        public List<CubeSidePiece> railings = new();
+        public List<CubeSidePiece> panels = new();
         public List<CubeCoating> coatings = new();
     }
 
@@ -60,8 +66,8 @@ namespace SlimeColorMaker
     }
 
     /// <summary>
-    /// 천장 조명 하나(장식): 위 칸 지형의 아랫면에 붙는 막대(2 × 1 × 8픽셀). 조명 윗면 전부가 위 칸 아랫면에 닿을 때만 놓이고(아랫면 높이는 0이 아니어도 되고
-    /// 조명이 그 높이까지 올라감, 높이는 저장하지 않고 지을 때 계산), 지형과 픽셀이 겹치면 놓지 않는다(<see cref="CubeGridRules.FitLight"/>).
+    /// 천장 조명 하나(장식): 위 칸 지형의 아랫면에 붙는 막대(2 × 1 × 8픽셀). 놓는 곳은 프리팹의 설치 규칙으로 정한다
+    /// (처음 값: 위 칸 지형의 칸 경계 아랫면이 꽉 참, <see cref="CubeGridRules.Supported"/>).
     /// 칸을 차지하지 않아 같은 칸에 기물을 둘 수 있다. 천장에서 떨어지면 편집 도구가 지운다.
     /// </summary>
     [Serializable]
@@ -80,6 +86,23 @@ namespace SlimeColorMaker
             this.cell = cell;
             this.axis = axis;
             this.color = color;
+        }
+    }
+
+    /// <summary>
+    /// 칸의 한 옆면에 붙는 장식 하나(철망 난간, 계기판): 칸 + 옆면(0 = 북, 1 = 동, 2 = 남, 3 = 서, CellFace 차례).
+    /// 모델은 남쪽 면 기준으로 만들고 옆면대로 돌린다(<see cref="CubeGridRules.SideRotation"/>). 놓는 곳은 프리팹의 설치 규칙으로 정한다(처음 값: 난간은 아래, 계기판은 뒤 칸 지형의 칸 경계 면이 꽉 참).
+    /// </summary>
+    [Serializable]
+    public struct CubeSidePiece
+    {
+        public Vector3Int cell;
+        public int side;
+
+        public CubeSidePiece(Vector3Int cell, int side)
+        {
+            this.cell = cell;
+            this.side = side;
         }
     }
 

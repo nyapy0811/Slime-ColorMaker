@@ -23,4 +23,7 @@ MonoBehaviour:
   conveyorBeltPrefab: {fileID: 3017853490229241096, guid: 0cf325026f599384c8296866a4b6bcfa, type: 3}
   pillarPrefab: {fileID: 1787815124256400881, guid: 9a67a53c01a762e4bb302507128860a2, type: 3}
   lightPrefab: {fileID: 2513487792905083326, guid: c4cc677e9fb91a4418ebf75c8a251533, type: 3}
+  cratePrefab: {fileID: 8438296816048788729, guid: d3175f33705f9dc488479efbeabb8774, type: 3}
+  railingPrefab: {fileID: 9045434316230632278, guid: 56885fab46666fa438469c026f90709b, type: 3}
+  panelPrefab: {fileID: 1493873391606700971, guid: 12ca48876c8c2ef4f80b4c88a20df63f, type: 3}
   coatingSettings: {fileID: 11400000, guid: cdf389c80cba99a4ca0c5f5e50102367, type: 2}

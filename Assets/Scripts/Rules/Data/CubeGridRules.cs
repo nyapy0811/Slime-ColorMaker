@@ -7,7 +7,7 @@ namespace SlimeColorMaker
     /// <summary>
     /// 큐브 맵의 순수 계산. 한 칸은 1×1×1이고 칸 좌표는 정수 (x, y, z)다. 칸은 x·z가 좌표 ±0.5, y가 좌표 ~ 좌표 + 1인
     /// 상자라 칸 중심은 (x, y + 0.5, z), 칸 바닥 가운데는 (x, y, z)다. 그래서 y = −1 칸의 블록 윗면이 높이 0이다.
-    /// 높이 제한과 천장은 없다. 한 칸에는 블록, 계단, 기둥, 기물 중 하나만 둔다(기물 검사는 편집 도구와 맵 검사).
+    /// 높이 제한과 천장은 없다. 한 칸에는 한 종류만 둔다(지형·장식·기물 검사는 편집 도구와 맵 검사).
     /// </summary>
     public static class CubeGridRules
     {
@@ -36,6 +36,67 @@ namespace SlimeColorMaker
 
         public static bool HasLight(CubeGridData data, Vector3Int cell) => data.lights.Exists(light => light.cell == cell);
 
+        /// <summary>반 칸 좌표가 든 칸.</summary>
+        public static Vector3Int CrateCell(Vector3Int half) => new(FloorDiv(half.x, 2), FloorDiv(half.y, 2), FloorDiv(half.z, 2));
+
+        /// <summary>반 칸 상자의 바닥 가운데(월드).</summary>
+        public static Vector3 CrateBottom(Vector3Int half) => new(half.x * 0.5f - 0.25f, half.y * 0.5f, half.z * 0.5f - 0.25f);
+
+        public static bool HasCrate(CubeGridData data, Vector3Int cell) => data.crates.Exists(half => CrateCell(half) == cell);
+
+        public static bool HasRailing(CubeGridData data, Vector3Int cell) => data.railings.Exists(piece => piece.cell == cell);
+
+        public static bool HasPanel(CubeGridData data, Vector3Int cell) => data.panels.Exists(piece => piece.cell == cell);
+
+        /// <summary>상자·난간·계기판이 칸에 있는가.</summary>
+        public static bool HasDecoration(CubeGridData data, Vector3Int cell) => HasCrate(data, cell) || HasRailing(data, cell) || HasPanel(data, cell);
+
+        /// <summary>상자를 놓는다. 그 반 칸에 이미 있으면 false. 같은 칸의 다른 것은 편집 도구가 본다(한 칸 한 종류).</summary>
+        public static bool AddCrate(CubeGridData data, Vector3Int half)
+        {
+            if (data.crates.Contains(half)) return false;
+            data.crates.Add(half);
+            return true;
+        }
+
+        public static bool RemoveCrate(CubeGridData data, Vector3Int half) => data.crates.Remove(half);
+
+        /// <summary>옆면 장식을 놓는다. 그 칸의 그 면에 이미 있으면 false.</summary>
+        public static bool AddSidePiece(List<CubeSidePiece> pieces, Vector3Int cell, int side)
+        {
+            side = Turn(side);
+            if (pieces.Exists(piece => piece.cell == cell && piece.side == side)) return false;
+            pieces.Add(new CubeSidePiece(cell, side));
+            return true;
+        }
+
+        /// <summary>남쪽 면 기준 모델을 옆면(0 = 북, 1 = 동, 2 = 남, 3 = 서)으로 보내는 회전.</summary>
+        public static Quaternion SideRotation(int side) => Quaternion.Euler(0f, 90f * Turn(side + 2), 0f);
+
+        /// <summary>옆면의 바깥 방향(칸 밖으로).</summary>
+        public static Vector3Int SideStep(int side) => SideSteps[Turn(side)];
+
+        /// <summary>
+        /// 난간마다 동쪽 끝(모델 기준 +x) 기둥을 켤지. 같은 면으로 이어진 옆 칸 난간이 있거나(그 난간의 서쪽 기둥이 맞닿음),
+        /// 같은 칸에서 동쪽 끝이 가리키는 면에도 난간이 있으면(안쪽 모서리, 그 난간의 서쪽 기둥과 겹침) 끈다. 서쪽 기둥은 늘 켠다.
+        /// </summary>
+        public static Dictionary<CubeSidePiece, bool> RailingEastPosts(CubeGridData data)
+        {
+            var set = new HashSet<CubeSidePiece>(data.railings);
+            var posts = new Dictionary<CubeSidePiece, bool>();
+            foreach (var railing in set)
+            {
+                int end = EndSide(railing.side); // 동쪽 끝이 가리키는 옆면
+                bool continues = set.Contains(new CubeSidePiece(railing.cell + SideStep(end), railing.side));
+                bool corner = set.Contains(new CubeSidePiece(railing.cell, end));
+                posts[railing] = !continues && !corner;
+            }
+            return posts;
+        }
+
+        // 옆면 장식의 동쪽 끝(모델 +x)이 가리키는 옆면: 남쪽 면(모델 그대로)이면 동쪽, 돌리면 같이 돈다.
+        static int EndSide(int side) => Turn(side - 1);
+
         /// <summary>블록이나 계단, 기둥이 칸을 차지하는가(천장 조명은 차지하지 않음, 조명과의 겹침은 픽셀로 봄).</summary>
         public static bool IsOccupied(CubeGridData data, Vector3Int cell) => HasBlock(data, cell) || HasStair(data, cell) || HasPillar(data, cell);
 
@@ -63,7 +124,7 @@ namespace SlimeColorMaker
             return true;
         }
 
-        /// <summary>천장 조명을 놓는다(방향, 빛 색). 칸에 이미 조명이 있으면 false. 천장에 닿는지·지형과 겹치는지는 픽셀로 따로 본다(<see cref="FitLight"/>).</summary>
+        /// <summary>천장 조명을 놓는다(방향, 빛 색). 칸에 이미 조명이 있으면 false. 붙는 곳은 편집 도구가 설치 규칙으로 따로 본다.</summary>
         public static bool AddLight(CubeGridData data, Vector3Int cell, CellAxis axis, Color color)
         {
             if (HasLight(data, cell)) return false;
@@ -75,46 +136,71 @@ namespace SlimeColorMaker
         public const int CellPixels = 16;
 
         /// <summary>
-        /// 천장 조명이 올라갈 높이(픽셀). <paramref name="light"/>는 조명 칸 기준 조명 픽셀(칸 맨 위에 붙은 모양, 0~15),
-        /// <paramref name="ownSolid"/>·<paramref name="aboveSolid"/>는 조명 칸·위 칸의 지형 픽셀(칸 기준 0~15)이다.
-        /// 조명 윗면의 모든 열에서 바로 위 칸 지형의 가장 낮은 픽셀까지 올리는 양이 같으면(윗면 전부가 위 칸 아랫면에 닿음, 아랫면 높이는 0이 아니어도 됨)
-        /// 그만큼 올리고, 올린 조명 픽셀이 두 칸의 지형 픽셀과 겹치지 않으면 true.
+        /// 설치 규칙(<paramref name="rules"/>) 중 하나라도 맞는가(없으면 어디든 놓임). 기물 기준 방향은 놓인 회전(<paramref name="rotation"/>)으로 세계 방향이 된다.
+        /// <paramref name="fullFace"/>는 그 세계 방향 옆 칸 지형의 칸 경계 면이 꽉 찼는지, <paramref name="sameKind"/>는 그쪽 옆에 같은 종류가 있는지.
         /// </summary>
-        public static bool FitLight(IEnumerable<Vector3Int> light, Func<Vector3Int, bool> ownSolid, Func<Vector3Int, bool> aboveSolid, out int height)
+        public static bool Supported(IReadOnlyList<PlacementRule> rules, Quaternion rotation, Func<Vector3Int, bool> fullFace, Func<Vector3Int, bool> sameKind)
         {
-            height = -1;
-            var pixels = new List<Vector3Int>(light);
-            var tops = new Dictionary<Vector2Int, int>();
-            foreach (var p in pixels)
+            if (rules == null || rules.Count == 0) return true;
+            foreach (var rule in rules)
+                foreach (var step in Directions(rule.direction, rotation))
+                    if (rule.check == PlacementCheck.FullFace ? fullFace(step) : sameKind(step)) return true;
+            return false;
+        }
+
+        /// <summary>설치 규칙 방향의 세계 방향(한 걸음). 세계 기준(아랫방향·윗방향·옆방향 = 북·동·남·서 넷)은 그대로, 기물 기준은 <paramref name="rotation"/>으로 돌린다.</summary>
+        public static List<Vector3Int> Directions(PlacementDirection direction, Quaternion rotation)
+        {
+            switch (direction)
             {
-                var column = new Vector2Int(p.x, p.z);
-                if (!tops.TryGetValue(column, out int top) || p.y > top) tops[column] = p.y;
+                case PlacementDirection.Down: return new List<Vector3Int> { Vector3Int.down };
+                case PlacementDirection.Up: return new List<Vector3Int> { Vector3Int.up };
+                case PlacementDirection.AnySide: return new List<Vector3Int>(SideSteps);
             }
-            if (tops.Count == 0) return false;
-            foreach (var (column, top) in tops)
+            var local = direction switch
             {
-                int lowest = -1;
-                for (int y = 0; y < CellPixels && lowest < 0; y++)
-                    if (aboveSolid(new Vector3Int(column.x, y, column.y))) lowest = y;
-                if (lowest < 0) return false;
-                int lift = CellPixels + lowest - (top + 1); // 조명 윗면(top + 1)을 위 칸 아랫면(16 + lowest)에 닿게
-                if (height >= 0 && height != lift) return false;
-                height = lift;
-            }
-            foreach (var p in pixels)
+                PlacementDirection.Back => Vector3.back,
+                PlacementDirection.Front => Vector3.forward,
+                PlacementDirection.Left => Vector3.left,
+                PlacementDirection.TopFace => Vector3.up,
+                PlacementDirection.BottomFace => Vector3.down,
+                _ => Vector3.right,
+            };
+            return new List<Vector3Int> { Vector3Int.RoundToInt(rotation * local) };
+        }
+
+        /// <summary>
+        /// 칸 경계 면이 꽉 찼나: <paramref name="toward"/>(축 방향 하나) 쪽 옆 칸에서 이 칸과 맞닿은 한 겹(16 × 16 픽셀)이
+        /// 전부 찼다(<paramref name="nextSolid"/>, 옆 칸 기준 0~15).
+        /// </summary>
+        public static bool FullFace(Vector3Int toward, Func<Vector3Int, bool> nextSolid)
+        {
+            int axis = toward.x != 0 ? 0 : toward.y != 0 ? 1 : 2;
+            int layer = toward[axis] > 0 ? 0 : CellPixels - 1;
+            for (int a = 0; a < CellPixels; a++)
+            for (int b = 0; b < CellPixels; b++)
             {
-                int y = p.y + height;
-                if (y < CellPixels ? ownSolid(new Vector3Int(p.x, y, p.z)) : aboveSolid(new Vector3Int(p.x, y - CellPixels, p.z))) return false;
+                var p = axis == 0 ? new Vector3Int(layer, a, b) : axis == 1 ? new Vector3Int(a, layer, b) : new Vector3Int(a, b, layer);
+                if (!nextSolid(p)) return false;
             }
             return true;
         }
 
-        /// <summary>칸의 블록이나 계단, 기둥, 천장 조명을 지운다(블록의 코팅도 함께). 없었으면 false. 천장에서 떨어진 조명은 편집 도구가 따로 지운다.</summary>
+        /// <summary>반 칸 상자의 <paramref name="toward"/>(축 방향 하나) 쪽 면이 칸 경계에 있나(칸의 그쪽 반에 든 상자).</summary>
+        public static bool CrateFaceOnBoundary(Vector3Int half, Vector3Int toward)
+        {
+            int axis = toward.x != 0 ? 0 : toward.y != 0 ? 1 : 2;
+            bool upperHalf = half[axis] - FloorDiv(half[axis], 2) * 2 == 1;
+            return toward[axis] > 0 ? upperHalf : !upperHalf;
+        }
+
+        /// <summary>칸의 블록이나 계단, 기둥, 천장 조명, 상자·난간·계기판을 지운다(블록의 코팅도 함께). 없었으면 false. 받침이 사라진 것은 편집 도구가 따로 지운다.</summary>
         public static bool Remove(CubeGridData data, Vector3Int cell)
         {
             data.coatings.RemoveAll(coating => coating.cell == cell);
             return data.blocks.Remove(cell) | data.stairs.RemoveAll(stair => stair.cell == cell) > 0 | data.pillars.RemoveAll(pillar => pillar.cell == cell) > 0
-                | data.lights.RemoveAll(light => light.cell == cell) > 0;
+                | data.lights.RemoveAll(light => light.cell == cell) > 0 | data.crates.RemoveAll(half => CrateCell(half) == cell) > 0
+                | data.railings.RemoveAll(piece => piece.cell == cell) > 0 | data.panels.RemoveAll(piece => piece.cell == cell) > 0;
         }
 
         /// <summary>칸의 블록이나 계단, 기둥만 지운다(코팅·조명은 그대로). 편집 도구가 막 놓은 지형을 되돌릴 때 쓴다.</summary>

@@ -626,6 +626,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3855670736524004552}
+  - component: {fileID: 4824300356424061853}
   - component: {fileID: 8435180725007943896}
   - component: {fileID: 3401795835350025707}
   - component: {fileID: 7472869160116692494}
@@ -653,6 +654,19 @@ Transform:
   - {fileID: 4481657492626554353}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4824300356424061853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7677031606364126376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4bee2d55d3159b4d9d9d5ca3d2c545b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlimeColorMaker.PlacementRules
+  rules: []
 --- !u!114 &8435180725007943896
 MonoBehaviour:
   m_ObjectHideFlags: 0

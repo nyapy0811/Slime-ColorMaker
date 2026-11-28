@@ -261,32 +261,50 @@ namespace SlimeColorMaker
             Assert.AreEqual(PillarConnector.None, layouts[C(0, 0, 0)].east);
         }
 
-        // 남북 조명 막대(x 7~8, y 15, z 4~11): 칸 맨 위에 붙은 모양.
-        static List<Vector3Int> Bar()
+        [Test]
+        public void FullFace_NeedsWholeBoundaryLayer()
         {
-            var bar = new List<Vector3Int>();
-            for (int z = 4; z < 12; z++)
-            for (int x = 7; x < 9; x++)
-                bar.Add(C(x, 15, z));
-            return bar;
+            Assert.IsTrue(CubeGridRules.FullFace(Vector3Int.up, p => true));                  // 위 칸이 블록
+            Assert.IsFalse(CubeGridRules.FullFace(Vector3Int.up, p => p.y >= 4));             // 아랫면이 높이 4(눕힌 기둥): 칸 경계 아님
+            Assert.IsFalse(CubeGridRules.FullFace(Vector3Int.up, p => p.x != 0 || p.z != 0)); // 빈 픽셀 하나
+            Assert.IsTrue(CubeGridRules.FullFace(Vector3Int.down, p => p.y == 15));           // 아래 칸 윗면 한 겹만 차도 됨
+            Assert.IsTrue(CubeGridRules.FullFace(Vector3Int.back, p => p.z == 15));           // 남쪽 칸의 북쪽 끝 한 겹
+            Assert.IsFalse(CubeGridRules.FullFace(Vector3Int.back, p => p.z == 0));           // 남쪽 칸의 먼 쪽 면
         }
 
         [Test]
-        public void FitLight_TouchesCeilingAtAnyHeight()
+        public void Supported_AnyRuleInPlacedDirection()
         {
-            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => false, p => true, out int height)); // 위 칸이 블록
-            Assert.AreEqual(0, height);
-            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => false, p => p.y >= 4, out height)); // 위 칸 아랫면이 높이 4(눕힌 기둥)
-            Assert.AreEqual(4, height);
-            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => false, p => false, out _));       // 위 칸 비었음
-            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => false, p => p.y >= (p.z < 8 ? 0 : 4), out _)); // 아랫면 높이가 고르지 않음
+            var rules = new List<PlacementRule> { new(PlacementCheck.FullFace, PlacementDirection.Back), new(PlacementCheck.SameKind, PlacementDirection.Down) };
+            var east = CubeGridRules.SideRotation(1); // 동쪽 면 장식: 뒤 = +x
+            Assert.IsTrue(CubeGridRules.Supported(rules, east, d => d == Vector3Int.right, d => false));
+            Assert.IsFalse(CubeGridRules.Supported(rules, east, d => d == new Vector3Int(0, 0, -1), d => false));
+            Assert.IsTrue(CubeGridRules.Supported(rules, east, d => false, d => d == Vector3Int.down));
+            Assert.IsTrue(CubeGridRules.Supported(new List<PlacementRule>(), east, d => false, d => false)); // 규칙 없음 = 어디든
+            var side = new List<PlacementRule> { new(PlacementCheck.SameKind, PlacementDirection.AnySide) };
+            Assert.IsTrue(CubeGridRules.Supported(side, Quaternion.identity, d => false, d => d == Vector3Int.left));
+            Assert.IsFalse(CubeGridRules.Supported(side, Quaternion.identity, d => false, d => d == Vector3Int.up));
         }
 
         [Test]
-        public void FitLight_RejectsPixelOverlap()
+        public void Directions_WorldStaysObjectTurns()
         {
-            Assert.IsTrue(CubeGridRules.FitLight(Bar(), p => p.y >= 4 && p.y < 12, p => true, out _));  // 조명 칸 아래쪽 들보(4~12)는 겹치지 않음
-            Assert.IsFalse(CubeGridRules.FitLight(Bar(), p => p.x >= 6 && p.x < 10, p => true, out _)); // 조명 칸 세운 기둥 웨브와 겹침
+            var lying = Quaternion.Euler(0f, 0f, 90f); // 눕힌 기둥처럼 Z축 90°
+            CollectionAssert.AreEqual(new[] { Vector3Int.down }, CubeGridRules.Directions(PlacementDirection.Down, lying));       // 아랫방향(세계)
+            CollectionAssert.AreEqual(new[] { Vector3Int.right }, CubeGridRules.Directions(PlacementDirection.BottomFace, lying)); // 아랫면(기물)이 옆으로
+            CollectionAssert.AreEqual(new[] { Vector3Int.left }, CubeGridRules.Directions(PlacementDirection.TopFace, lying));
+            Assert.AreEqual(4, CubeGridRules.Directions(PlacementDirection.AnySide, lying).Count);                                  // 옆방향(세계) 넷
+            CollectionAssert.AreEqual(new[] { new Vector3Int(0, 0, -1) }, CubeGridRules.Directions(PlacementDirection.Back, lying)); // Z축으로 돌려도 뒷면은 그대로
+        }
+
+        [Test]
+        public void CrateFaceOnBoundary_ByHalf()
+        {
+            Assert.IsTrue(CubeGridRules.CrateFaceOnBoundary(C(0, 0, 0), Vector3Int.down));  // 칸 아래쪽 반
+            Assert.IsFalse(CubeGridRules.CrateFaceOnBoundary(C(0, 1, 0), Vector3Int.down)); // 칸 위쪽 반(아래는 같은 칸)
+            Assert.IsTrue(CubeGridRules.CrateFaceOnBoundary(C(0, -1, 0), Vector3Int.up));
+            Assert.IsTrue(CubeGridRules.CrateFaceOnBoundary(C(-1, 0, 0), Vector3Int.right));
+            Assert.IsFalse(CubeGridRules.CrateFaceOnBoundary(C(-1, 0, 0), Vector3Int.left));
         }
 
         [Test]
@@ -301,6 +319,35 @@ namespace SlimeColorMaker
             Assert.IsTrue(CubeGridRules.HasLight(data, C(0, 0, 0)));   // 지형만 지움
             Assert.IsTrue(CubeGridRules.Remove(data, C(0, 0, 0)));
             Assert.AreEqual(0, data.lights.Count);
+        }
+
+        [Test]
+        public void RailingEastPosts_HiddenWhenContinuedOrInnerCorner()
+        {
+            var data = new CubeGridData();
+            CubeGridRules.AddSidePiece(data.railings, C(0, 0, 0), 2); // 남쪽 면, 동쪽 끝은 +x
+            CubeGridRules.AddSidePiece(data.railings, C(1, 0, 0), 2);
+            CubeGridRules.AddSidePiece(data.railings, C(1, 0, 0), 1); // 같은 칸 동쪽 면(안쪽 모서리)
+            Assert.IsFalse(CubeGridRules.AddSidePiece(data.railings, C(1, 0, 0), 1)); // 같은 면 둘은 안 됨
+            var posts = CubeGridRules.RailingEastPosts(data);
+            Assert.IsFalse(posts[new CubeSidePiece(C(0, 0, 0), 2)]); // 옆 칸으로 이어짐
+            Assert.IsFalse(posts[new CubeSidePiece(C(1, 0, 0), 2)]); // 안쪽 모서리
+            Assert.IsTrue(posts[new CubeSidePiece(C(1, 0, 0), 1)]);  // 동쪽 면의 끝(+z 쪽)은 비었음
+        }
+
+        [Test]
+        public void Decorations_CratesByHalfCellAndRemovedWithCell()
+        {
+            var data = new CubeGridData();
+            Assert.IsTrue(CubeGridRules.AddCrate(data, C(-1, 2, 1)));
+            Assert.IsFalse(CubeGridRules.AddCrate(data, C(-1, 2, 1)));
+            Assert.AreEqual(C(-1, 1, 0), CubeGridRules.CrateCell(C(-1, 2, 1)));
+            Assert.AreEqual(new Vector3(-0.75f, 1f, 0.25f), CubeGridRules.CrateBottom(C(-1, 2, 1)));
+            CubeGridRules.AddSidePiece(data.panels, C(-1, 1, 0), 0);
+            Assert.IsTrue(CubeGridRules.HasDecoration(data, C(-1, 1, 0)));
+            Assert.IsFalse(CubeGridRules.IsOccupied(data, C(-1, 1, 0)));
+            Assert.IsTrue(CubeGridRules.Remove(data, C(-1, 1, 0)));
+            Assert.AreEqual(0, data.crates.Count + data.panels.Count);
         }
 
         [Test]
